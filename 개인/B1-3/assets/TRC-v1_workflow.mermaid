@@ -1,0 +1,35 @@
+flowchart TD
+    subgraph TRIGGER["① TRIGGER"]
+        A["🔔 RSS 신규 기사 감지<br/><b>Make</b> RSS · Watch RSS feed items<br/><b>n8n</b> RSS Feed Trigger<br/>─────────────<br/>전자신문 Section901<br/>1일 1회 08:00 KST · 최대 5건<br/>상태 저장 → 멱등성 보장"]
+    end
+
+    subgraph ACTION1["② ACTION 1 · 정규화"]
+        B["⚙️ 데이터 정제<br/><b>Make</b> Tools · Set multiple variables<br/><b>n8n</b> Code · Run Once for All Items<br/>─────────────<br/>N1 HTML 태그 제거 · N2 엔티티 제거<br/>N3 공백 정리 · N4 요약 200자 절단<br/>N5 JSON 안전화 · N6 KST 통일"]
+    end
+
+    subgraph ACTION2["③ ACTION 2 · 스코어링"]
+        C["🧮 전략 시그널 점수 산출<br/>─────────────<br/>자본시장 투자·인수·합병·지분·상장<br/>기술자산 특허·양산·출시<br/>제도정책 규제<br/>사업화 계약·수주·협력<br/>─────────────<br/>score = 고유 매칭 키워드 수 (0~12)<br/>중복 카운트 금지"]
+    end
+
+    D{"🔀 <b>조건 분기</b><br/><b>Make</b> Router + Filter<br/><b>n8n</b> Switch<br/>─────────────<br/>score ≥ 2 ?<br/>θ=2 · 실측으로 결정"}
+
+    subgraph ROUTEA["Route A · CORE"]
+        E["📊 ACTION 3<br/>Google Sheets · Add a Row<br/>시트 <b>CORE</b> · 9열"]
+        F["📣 ACTION 4<br/>HTTP POST · Discord Webhook<br/>4행 고정 템플릿"]
+    end
+
+    subgraph ROUTEB["Route B · REF (Fallback)"]
+        G["📊 ACTION 5<br/>Google Sheets · Add a Row<br/>시트 <b>REF</b> · 9열<br/>─────────────<br/>알림 없음 (의도적 비대칭)"]
+    end
+
+    A --> B --> C --> D
+    D -->|"YES · score ≥ 2"| E --> F
+    D -->|"NO · Fallback route<br/>유실 확률 0"| G
+
+    style A fill:#e8f0fe,stroke:#4285f4,stroke-width:2px
+    style B fill:#f1f3f4,stroke:#5f6368,stroke-width:2px
+    style C fill:#f1f3f4,stroke:#5f6368,stroke-width:2px
+    style D fill:#fef7e0,stroke:#f9ab00,stroke-width:3px
+    style E fill:#e6f4ea,stroke:#34a853,stroke-width:2px
+    style F fill:#e6f4ea,stroke:#34a853,stroke-width:2px
+    style G fill:#fce8e6,stroke:#ea4335,stroke-width:2px

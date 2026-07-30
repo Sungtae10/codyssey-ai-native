@@ -23,12 +23,12 @@ Zapier는 14일 Pro 트라이얼로 가능하지만 종료 후 워크플로우�
 |---|---|---|
 | `00_START_HERE.md` | 지금 이 문서. 진행 순서 | — |
 | `docs/01_WORKFLOW_SPEC.md` | **도구 중립 명세서 (5개 계약)** — 동일성 증빙의 근거 | 첨부 권장 (가점) |
-| `docs/02_MAKE_구현가이드.md` | Make 모듈 7개 클릭 순서 + 수식 복붙용 | 작업용 |
-| `docs/03_n8n_구현가이드.md` | n8n 설치 + 노드 6개 + Code 로직 | 작업용 |
-| `docs/04_비교분석보고서.md` | **프로젝트 1 필수 제출물** (비교 항목 8개) | ✅ 필수 |
-| `docs/05_프로젝트2_설계문서.md` | **프로젝트 2 필수 제출물** | ✅ 필수 |
-| `docs/06_심층인터뷰_QA스크립트.md` | 평가 항목 2·3·4 전 문항 답변 스크립트 (Q1~Q14) | 개인용 |
-| `docs/07_제출_체크리스트.md` | 평가표 1:1 매핑 + 보안 점검표 | 개인용 |
+| `docs/02_make_guide.md` | Make 모듈 7개 클릭 순서 + 수식 복붙용 | 작업용 |
+| `docs/03_n8n_guide.md` | n8n 설치 + 노드 6개 + Code 로직 | 작업용 |
+| `docs/04_comparison_report.md` | **프로젝트 1 필수 제출물** (비교 항목 8개) | ✅ 필수 |
+| `docs/05_project2_design.md` | **프로젝트 2 필수 제출물** | ✅ 필수 |
+| `docs/06_interview_qa.md` | 평가 항목 2·3·4 전 문항 답변 스크립트 (Q1~Q14) | 개인용 |
+| `docs/07_submission_checklist.md` | 평가표 1:1 매핑 + 보안 점검표 | 개인용 |
 | `assets/TRC-v1_workflow.mermaid` | 프로젝트 1 구조 다이어그램 | 첨부 |
 | `workflows/n8n_TRC_v1.json` | n8n 임포트용 (⚠️ 미검증 — 수동 구성이 정본) | 참고 |
 | `workflows/_test_scoring.js` | 스코어링 로직 단위 테스트 (`node _test_scoring.js`) | 참고 (가점) |
@@ -45,34 +45,35 @@ Zapier는 14일 Pro 트라이얼로 가능하지만 종료 후 워크플로우�
 - [ ] Make 무료 가입
 - [ ] `node workflows/_test_scoring.js` 실행해 스코어링 로직 확인 (선택, 1분)
 
-### STEP 1 · Make 구현 (40분) → `docs/02_MAKE_구현가이드.md`
+### STEP 1 · Make 구현 (40분) → `docs/02_make_guide.md`
 - [ ] 모듈 ①~⑦ 구성
 - [ ] `Run once` 실행 → **Router 양쪽에 번들이 지나갔는지 확인**
 - [ ] 캡처 1~8, 15
 
-### STEP 2 · n8n 구현 (55분) → `docs/03_n8n_구현가이드.md`
+### STEP 2 · n8n 구현 (55분) → `docs/03_n8n_guide.md`
 - [ ] `npx n8n` 설치 (Node 20+ 필요)
 - [ ] GCP 서비스 계정 발급 + **스프레드시트를 서비스 계정 이메일과 공유** ← 여기서 403 자주 발생
 - [ ] 노드 ①~⑥ 구성
 - [ ] `Test workflow` → **양쪽 경로 확인**
 - [ ] 캡처 1~12
 
-### STEP 3 · 프로젝트 2 구현 (50분) → `docs/05_프로젝트2_설계문서.md` §4
-- [ ] Gmail 라벨 `GradApp` + 필터 생성
-- [ ] Sheets `GradApp_Tracker` (탭 `URGENT`/`NORMAL`, 8열)
-- [ ] Discord 채널 `#deadline-alert` + Webhook
-- [ ] Make 모듈 ①~⑧ 구성
-- [ ] **테스트 메일 T1·T2·T3 발송** → 라벨 부여 → 실행 (§6 검증 시나리오)
-- [ ] 스케줄 `Every day 08:30` + 토글 ON
+### STEP 3 · 프로젝트 2 구현 (50분) → `docs/05_project2_design.md` §4
+- [ ] OPENDART 인증키 발급 (opendart.fss.or.kr — 무료, 개인)
+- [ ] 관심 기업 고유번호(corp_code) 확인 — corpCode.xml 다운로드 후 검색
+- [ ] Sheets `DSR_Disclosure_Log` (탭 `SIGNAL`/`ROUTINE`, 8열)
+- [ ] Discord 채널 `#dart-signal` + Webhook
+- [ ] Make 모듈 구성: HTTP(list.json) → status 필터 → Iterator → 분류 Set → Router → Discord+Sheets
+- [ ] **검증 T1~T4 실행** — 날짜 창을 과거로 넓혀 SIGNAL·ROUTINE 양쪽 발화 확인 후 **수식 복원** (§6 검증 시나리오)
+- [ ] 스케줄 `Every day 08:00` + 토글 ON
 - [ ] **스케줄에 의한 자동 실행 기록 1건 확보** ← 평가 항목 1-4의 핵심
 
 ### STEP 4 · 문서 마감 (30분)
-- [ ] `04_비교분석보고서.md` §4.1 실행 결과 표 · §4.2 동일성 검증 표 **빈칸 채우기**
-- [ ] `05_프로젝트2_설계문서.md` §1.2 메일 유입량 실측값 기입
+- [ ] `04_comparison_report.md` §4.1 실행 결과 표 · §4.2 동일성 검증 표 **빈칸 채우기**
+- [ ] `05_project2_design.md` §1.2 확인 주기 실측값 기입
 - [ ] 두 문서를 PDF로 변환 (또는 Markdown 그대로 제출)
 - [ ] 스크린샷 파일명 정리
 
-### STEP 5 · 최종 검증 (15분) → `docs/07_제출_체크리스트.md`
+### STEP 5 · 최종 검증 (15분) → `docs/07_submission_checklist.md`
 - [ ] 평가표 1:1 매핑 표 전항 체크
 - [ ] **🔒 보안 점검표 S1~S8 전항 확인** ← Webhook URL·Private Key 마스킹
 - [ ] 자기 점검 3문항 소리 내어 답하기
@@ -81,7 +82,7 @@ Zapier는 14일 Pro 트라이얼로 가능하지만 종료 후 워크플로우�
 
 ## ⚠️ 가장 흔히 놓치는 3가지
 
-1. **분기 양쪽 실행 증빙** — 평가 항목 1이 명시적으로 요구한다. Router 한쪽만 번들이 흐른 스크린샷은 FAIL 사유다. 해결 순서는 `02_MAKE_구현가이드.md` §8-3에 있다. **θ나 키워드 사전을 임시로 바꿔 맞추지 말 것** — 스크린샷과 보고서의 임계값이 어긋나면 즉시 지적된다.
+1. **분기 양쪽 실행 증빙** — 평가 항목 1이 명시적으로 요구한다. Router 한쪽만 번들이 흐른 스크린샷은 FAIL 사유다. 해결 순서는 `02_make_guide.md` §8-3에 있다. **θ나 키워드 사전을 임시로 바꿔 맞추지 말 것** — 스크린샷과 보고서의 임계값이 어긋나면 즉시 지적된다.
 
 2. **P2의 "자동 실행" 증빙 2장 세트** — 스케줄 설정 화면 **+** 그 스케줄로 자동 실행된 History 기록. `Run once` 기록만 내면 "수동 실행 아닌가"를 반드시 묻는다. 하루 기다리기 어렵다면 스케줄을 임시로 `Every 15 minutes`로 두고 자동 실행 1건을 확보한 뒤 되돌린다.
 

@@ -6,17 +6,37 @@
 
 ---
 
-## 📌 심사자용 바로가기
+## 📋 진행 상태 (Status Board)
+
+> 이 저장소는 진행 중인 작업물을 그대로 반영합니다. 아래 표가 실제 상태입니다.
+
+| 단계 | 상태 |
+|---|---|
+| 워크플로우 설계 (도구 중립 명세서 · 5개 계약) | ✅ 완료 |
+| 스코어링 로직 단위 테스트 (Node.js, CORE 2/REF 3 발화 확인) | ✅ 완료 |
+| 구현 가이드·보고서 초안·인터뷰 대비 문서 | ✅ 완료 |
+| **프로젝트 1 — Make 실제 구현·실행** | 🔄 진행 중 |
+| **프로젝트 1 — n8n 실제 구현·실행** | 🔄 진행 중 |
+| **프로젝트 2 — Make 구현·자동 실행 증빙** | 🔄 진행 중 |
+| 실행 스크린샷 (`screenshots/`) | 🔄 구현 후 업로드 예정 |
+| 보고서 실측값 기입 (§4.1·§4.2) 및 최종화 | 🔄 실행 후 완료 예정 |
+
+---
+
+## 📌 심사자용 문서 바로가기
 
 | 평가 대상 | 문서 | 비고 |
 |---|---|---|
-| **[프로젝트 1] 비교 분석 보고서** | [docs/04_비교분석보고서.md](docs/04_비교분석보고서.md) | 비교 항목 **8개** (요구 5개 초과) |
-| **[프로젝트 2] 설계·구현 문서** | [docs/05_프로젝트2_설계문서.md](docs/05_프로젝트2_설계문서.md) | 반복 업무 정의·도구 선정 이유·흐름 설명·다이어그램 포함 |
+| **[프로젝트 1] 비교 분석 보고서** | [docs/04_comparison_report.md](docs/04_comparison_report.md) | 비교 항목 **8개** (요구 5개 초과) · 실측 기입란은 실행 후 확정 |
+| **[프로젝트 2] 설계·구현 문서** | [docs/05_project2_design.md](docs/05_project2_design.md) | 반복 업무 정의·도구 선정 이유·흐름·다이어그램 포함 |
 | 도구 중립 워크플로우 명세서 | [docs/01_WORKFLOW_SPEC.md](docs/01_WORKFLOW_SPEC.md) | 두 구현체의 **동일성 증빙 근거** (5개 계약) |
-| 구현 화면·실행 결과 스크린샷 | [screenshots/](screenshots/) | 파일명 규칙은 아래 표 참조 |
-| 워크플로우 구조 다이어그램 | [assets/TRC-v1_workflow.mermaid](assets/TRC-v1_workflow.mermaid) | GitHub에서 자동 렌더링 |
-| n8n 워크플로우 JSON | [workflows/n8n_TRC_v1.json](workflows/n8n_TRC_v1.json) | import용 (수동 구성이 정본) |
-| 스코어링 로직 단위 테스트 | [workflows/_test_scoring.js](workflows/_test_scoring.js) | `node workflows/_test_scoring.js` |
+| Make 구현 가이드 | [docs/02_make_guide.md](docs/02_make_guide.md) | 모듈 7개 설정값·수식 |
+| n8n 구현 가이드 | [docs/03_n8n_guide.md](docs/03_n8n_guide.md) | 설치·노드 6개·Code 로직 |
+| 심층 인터뷰 Q&A | [docs/06_interview_qa.md](docs/06_interview_qa.md) | 평가 항목 2·3·4 전 문항 대응 |
+| 제출 체크리스트 | [docs/07_submission_checklist.md](docs/07_submission_checklist.md) | 평가표 1:1 매핑 + 보안 점검표 |
+| 워크플로우 다이어그램 | [assets/TRC-v1_workflow.mermaid](assets/TRC-v1_workflow.mermaid) | GitHub 자동 렌더링 |
+| n8n 워크플로우 JSON | [workflows/n8n_TRC_v1.json](workflows/n8n_TRC_v1.json) | import용 구조 파일 — 아래 보안 원칙 참조 |
+| 스코어링 단위 테스트 | [workflows/_test_scoring.js](workflows/_test_scoring.js) | `node workflows/_test_scoring.js` |
 
 ---
 
@@ -34,54 +54,50 @@
 ```
 
 - Trigger 1개 · **Action 5개** · 조건 분기 1개 — 요구사항 충족
-- **양 분기 실행 증빙**: [screenshots/make_07_run_once.png](screenshots/make_07_run_once.png) · [screenshots/n8n_06_test_run.png](screenshots/n8n_06_test_run.png)
-- **동일성 증빙**: 같은 스프레드시트·같은 9열 스키마에 `도구` 열만 달리해 적재 → [screenshots/common_01_sheets_both.png](screenshots/common_01_sheets_both.png)
+- 동일성 설계: 구현 전에 5개 계약(입력 이벤트·정규화·분기·출력·멱등성)을 고정하고 두 도구를 같은 계약의 실행체로 구현 → [명세서](docs/01_WORKFLOW_SPEC.md)
+- 분기 로직은 실제 피드 형태의 픽스처 5건으로 **사전 단위 테스트 완료** (CORE 2 / REF 3 — 양 경로 발화)
 
-## 프로젝트 2 — 자유 주제: 대학원 공고 메일 마감일 트리아지 (Make)
+## 프로젝트 2 — 자유 주제: DART 공시 전략 시그널 레이더 (Make)
 
-**반복 업무**: 대학원 모집요강·학회·장학 공고 메일에서 마감일을 찾아 잔여일을 계산하고 기록하는 작업 (주 약 25분 + 마감 누락 리스크)
+**반복 업무**: 관심 기업(대기업)의 전자공시를 수시로 확인해 전략 시그널 공시(투자·M&A·공급계약 등)를 눈으로 선별하는 작업 (주 약 25분 + 관측 공백 리스크). 데이터 소스는 금융감독원 **OPENDART 오픈API** (무료 개인 인증키).
 
 ```
-[Trigger] Gmail 라벨 GradApp 메일 수신 (자동 실행)
-    → 정규화 → [Text parser] 마감일 정규식 추출 → 마감일 조립
-    → [분기] 마감일 존재 ∧ D-7 이내 ?
-        ├ URGENT → Discord 알림 → Sheets(URGENT)
-        └ NORMAL → Sheets(NORMAL)  ※ Fallback route
+[Trigger] Schedule 매일 08:00 KST (자동 실행)
+    → [HTTP] DART list.json 조회 (전일 날짜 창 — 무상태 멱등성 설계)
+    → [필터] status=000 (공시 없는 날은 조기 종료)
+    → [Iterator] 공시 목록 분해 → [분류] 시그널 사전 12개 매칭
+    → [분기] 전략 시그널 유형인가 ?
+        ├ SIGNAL  → Discord 알림 → Sheets(SIGNAL)
+        └ ROUTINE → Sheets(ROUTINE)  ※ Fallback route
 ```
 
-- **자동 실행 증빙**: 스케줄 설정 [p2_08_schedule_on.png](screenshots/p2_08_schedule_on.png) + 스케줄에 의한 자동 실행 기록 [p2_09_auto_history.png](screenshots/p2_09_auto_history.png)
-- 도구 선정 이유는 비교 항목 3개(가동 지속성·인증 방식·실행 로그)와 연결 → [설계 문서 §2](docs/05_프로젝트2_설계문서.md)
+- P1과 의도적으로 구조를 차별화: RSS/상태저장 트리거(P1) ↔ **REST API/날짜 창 멱등성**(P2), 점수 임계값 분기(P1) ↔ **유형 매칭 분기**(P2)
+- 도구 선정 이유는 프로젝트 1의 비교 항목 3개(⑧ 가동 지속성 · ⑤ 실행 로그 · ③ 무료 플랜 예산)와 연결 → [설계 문서 §2](docs/05_project2_design.md)
+- 자동 실행 증빙은 **스케줄 설정 화면 + 스케줄에 의한 자동 실행 History** 2장 세트로 제출 예정
 
 ---
 
-## 스크린샷 목록
+## 🔒 보안 원칙
 
-| 구분 | 파일 | 내용 |
-|---|---|---|
-| Make | `make_01`~`make_09` | 트리거·정규화·스코어링·Router·Sheets·HTTP(마스킹)·**실행 결과**·History·오퍼레이션 사용량 |
-| n8n | `n8n_01`~`n8n_07` | 트리거·Code·Switch·Sheets·HTTP(마스킹)·**실행 결과**·Executions |
-| 공통 | `common_01`~`common_02` | **동일 스키마 병렬 적재**·Discord 알림 |
-| P2 | `p2_01`~`p2_09` | Gmail 트리거·Text parser·Router·실행 결과·알림·시트·**자동 실행 증빙 2장** |
+- `workflows/n8n_TRC_v1.json`의 `YOUR_SPREADSHEET_URL_HERE` / `YOUR_DISCORD_WEBHOOK_URL_HERE`는 **의도된 자리표시자**입니다. 실제 Webhook URL·문서 ID를 공개 저장소에 커밋하는 것 자체가 민감정보 노출이므로, 실행 증빙은 JSON이 아니라 **마스킹된 스크린샷**으로 제출합니다.
+- Discord Webhook URL·Google 서비스 계정 키는 모든 스크린샷에서 마스킹 처리합니다.
+- 서비스 계정 키 JSON·`.env`는 `.gitignore`로 커밋을 차단합니다.
+- OPENDART API 키(`crtfc_key`)는 스크린샷·문서·저장소 어디에도 원문을 노출하지 않으며(`***MASKED***` 표기), 공시 조회 전용 키라 노출 시에도 재발급으로 즉시 무효화됩니다.
 
-## 🔒 보안
-
-- Discord Webhook URL·Google 서비스 계정 키는 **모든 스크린샷에서 마스킹** 처리
-- 서비스 계정 키 JSON은 `.gitignore`로 커밋 차단
-- 자동화 범위를 Gmail 라벨로 한정해 민감 메일이 파이프라인에 진입하지 않도록 설계
-
-## 문서 전체 구조
+## 저장소 구조
 
 ```
-├── README.md                        ← 지금 이 문서 (심사자 진입점)
+├── README.md                        ← 심사자 진입점 (진행 상태 포함)
+├── 00_START_HERE.md                 작업 순서 가이드
 ├── docs/
 │   ├── 01_WORKFLOW_SPEC.md          도구 중립 명세서 (동일성 계약 5개)
-│   ├── 02_MAKE_구현가이드.md         Make 모듈 7개 설정값
-│   ├── 03_n8n_구현가이드.md          n8n 설치·노드 6개·Code 로직
-│   ├── 04_비교분석보고서.md          ★ 프로젝트 1 제출물
-│   ├── 05_프로젝트2_설계문서.md      ★ 프로젝트 2 제출물
-│   ├── 06_심층인터뷰_QA스크립트.md   평가 항목 2·3·4 대비
-│   └── 07_제출_체크리스트.md         평가표 1:1 매핑 + 보안 점검
-├── screenshots/                     구현·실행 증빙
+│   ├── 02_make_guide.md             Make 모듈 7개 설정값
+│   ├── 03_n8n_guide.md              n8n 설치·노드 6개·Code 로직
+│   ├── 04_comparison_report.md      ★ 프로젝트 1 제출물 (실측 후 최종화)
+│   ├── 05_project2_design.md        ★ 프로젝트 2 제출물
+│   ├── 06_interview_qa.md           심층 인터뷰 대비
+│   └── 07_submission_checklist.md   평가표 1:1 매핑 + 보안 점검
+├── screenshots/                     실행 증빙 (구현 후 업로드)
 ├── workflows/                       n8n JSON + 로직 단위 테스트
 └── assets/                          다이어그램
 ```

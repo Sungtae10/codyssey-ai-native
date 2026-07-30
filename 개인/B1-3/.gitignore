@@ -1,0 +1,10 @@
+*service-account*.json
+*credentials*.json
+*token*.json
+*.pem
+*.key
+.env
+screenshots/_raw/
+*_unmasked.png
+.DS_Store
+Thumbs.db

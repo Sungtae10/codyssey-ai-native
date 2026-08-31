@@ -13,6 +13,7 @@
 |---|---|---|
 | `make_01_canvas_masked.png` | Make 시나리오 전체 캔버스 — RSS 2 → 필터 `본문기사만` → `01_정규화` 3 → `02_스코어링` 6 → Router 10 → Sheets 11/12 → HTTP 13.<br/>**Router 양쪽이 `1st CORE (score>=2)` / `2nd REF (score<2)` 명시적 조건**으로 선언된 것이 보인다 (Fallback route 미사용 증빙) | `01_WORKFLOW_SPEC.md` §3.3 · §7 |
 | `make_02_history_20260730_1252.png` | Make History — 실행 기록 `2026년 7월 30일 오후 12:52:55` 성공 | `04_comparison_report.md` §4.1 |
+| `n8n_01_canvas.png` | n8n 워크플로우 `TRC-v2 n8n (P1)` 전체 캔버스 — **노드 8개**: Schedule Trigger → RSS Read → Filter → 정규화+스코어링(Code) → **If** → Sheets CORE → Discord 알림 / Sheets REF.<br/>**If 노드 출력이 `true`/`false` 2개**인 것이 보인다 — Switch가 아니라 If를 쓴 이유(MECE를 구조로 보장)의 시각적 증빙 | `01_WORKFLOW_SPEC.md` §3.3 · `03_n8n_guide.md` §2 |
 | `common_01_sheets_core_make_n8n.png` | Google Sheets `TRC_Research_Log` **CORE 탭** — `도구` 열에 **Make 행과 n8n 행이 함께** 적재됨.<br/>같은 기사(경동나비엔 3점 / 엡손 2점 / 한국엡손 3점 / 韓-브라질 4점 / 포유디지탈 3점 / LG전자 배당 2점 / 코웨이 2점)가 **두 도구에서 같은 점수**로 기록된 것이 행 단위로 확인된다 | **동일성 검증 핵심 증빙** — `04_comparison_report.md` §4.2 |
 | `common_02_sheets_ref_make_n8n.png` | 같은 스프레드시트 **REF 탭** — Make 34행 + n8n 40행 | 검증 등식 `CORE + REF` |
 
@@ -53,12 +54,18 @@
 | 파일명 | 내용 | 사유 |
 |---|---|---|
 | `make_09_run_once.png` | Make 캔버스에 번들 수 `8 / 34` 가 표시된 상태 | 실행 직후 캡처를 남기지 못했다. 대신 **결과물인 Sheets 적재 행**(`common_01`·`common_02`)과 History 실행 기록으로 대체한다 |
-| `n8n_06_canvas.png` | n8n 캔버스 `9 / 40` | 동일. n8n 실행 결과는 `common_01`·`common_02`의 `도구 = n8n` 행으로 확인 가능하다 |
-| `n8n_07_executions.png` | Executions ID#17 (12.424s) | 동일 |
+| `n8n_06_canvas_counts.png` | n8n 캔버스에 실행 item 수 `9 / 40` 이 표시된 상태 | 실행 직후 캡처를 남기지 못했다. **워크플로우 구조 자체는 `n8n_01_canvas.png`로 확인 가능**하고, 실행 결과는 `common_01`·`common_02`의 `도구 = n8n` 행(CORE 9 / REF 40)으로 확인된다 |
+| `n8n_07_executions.png` | Executions 목록 ID#17 (12.424s) | 동일 |
 | `make_10_history_detail.png` | Operations 135 / 190.5 KB 상세 | History 상세 로그 보존 기간 경과 |
 | `common_03_discord.png` | Discord `#research-core` 알림 메시지 | 캡처 미보존 |
 
 > **대체 증빙의 논리**: 캔버스의 번들 숫자는 *실행 중* 상태를 보여주고, 시트의 적재 행은 *실행 결과*를 보여준다. 후자가 더 강한 증거다 — 숫자는 화면에서 사라지지만 행은 남는다. `CORE` 탭에 Make 8행과 n8n 행이 **같은 기사·같은 점수**로 나란히 있는 것이 이 과제의 동일성 주장을 직접 뒷받침한다.
+
+---
+
+## 3-1. 캡처 환경 주석
+
+`n8n_01_canvas.png` 는 제출 시점에 워크플로우를 재구동해 캡처한 것이다. 실측(2026-07-30)은 **n8n Community v2.32.6** 에서 수행했고, 이 캡처는 재구동 시점의 최신 버전 환경이다. **워크플로우 구성(노드 8개·연결·설정값)은 동일**하며, 워크플로우 정의는 `workflows/n8n_TRC_v2.json` 으로 저장소에 함께 제출했다.
 
 ---
 

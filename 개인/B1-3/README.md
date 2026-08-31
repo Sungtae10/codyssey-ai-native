@@ -1,132 +1,80 @@
-# B1-3 · 노코드 자동화 기초: 워크플로우 설계
+# 실행 증빙 스크린샷
 
-**미션** 동일 워크플로우를 2개 이상의 자동화 도구로 구현·비교 + 자유 주제 자동화 설계·구현
-**사용 도구** Make (클라우드 관리형) · n8n Community Edition v2.32.6 (셀프호스팅) — **유료 결제 0원**
-**구현·측정일** 2026-07-30
+> 이 폴더의 이미지는 **실제 구현·실행 화면**이다. 마스킹 처리 후 업로드했다.
+> 확보하지 못한 캡처는 §3에 **없다고 명시**한다 — 있는 것처럼 링크만 걸어두면 심사에서 즉시 드러난다.
 
 ---
 
-## 📋 진행 상태
+## 1. 수록 목록
 
-| 단계 | 상태 |
+### 프로젝트 1 (TRC-v2 · Make vs n8n)
+
+| 파일 | 내용 | 문서 대응 |
+|---|---|---|
+| `make_01_canvas_masked.png` | Make 시나리오 전체 캔버스 — RSS 2 → 필터 `본문기사만` → `01_정규화` 3 → `02_스코어링` 6 → Router 10 → Sheets 11/12 → HTTP 13.<br/>**Router 양쪽이 `1st CORE (score>=2)` / `2nd REF (score<2)` 명시적 조건**으로 선언된 것이 보인다 (Fallback route 미사용 증빙) | `01_WORKFLOW_SPEC.md` §3.3 · §7 |
+| `make_02_history_20260730_1252.png` | Make History — 실행 기록 `2026년 7월 30일 오후 12:52:55` 성공 | `04_comparison_report.md` §4.1 |
+| `n8n_01_canvas.png` | n8n 워크플로우 `TRC-v2 n8n (P1)` 전체 캔버스 — **노드 8개**: Schedule Trigger → RSS Read → Filter → 정규화+스코어링(Code) → **If** → Sheets CORE → Discord 알림 / Sheets REF.<br/>**If 노드 출력이 `true`/`false` 2개**인 것이 보인다 — Switch가 아니라 If를 쓴 이유(MECE를 구조로 보장)의 시각적 증빙 | `01_WORKFLOW_SPEC.md` §3.3 · `03_n8n_guide.md` §2 |
+| `common_01_sheets_core_make_n8n.png` | Google Sheets `TRC_Research_Log` **CORE 탭** — `도구` 열에 **Make 행과 n8n 행이 함께** 적재됨.<br/>같은 기사(경동나비엔 3점 / 엡손 2점 / 한국엡손 3점 / 韓-브라질 4점 / 포유디지탈 3점 / LG전자 배당 2점 / 코웨이 2점)가 **두 도구에서 같은 점수**로 기록된 것이 행 단위로 확인된다 | **동일성 검증 핵심 증빙** — `04_comparison_report.md` §4.2 |
+| `common_02_sheets_ref_make_n8n.png` | 같은 스프레드시트 **REF 탭** — Make 34행 + n8n 40행 | 검증 등식 `CORE + REF` |
+
+### 프로젝트 2 (DSR-v1 · DART 공시 시그널 레이더)
+
+| 파일 | 내용 | 문서 대응 |
+|---|---|---|
+| `p2_01_canvas_1_99_schedule_on.png` | ★ **가장 중요** — 전체 캔버스에 Router 양쪽 번들 수 **SIGNAL 1 / ROUTINE 99** 표시 + 하단에 **`Daily at 오전 8:00` 토글 ON** | 평가 1-4 (자동 실행) · 1-7 (양 분기 실행) |
+| `p2_02_router_signal_routine.png` | Router 분기 확대 — `1st SIGNAL ✓1` / `2nd ROUTINE ✓99` → Google Sheets 8 / 9 | `05_project2_design.md` §6.1 |
+| `p2_03_canvas_http_iterator_tools.png` | 상류 확대 — HTTP 2 `✓1` → Iterator 3 `✓1` → Tools 5 `✓100` | §3.2 단계별 출력 |
+| `p2_04_iterator_array.png` | Iterator 설정 — `Array = 2.data.list` | §4-3 |
+| `p2_05_sheets_mapping_signal.png` | Sheets(SIGNAL) A~H 매핑 — D열이 **리터럴 `SIGNAL`** 인 것이 보인다 | §4-6 (리터럴 사용 근거) |
+| `p2_06_http_config.png` | HTTP 모듈 설정 — URL `opendart.fss.or.kr/api/list.json`, **Parse response = Yes** | §4-2 |
+| `p2_07_sheet_schema.png` | Google Sheets `DSR_Disclosure_Log` — 8열 헤더 + `SIGNAL`/`ROUTINE` 탭 구조 | §4-0 |
+
+### 참고 — 폐기한 설계의 증거 (설계 문서 §7)
+
+| 파일 | 내용 |
 |---|---|
-| 도구 중립 명세서 (TRC-v2, 계약 5개) | ✅ 완료 |
-| 스코어링 로직 단위 테스트 (Node.js, 도구 투입 전) | ✅ 완료 |
-| **프로젝트 1 — Make 구현·실행** | ✅ 완료 (`8 + 34 = 42`, 135 op, 18.0s) |
-| **프로젝트 1 — n8n 구현·실행** | ✅ 완료 (`9 + 40 = 49`, ID#17, 12.424s) |
-| **프로젝트 1 — 동일성 검증** | ✅ 완료 (같은 기사 7건 점수 **7/7 일치**) |
-| **프로젝트 2 — Make 구현·자동 실행** | ✅ 완료 (`1 + 99 = 100`, Daily 08:00 스케줄 ON) |
-| 비교 분석 보고서 (비교 항목 **9개**) | ✅ 완료 |
-| 실행 스크린샷 (마스킹 완료 13장) | ✅ `screenshots/` — 미확보분은 사유 명시 |
+| `p2_ref_tools_variables.png` | Tools 모듈의 `matched` 변수 설정 — `if(contains(3.report_nm; "유상증자"); ...)` |
+| `p2_ref_tools_output_matched_empty.png` | 그 실행 출력 — `collected_at`·`dart_link`는 정상인데 **`matched: empty`**.<br/>→ 이 실측이 `05_project2_design.md` §7-①(중간 변수 제거, Router가 원본 필드를 직접 검사)의 근거다 |
 
 ---
 
-## 📌 심사자용 문서 바로가기
+## 2. 마스킹 처리
 
-| 평가 대상 | 문서 | 비고 |
+| 대상 | 처리 |
+|---|---|
+| Discord Webhook URL | `make_01_canvas_masked.png` 우하단 HTTP 모듈 라벨을 **검은 박스로 덮음** |
+| OPENDART `crtfc_key` | 키가 보이는 캡처는 **이 폴더에 포함하지 않았다.** 해당 키는 노출 발견 즉시 **재발급하여 무효화** (`05_project2_design.md` §8) |
+| Google 서비스 계정 Private Key | 캡처 없음 |
+| 계정 이메일 · 스프레드시트 ID | 캡처 범위에 미포함 |
+
+---
+
+## 3. 확보하지 못한 캡처 (정직하게 명시)
+
+| 파일명 | 내용 | 사유 |
 |---|---|---|
-| **[프로젝트 1] 비교 분석 보고서** | [docs/04_comparison_report.md](docs/04_comparison_report.md) | 비교 항목 **9개** (요구 5개 초과) · 전 항목 실측 근거 |
-| **[프로젝트 2] 설계·구현 문서** | [docs/05_project2_design.md](docs/05_project2_design.md) | 반복 업무 정의·도구 선정 근거·다이어그램·**As-Built** |
-| 도구 중립 워크플로우 명세서 | [docs/01_WORKFLOW_SPEC.md](docs/01_WORKFLOW_SPEC.md) | 두 구현체의 **동일성 증빙 근거** (계약 5개 + 실측 §9) |
-| Make 구현 가이드 | [docs/02_make_guide.md](docs/02_make_guide.md) | 모듈 7 + 필터 2, 수식 전문 |
-| n8n 구현 가이드 | [docs/03_n8n_guide.md](docs/03_n8n_guide.md) | 노드 8, Code 노드 전문 |
-| 심층 인터뷰 Q&A | [docs/06_interview_qa.md](docs/06_interview_qa.md) | 평가 항목 2·3·4 전 문항 + 트러블슈팅 12건 |
-| 제출 체크리스트 | [docs/07_submission_checklist.md](docs/07_submission_checklist.md) | 평가표 1:1 자체 감사 + 보안 점검 |
-| 워크플로우 다이어그램 | [assets/](assets/) | TRC-v2 (P1) · DSR-v1 (P2) |
-| n8n 워크플로우 JSON | [workflows/n8n_TRC_v2.json](workflows/n8n_TRC_v2.json) | import용 — 아래 보안 원칙 참조 |
-| 스코어링 단위 테스트 | [workflows/_test_scoring.js](workflows/_test_scoring.js) | `node workflows/_test_scoring.js` |
+| `make_09_run_once.png` | Make 캔버스에 번들 수 `8 / 34` 가 표시된 상태 | 실행 직후 캡처를 남기지 못했다. 대신 **결과물인 Sheets 적재 행**(`common_01`·`common_02`)과 History 실행 기록으로 대체한다 |
+| `n8n_06_canvas_counts.png` | n8n 캔버스에 실행 item 수 `9 / 40` 이 표시된 상태 | 실행 직후 캡처를 남기지 못했다. **워크플로우 구조 자체는 `n8n_01_canvas.png`로 확인 가능**하고, 실행 결과는 `common_01`·`common_02`의 `도구 = n8n` 행(CORE 9 / REF 40)으로 확인된다 |
+| `n8n_07_executions.png` | Executions 목록 ID#17 (12.424s) | 동일 |
+| `make_10_history_detail.png` | Operations 135 / 190.5 KB 상세 | History 상세 로그 보존 기간 경과 |
+| `common_03_discord.png` | Discord `#research-core` 알림 메시지 | 캡처 미보존 |
+
+> **대체 증빙의 논리**: 캔버스의 번들 숫자는 *실행 중* 상태를 보여주고, 시트의 적재 행은 *실행 결과*를 보여준다. 후자가 더 강한 증거다 — 숫자는 화면에서 사라지지만 행은 남는다. `CORE` 탭에 Make 8행과 n8n 행이 **같은 기사·같은 점수**로 나란히 있는 것이 이 과제의 동일성 주장을 직접 뒷받침한다.
 
 ---
 
-## 프로젝트 1 — 자동화 도구 비교 구현 (Make vs n8n)
+## 3-1. 캡처 환경 주석
 
-**TRC-v2 · 기술경영 리서치 큐레이션 파이프라인**
-
-```
-[Trigger] 전자신문 전자 섹션 RSS (1일 1회 08:00 KST)
-    ├ [노이즈 필터] 제목에 [포토] 포함 시 제외
-    → [Action 1] 정규화 (HTML 제거·200자 절단·KST 통일·JSON 안전화)
-    → [Action 2] 스코어링 (가중 2단 시그널 사전 — T1 2점 / T2 1점)
-    → [분기] score >= 2 ?
-        ├ CORE → [Action 3] Sheets(CORE) → [Action 4] Discord 알림
-        └ REF  → [Action 5] Sheets(REF)     ※ 명시적 조건 (Fallback 금지)
-```
-
-**실측 결과**
-
-| | Make | n8n |
-|---|---|---|
-| 수집 → 필터 통과 | 50 → **42** | 50 → **49** |
-| CORE / REF | **8 / 34** (19%) | **9 / 40** (18%) |
-| 검증 등식 | `8+34=42` ✅ | `9+40=49` ✅ |
-| 실행 시간 · 데이터 | 18.0s · 190.5 KB | 12.424s · 127 KB |
-| 자원 소모 | 135 오퍼레이션 | 0 (과금 없음) |
-
-**동일성 증빙**: 같은 기사 7건에서 **점수 7/7 일치**. 표기 불일치 1건(후행 쉼표)은 원인과 함께 그대로 기록.
-
-## 프로젝트 2 — 자유 주제: DART 공시 전략 시그널 레이더 (Make)
-
-**DSR-v1** · 금융감독원 **OPENDART 오픈API**(무료 개인 인증키) 기반
-
-```
-[Trigger] Make Schedule — Daily 08:00 KST (토글 ON, 수동 개입 없음)
-    → [Action 1] HTTP GET list.json (날짜 창 = 무상태 멱등성 설계)
-    → [Action 2] Iterator — 공시 목록 100건 분해
-    → [Action 3] Set variables — 수집시각 KST · DART 원문 링크
-    → [분기] report_nm 이 전략 시그널 서식명을 포함하는가 ?
-        ├ SIGNAL  → [Action 4] Sheets(SIGNAL)   1건
-        └ ROUTINE → [Action 5] Sheets(ROUTINE) 99건
-```
-
-- **실측 `1 + 99 = 100`** — 양 분기 경로 모두 실제 실행, 유실 0
-- P1과 의도적 구조 차별화: RSS/상태저장 트리거 ↔ **REST API/날짜 창 멱등성**, 점수 임계값 분기 ↔ **유형 매칭 분기**
-- 도구 선정 근거는 P1 비교 항목 3개(⑧ 가동 지속성 · ⑤ 실행 로그 · ③ 무료 플랜)와 연결
-- **구현 중 폐기한 설계를 §7에 그대로 기록** — 설계안과 구현물의 차이를 감추지 않는다
+`n8n_01_canvas.png` 는 제출 시점에 워크플로우를 재구동해 캡처한 것이다. 실측(2026-07-30)은 **n8n Community v2.32.6** 에서 수행했고, 이 캡처는 재구동 시점의 최신 버전 환경이다. **워크플로우 구성(노드 8개·연결·설정값)은 동일**하며, 워크플로우 정의는 `workflows/n8n_TRC_v2.json` 으로 저장소에 함께 제출했다.
 
 ---
 
-## 🔍 이 과제에서 얻은 것
+## 4. 재캡처 방법 (여력이 있다면)
 
-두 도구에서 **각각 조용한 데이터 유실 사고**를 겪었다.
+| 캡처 | 경로 |
+|---|---|
+| Make 실행 이력 | Make → 시나리오 열기 → 좌측 `History` → 2026-07-30 12:52 실행 클릭 |
+| n8n 실행 이력 | `npx.cmd n8n` 재기동 → <http://localhost:5678> → 워크플로우 → `Executions` 탭 |
+| Discord 알림 | Discord `#research-core` 채널 스크롤 |
 
-| | Make | n8n |
-|---|---|---|
-| 사고 | Fallback route가 **34건**을 삼킴 | Switch 규칙 모드 불일치로 **9건** 소실 |
-| 표시 | 오류 없이 "성공" | 오류 없이 "executed successfully" |
-| 해결 | 명시적 조건 `score < 2` | **If 노드** (MECE를 구조로 보장) |
-
-둘 다 **오류가 나지 않았다.** 발견 수단은 하나였다 —
-
-```
-CORE 건수 + REF 건수 = 필터 통과 건수
-```
-
-도구 지식이 아니라 **검증 습관**이 이 과제의 산출물이다.
-
----
-
-## 🔒 보안 원칙
-
-- `workflows/n8n_TRC_v2.json` 의 `YOUR_SPREADSHEET_URL_HERE` / `YOUR_DISCORD_WEBHOOK_URL_HERE` 는 **의도된 자리표시자**다. 실제 Webhook URL·문서 ID를 공개 저장소에 커밋하는 것 자체가 민감정보 노출이므로, 실행 증빙은 JSON이 아니라 **마스킹된 스크린샷**으로 제출한다.
-- Discord Webhook URL · Google 서비스 계정 Private Key · OPENDART `crtfc_key` 는 모든 스크린샷에서 마스킹하고 문서에는 `***MASKED***` 로 표기한다.
-- 서비스 계정 키 JSON · `.env` 는 `.gitignore` 로 커밋을 차단한다.
-- **DART 인증키가 캡처 중 1회 노출되어 즉시 재발급했다.** 이 사실을 숨기지 않는 이유는 `docs/05_project2_design.md` §8에 적었다.
-
-## 저장소 구조
-
-```
-├── README.md                        심사자 진입점
-├── 00_START_HERE.md                 작업 순서 가이드
-├── .gitignore                       민감정보 커밋 차단
-├── docs/
-│   ├── 01_WORKFLOW_SPEC.md          도구 중립 명세서 (계약 5개 + 실측 검증)
-│   ├── 02_make_guide.md             Make As-Built 설정값
-│   ├── 03_n8n_guide.md              n8n As-Built 설정값
-│   ├── 04_comparison_report.md      ★ 프로젝트 1 제출물
-│   ├── 05_project2_design.md        ★ 프로젝트 2 제출물
-│   ├── 06_interview_qa.md           심층 인터뷰 대비
-│   └── 07_submission_checklist.md   평가표 1:1 자체 감사
-├── screenshots/                     실행 증빙 (마스킹 완료본)
-├── workflows/                       n8n JSON + 스코어링 단위 테스트
-└── assets/                          다이어그램 (TRC-v2 · DSR-v1)
-```
+**촬영 규칙**: 전체 화면이 아니라 **브라우저 창 영역만** 캡처한다(`Alt+PrtSc`). 전체 화면은 북마크바·다른 탭 제목·바탕화면 파일명이 함께 찍힌다 — 가장 자주 나는 사고다.

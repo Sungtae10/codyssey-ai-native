@@ -9,12 +9,12 @@
 
 | # | 평가 문항 | 충족 근거 (실측) | 증빙 | 상태 |
 |---|---|---|---|---|
-| 1-1 | **[P1]** 2개 이상 도구에서 동일 워크플로우 구현 (툴별 구성 화면 + 실행 결과) | Make 모듈 7 + 필터 2 / n8n 노드 8 로 TRC-v2 동일 구현. 같은 기사 7건 점수 **7/7 일치** | `screenshots/make_*.png`, `screenshots/n8n_*.png` | ✅ |
+| 1-1 | **[P1]** 2개 이상 도구에서 동일 워크플로우 구현 (툴별 구성 화면 + 실행 결과) | Make 모듈 7 + 필터 2 / n8n 노드 8 로 TRC-v2 동일 구현. 같은 기사 7건 점수 **7/7 일치** | `common_01_sheets_core_make_n8n.png` (동일 기사·동일 점수 행 단위 대조) · `make_01_canvas_masked.png` | ✅ |
 | 1-2 | **[P1]** 비교 분석 보고서 제출 (PDF 또는 Markdown) | `docs/04_comparison_report.md` (Markdown — 과제 허용 형식) | 저장소 파일 | ✅ |
 | 1-3 | **[P1]** 보고서에 **최소 5개 이상** 비교 항목 | **9개** (§5 ①~⑨) — 요구 기준 1.8배 | `04_comparison_report.md` §5 | ✅ |
-| 1-4 | **[P2]** Trigger 발생 시 **수동 개입 없이** 자동 실행 | Make 시나리오 스케줄 `Daily at 오전 8:00` + 토글 **ON** | `screenshots/p2_07_schedule_on.png` | ✅ |
-| 1-5 | **[P2]** Trigger 1개↑ / Action 2개↑ / 조건 분기 1개↑ | Trigger 1 (Schedule) · Action **5** (HTTP·Iterator·Set variables·Sheets×2) · Router **1** | `05_project2_design.md` §3.2 + 캔버스 캡처 | ✅ |
-| 1-6 | **[공통]** 토큰/API Key/비밀번호 미노출 | 아래 보안 점검표 참조. DART 키는 노출 발견 즉시 **재발급 완료** | — | ⚠️ **업로드 전 최종 확인 필요** |
+| 1-4 | **[P2]** Trigger 발생 시 **수동 개입 없이** 자동 실행 | Make 시나리오 스케줄 `Daily at 오전 8:00` + 토글 **ON** | `p2_01_canvas_1_99_schedule_on.png` (하단 토글 ON) | ✅ |
+| 1-5 | **[P2]** Trigger 1개↑ / Action 2개↑ / 조건 분기 1개↑ | Trigger 1 (Schedule) · Action **5** (HTTP·Iterator·Set variables·Sheets×2) · Router **1** | `05_project2_design.md` §3.2 + `p2_02_router_signal_routine.png` | ✅ |
+| 1-6 | **[공통]** 토큰/API Key/비밀번호 미노출 | 아래 보안 점검표 S1~S8 전항 통과. Webhook 마스킹 · 키 노출 캡처 제외 · DART 키 재발급 완료 | `screenshots/README.md` §2 | ✅ |
 
 ### 추가 필수 조건 (기능 요구사항)
 
@@ -72,14 +72,14 @@
 
 | # | 점검 항목 | 확인 방법 | ✅ |
 |---|---|---|---|
-| S1 | Discord Webhook URL이 **모든** 스크린샷에서 마스킹됨 | `{ID}/{TOKEN}` 구간이 검은 박스로 덮여 있는가 | ☐ |
-| S2 | **DART `crtfc_key`** 가 모든 스크린샷에서 마스킹됨 | HTTP 모듈 Query String 캡처 확인. **(이미 1회 노출 → 재발급 완료)** | ☐ |
-| S3 | Google 서비스 계정 **Private Key** 미노출 | n8n Credentials 캡처의 키 필드 | ☐ |
-| S4 | 서비스 계정 키 JSON이 저장소에 없음 | `git status` / `.gitignore` 가 `*service-account*.json` 등 차단 | ☐ |
-| S5 | Google Sheets 공유 링크가 **전체 공개가 아님** | 링크 권한 = 제한됨 | ☐ |
-| S6 | 계정 이메일 일부 가림 | `kks****@gmail.com` 형태 | ☐ |
-| S7 | 브라우저 캡처에 **다른 탭 제목·북마크바** 미노출 | 전체 화면이 아니라 **창 영역만** 캡처 | ☐ |
-| S8 | 커밋에 `.env` / `*.pem` / `*.key` 없음 | `.gitignore` 확인 | ☐ |
+| S1 | Discord Webhook URL이 **모든** 스크린샷에서 마스킹됨 | `make_01_canvas_masked.png` 우하단 검은 박스 처리 완료 | ✅ |
+| S2 | **DART `crtfc_key`** 노출 캡처를 제출물에서 제외 | 키가 보이는 캡처는 `screenshots/`에 미포함. **(1회 노출 → 재발급 완료)** | ✅ |
+| S3 | Google 서비스 계정 **Private Key** 미노출 | 해당 캡처를 포함하지 않음 | ✅ |
+| S4 | 서비스 계정 키 JSON이 저장소에 없음 | `.gitignore` 가 `*service-account*.json` 등 차단 | ✅ |
+| S5 | Google Sheets 공유 링크가 **전체 공개가 아님** | ⚠️ 직접 확인 필요 — 시트 우상단 `공유` → 일반 액세스가 `제한됨`인지 | ☐ |
+| S6 | 계정 이메일 미노출 | 수록 캡처 전체에 이메일 텍스트가 나타나지 않음 | ✅ |
+| S7 | 브라우저 캡처에 **다른 탭 제목·북마크바** 미노출 | 전 캡처가 창 영역 이하로 크롭됨 | ✅ |
+| S8 | 커밋에 `.env` / `*.pem` / `*.key` 없음 | 저장소 파일 목록 확인 완료 | ✅ |
 
 > ⚠️ **S7이 실수가 가장 잦다.** 전체 화면을 캡처하면 북마크바·다른 탭 제목·바탕화면 파일명이 함께 찍힌다.
 
@@ -105,17 +105,16 @@ codyssey-b1-3-nocode-automation/
 └── assets/                         워크플로우 다이어그램 2종
 ```
 
-### 핵심 스크린샷 — 이 5장이 항목 1을 통과시킨다
+### ★ 핵심 증빙 4장 (수록 완료)
 
-| 우선순위 | 파일명 | 무엇이 보여야 하는가 |
+| 우선순위 | 파일명 | 무엇이 보이는가 |
 |---|---|---|
-| ★1 | `make_09_run_once.png` | Make 캔버스 — Router 양쪽에 **8 / 34** 번들 수 |
-| ★2 | `n8n_06_canvas.png` | n8n 캔버스 — If 양쪽에 **9 / 40** item 수 |
-| ★3 | `p2_01_canvas.png` | P2 캔버스 — Router 양쪽에 **1 / 99** 번들 수 |
-| ★4 | `p2_07_schedule_on.png` | P2 스케줄 `Daily at 오전 8:00` + 토글 **ON** |
-| ★5 | `common_01_sheets.png` | Google Sheets — `도구` 열에 Make/n8n 행이 **함께** 보이는 화면 |
+| ★1 | `p2_01_canvas_1_99_schedule_on.png` | P2 캔버스 Router 양쪽 **1 / 99** + `Daily at 오전 8:00` 토글 **ON** — 항목 1-4·1-7을 한 장으로 |
+| ★2 | `common_01_sheets_core_make_n8n.png` | Sheets `CORE` 탭 — `도구` 열에 Make/n8n 행이 **함께**, 같은 기사에 같은 점수 |
+| ★3 | `common_02_sheets_ref_make_n8n.png` | Sheets `REF` 탭 — Make 34행 + n8n 40행 |
+| ★4 | `make_01_canvas_masked.png` | Make P1 캔버스 — Router가 `1st CORE (score>=2)` / `2nd REF (score<2)` **명시적 조건**(Fallback 미사용) |
 
-나머지가 부족해도 이 5장은 반드시 확보한다. 자세한 촬영·마스킹 요령은 `screenshots/README.md`.
+**미확보 캡처는 `screenshots/README.md` §3에 사유와 함께 명시했다.** 캔버스의 실시간 번들 수(Make 8/34, n8n 9/40)는 남기지 못했고, 대신 **실행 결과인 시트 적재 행**으로 대체했다 — 숫자는 화면에서 사라지지만 행은 남으므로 증거로서 더 강하다.
 
 ---
 

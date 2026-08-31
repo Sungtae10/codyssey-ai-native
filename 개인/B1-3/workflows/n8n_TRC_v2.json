@@ -1,0 +1,474 @@
+{
+  "name": "TRC-v2 리서치 큐레이션 (P1)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "days",
+              "triggerAtHour": 8,
+              "triggerAtMinute": 0
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -260,
+        300
+      ],
+      "id": "node-schedule",
+      "name": "Schedule Trigger · 매일 08:00"
+    },
+    {
+      "parameters": {
+        "url": "https://rss.etnews.com/06.xml",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.1,
+      "position": [
+        -40,
+        300
+      ],
+      "id": "node-rss",
+      "name": "RSS Read · 전자신문 전자",
+      "notes": "RSS Read는 Action이라 상태가 없다 → 매 실행 전량 재처리. 운영 시 Remove Duplicates 필요."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c-photo",
+              "leftValue": "={{ $json.title }}",
+              "rightValue": "[포토]",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        180,
+        300
+      ],
+      "id": "node-filter",
+      "name": "Filter · 본문기사만"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const SIGNAL_T1 = ['투자', '인수', '배당', '특허', '양산', '수주']; // 2점\nconst SIGNAL_T2 = ['개발', '출시', '공급', '진출', '제휴', '확대']; // 1점\nconst THRESHOLD = 2;\nconst TOOL = 'n8n';\n\nconst stripTags = (s = '') =>\n  String(s).replace(/<[^>]*>/g, ' ').replace(/&[a-zA-Z#0-9]+;/g, ' ').replace(/\\s+/g, ' ').trim();\n\nconst jsonSafe = (s = '') =>\n  String(s).replace(/[\"\\\\\\r\\n]/g, ' ').replace(/\\s+/g, ' ').trim();\n\nconst kst = (d) => {\n  const dt = d ? new Date(d) : new Date();\n  if (isNaN(dt.getTime())) return '';\n  return new Intl.DateTimeFormat('sv-SE', {\n    timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit',\n    hour: '2-digit', minute: '2-digit', hour12: false,\n  }).format(dt).replace('T', ' ');\n};\n\nconst out = [];\nfor (const item of $input.all()) {\n  const j = item.json;\n  const title = stripTags(j.title);\n  const summary = stripTags(j.contentSnippet || j.content || j.description || '').slice(0, 200);\n  const hay = (title + ' ' + summary).toLowerCase();\n\n  const hit1 = SIGNAL_T1.filter((w) => hay.includes(w));\n  const hit2 = SIGNAL_T2.filter((w) => hay.includes(w));\n  const score = hit1.length * 2 + hit2.length;\n\n  out.push({ json: {\n    collected_at: kst(),\n    tool: TOOL,\n    tier: score >= THRESHOLD ? 'CORE' : 'REF',\n    score,\n    matched_keywords: [...hit1, ...hit2].join(','),\n    title,\n    title_safe: jsonSafe(title),\n    summary,\n    published_at: kst(j.isoDate || j.pubDate),\n    link: j.link || '',\n  }});\n}\nreturn out;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        400,
+        300
+      ],
+      "id": "node-code",
+      "name": "정규화+스코어링"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c-score",
+              "leftValue": "={{ $json.score }}",
+              "rightValue": 2,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        620,
+        300
+      ],
+      "id": "node-if",
+      "name": "분기 · score >= 2",
+      "notes": "Switch가 아니라 If를 쓰는 이유: 출력이 true/false 2개뿐이라 MECE가 구조로 보장된다."
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SPREADSHEET_URL_HERE",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "CORE",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "수집시각": "={{ $json.collected_at }}",
+            "도구": "={{ $json.tool }}",
+            "분류": "CORE",
+            "점수": "={{ $json.score }}",
+            "매칭키워드": "={{ $json.matched_keywords }}",
+            "제목": "={{ $json.title }}",
+            "요약": "={{ $json.summary }}",
+            "발행일": "={{ $json.published_at }}",
+            "링크": "={{ $json.link }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "수집시각",
+              "displayName": "수집시각",
+              "type": "string",
+              "required": false,
+              "canBeUsedToMatch": true,
+              "display": true
+            },
+            {
+              "id": "도구",
+              "displayName": "도구",
+              "type": "string",
+              "required": false,
+              "canBeUsedToMatch": true,
+              "display": true
+            },
+            {
+              "id": "분류",
+              "displayName": "분류",
+              "type": "string",
+              "required": false,
+              "canBeUsedToMatch": true,
+              "display": true
+            },
+            {
+              "id": "점수",
+              "displayName": "점수",
+              "type": "string",
+              "required": false,
+              "canBeUsedToMatch": true,
+              "display": true
+            },
+            {
+              "id": "매칭키워드",
+              "displayName": "매칭키워드",
+              "type": "string",
+              "required": false,
+              "canBeUsedToMatch": true,
+              "display": true
+            },
+            {
+              "id": "제목",
+              "displayName": "제목",
+              "type": "string",
+              "required": false,
+              "canBeUsedToMatch": true,
+              "display": true
+            },
+            {
+              "id": "요약",
+              "displayName": "요약",
+              "type": "string",
+              "required": false,
+              "canBeUsedToMatch": true,
+              "display": true
+            },
+            {
+              "id": "발행일",
+              "displayName": "발행일",
+              "type": "string",
+              "required": false,
+              "canBeUsedToMatch": true,
+              "display": true
+            },
+            {
+              "id": "링크",
+              "displayName": "링크",
+              "type": "string",
+              "required": false,
+              "canBeUsedToMatch": true,
+              "display": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        860,
+        180
+      ],
+      "id": "node-sheets-core",
+      "name": "Sheets · CORE 적재",
+      "notes": "Document는 By URL 방식. 서비스 계정 이메일과 시트를 공유해야 동작한다."
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "YOUR_DISCORD_WEBHOOK_URL_HERE",
+        "sendBody": true,
+        "specifyBody": "keypair",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "content",
+              "value": "=[CORE] {{ $json.title_safe }}\n· 점수 {{ $json.score }} / 시그널 {{ $json.matched_keywords }}\n· 발행 {{ $json.published_at }} · 수집 {{ $json.tool }}\n{{ $json.link }}"
+            }
+          ]
+        },
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 1500
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1080,
+        180
+      ],
+      "id": "node-discord",
+      "name": "Discord · CORE 알림",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "notes": "429 Rate Limited 실측 → Batching(1건/1.5초) + Retry On Fail(3회/2초)"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SPREADSHEET_URL_HERE",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "REF",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "수집시각": "={{ $json.collected_at }}",
+            "도구": "={{ $json.tool }}",
+            "분류": "REF",
+            "점수": "={{ $json.score }}",
+            "매칭키워드": "={{ $json.matched_keywords }}",
+            "제목": "={{ $json.title }}",
+            "요약": "={{ $json.summary }}",
+            "발행일": "={{ $json.published_at }}",
+            "링크": "={{ $json.link }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "수집시각",
+              "displayName": "수집시각",
+              "type": "string",
+              "required": false,
+              "canBeUsedToMatch": true,
+              "display": true
+            },
+            {
+              "id": "도구",
+              "displayName": "도구",
+              "type": "string",
+              "required": false,
+              "canBeUsedToMatch": true,
+              "display": true
+            },
+            {
+              "id": "분류",
+              "displayName": "분류",
+              "type": "string",
+              "required": false,
+              "canBeUsedToMatch": true,
+              "display": true
+            },
+            {
+              "id": "점수",
+              "displayName": "점수",
+              "type": "string",
+              "required": false,
+              "canBeUsedToMatch": true,
+              "display": true
+            },
+            {
+              "id": "매칭키워드",
+              "displayName": "매칭키워드",
+              "type": "string",
+              "required": false,
+              "canBeUsedToMatch": true,
+              "display": true
+            },
+            {
+              "id": "제목",
+              "displayName": "제목",
+              "type": "string",
+              "required": false,
+              "canBeUsedToMatch": true,
+              "display": true
+            },
+            {
+              "id": "요약",
+              "displayName": "요약",
+              "type": "string",
+              "required": false,
+              "canBeUsedToMatch": true,
+              "display": true
+            },
+            {
+              "id": "발행일",
+              "displayName": "발행일",
+              "type": "string",
+              "required": false,
+              "canBeUsedToMatch": true,
+              "display": true
+            },
+            {
+              "id": "링크",
+              "displayName": "링크",
+              "type": "string",
+              "required": false,
+              "canBeUsedToMatch": true,
+              "display": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        860,
+        420
+      ],
+      "id": "node-sheets-ref",
+      "name": "Sheets · REF 적재",
+      "notes": "Document는 By URL 방식. 서비스 계정 이메일과 시트를 공유해야 동작한다."
+    }
+  ],
+  "connections": {
+    "Schedule Trigger · 매일 08:00": {
+      "main": [
+        [
+          {
+            "node": "RSS Read · 전자신문 전자",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read · 전자신문 전자": {
+      "main": [
+        [
+          {
+            "node": "Filter · 본문기사만",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter · 본문기사만": {
+      "main": [
+        [
+          {
+            "node": "정규화+스코어링",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "정규화+스코어링": {
+      "main": [
+        [
+          {
+            "node": "분기 · score >= 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "분기 · score >= 2": {
+      "main": [
+        [
+          {
+            "node": "Sheets · CORE 적재",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Sheets · REF 적재",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets · CORE 적재": {
+      "main": [
+        [
+          {
+            "node": "Discord · CORE 알림",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets · REF 적재": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Asia/Seoul"
+  },
+  "meta": {
+    "instanceId": "local"
+  },
+  "tags": []
+}

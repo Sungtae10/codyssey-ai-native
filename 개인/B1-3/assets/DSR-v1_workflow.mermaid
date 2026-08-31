@@ -1,0 +1,12 @@
+flowchart TD
+    A["⏰ Trigger<br/>Make Schedule · Daily 08:00 KST<br/>시나리오 토글 ON"]
+    B["🌐 Action 1 · 공시 조회<br/>HTTP › Make a request (모듈 2)<br/>GET opendart.fss.or.kr/api/list.json<br/>crtfc_key · bgn_de · end_de · page_count=100<br/>Parse response: Yes"]
+    C["🔁 Action 2 · 목록 분해<br/>Flow Control › Iterator (모듈 3)<br/>Array = 2.data.list → 100 bundle"]
+    D["🏷️ Action 3 · 공통 필드<br/>Tools › Set multiple variables (모듈 5)<br/>collected_at (KST 고정) · dart_link"]
+    E{"🔀 분기 · Router (모듈 7)<br/>report_nm 이 시그널 서식명을 포함하는가?"}
+    F["📊 Action 4 · Sheets › Add a Row (모듈 8)<br/>시트 SIGNAL · 8열 · 실측 1건"]
+    G["📊 Action 5 · Sheets › Add a Row (모듈 9)<br/>시트 ROUTINE · 8열 · 실측 99건"]
+
+    A --> B --> C --> D --> E
+    E -->|"Contains (OR 4개) · 1건"| F
+    E -->|"Does not contain (AND 4개) · 99건"| G

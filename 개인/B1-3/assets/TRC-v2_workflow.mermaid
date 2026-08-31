@@ -1,0 +1,18 @@
+flowchart TD
+    A["⏰ Trigger<br/>RSS 신규 기사 · 1일 1회 08:00 KST<br/>Make: Watch RSS feed items<br/>n8n: Schedule Trigger + RSS Read"]
+    N{"🧹 노이즈 필터<br/>제목에 [포토] 포함?"}
+    B["🧾 Action 1 · 정규화<br/>HTML 태그·엔티티 제거 · 200자 절단<br/>Asia/Seoul 고정 · JSON 안전화(title_safe)"]
+    C["🧮 Action 2 · 스코어링<br/>가중 2단 시그널 사전<br/>T1(투자·인수·배당·특허·양산·수주) 2점<br/>T2(개발·출시·공급·진출·제휴·확대) 1점"]
+    D{"🔀 조건 분기<br/>score >= 2 ?<br/>Make: Router 명시적 조건 2개<br/>n8n: If 노드"}
+    E["📊 Action 3 · Google Sheets(CORE)<br/>Make 8건 / n8n 9건"]
+    F["📣 Action 4 · Discord 알림<br/>CORE 전용"]
+    G["📊 Action 5 · Google Sheets(REF)<br/>Make 34건 / n8n 40건"]
+    V["✅ 검증 등식<br/>CORE + REF = 필터 통과 건수<br/>Make 8+34=42 · n8n 9+40=49"]
+
+    A --> N
+    N -->|"제외 · Make 8건 / n8n 1건"| X["🗑️ 처리 대상 제외"]
+    N -->|"통과 · Make 42 / n8n 49"| B --> C --> D
+    D -->|"CORE"| E --> F
+    D -->|"REF"| G
+    E -.-> V
+    G -.-> V

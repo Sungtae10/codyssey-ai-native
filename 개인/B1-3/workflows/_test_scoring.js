@@ -1,12 +1,13 @@
-// n8n Code 노드에 들어갈 스코어링 로직 단위 테스트 (로컬 검증용)
-const SIGNAL = {
-  '자본시장': ['투자', '인수', '합병', '지분', '상장'],
-  '기술자산': ['특허', '양산', '출시'],
-  '제도정책': ['규제'],
-  '사업화':   ['계약', '수주', '협력'],
-};
+// TRC-v2 스코어링 로직 단위 테스트 (도구 투입 전 로컬 검증용)
+// n8n Code 노드에 그대로 들어가는 로직과 동일하다. Make는 같은 규칙을 수식으로 구현한다.
+//   실행: node workflows/_test_scoring.js
+//
+// v1 사전(투자·인수·합병·지분·상장·특허·양산·출시·규제·계약·수주·협력, 평면 1점)은
+// 실제 etnews 전자 섹션 코퍼스에서 CORE 0건이 나와 폐기했다. 아래는 재설계된 가중 2단 사전이다.
+const SIGNAL_T1 = ['투자', '인수', '배당', '특허', '양산', '수주']; // 비가역적 결정 → 2점
+const SIGNAL_T2 = ['개발', '출시', '공급', '진출', '제휴', '확대']; // 방향성 발표  → 1점
 const THRESHOLD = 2;
-const MAX_ITEMS = 5;
+const MAX_ITEMS = 50;
 const TOOL = 'n8n';
 
 const stripTags = (s = '') =>
@@ -28,13 +29,10 @@ function run(items) {
     const title = stripTags(j.title);
     const summary = stripTags(j.contentSnippet || j.content || j.description || '').slice(0, 200);
     const hay = (title + ' ' + summary).toLowerCase();
-    const matched = [];
-    for (const words of Object.values(SIGNAL)) {
-      for (const w of words) {
-        if (hay.includes(w.toLowerCase()) && !matched.includes(w)) matched.push(w);
-      }
-    }
-    const score = matched.length;
+    const hit1 = SIGNAL_T1.filter((w) => hay.includes(w));
+    const hit2 = SIGNAL_T2.filter((w) => hay.includes(w));
+    const matched = [...hit1, ...hit2];
+    const score = hit1.length * 2 + hit2.length; // T1 2점 / T2 1점, 중복 카운트 없음
     out.push({ json: {
       collected_at: kst(),
       tool: TOOL,
@@ -51,7 +49,7 @@ function run(items) {
   return out;
 }
 
-// --- 실제 rss.etnews.com/Section901.xml 에서 확인된 형태의 테스트 픽스처 ---
+// --- 실제 rss.etnews.com/06.xml (전자 섹션) 에서 확인된 형태의 테스트 픽스처 ---
 const fixture = [
   { json: { title: '울산 글로벌 산업AX 선도도시 추진…‘피지컬AI’와 ‘AIDC’ 양축',
     description: '<p>울산시가 산업 인공지능 전환(AX) 선도도시 조성에 나선다. 시는 관련 기업과 투자 협력 양해각서를 체결하고 데이터센터 유치 계약을 추진한다.</p>',

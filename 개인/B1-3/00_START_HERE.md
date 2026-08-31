@@ -15,7 +15,7 @@
 | 4 | [screenshots/](screenshots/) | 실행 증빙 (마스킹 완료본) |
 | 5 | [docs/07_submission_checklist.md](docs/07_submission_checklist.md) | 평가표 1:1 자체 감사 결과 |
 
-**핵심 3장만 보고 싶다면**: `screenshots/make_09_run_once.png` (8/34) · `screenshots/n8n_06_canvas.png` (9/40) · `screenshots/p2_01_canvas.png` (1/99).
+**핵심 3장만 보고 싶다면**: `screenshots/p2_01_canvas_1_99_schedule_on.png` (P2 분기 1/99 + 스케줄 ON) · `screenshots/common_01_sheets_core_make_n8n.png` (두 도구의 동일 기사·동일 점수) · `screenshots/make_01_canvas_masked.png` (Router 명시적 조건). 미확보 캡처는 `screenshots/README.md` §3에 사유와 함께 적어 두었다.
 
 ---
 

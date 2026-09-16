@@ -134,9 +134,9 @@ def build_report(rows, analysis=None, output_dir=OUTPUT_DIR):
     total_count = len(df)
 
     # 품질지표 1: 본문 존재율
-    if "content" in df.columns:
+    if "body" in df.columns:
         content_count = (
-            df["content"]
+            df["body"]
             .fillna("")
             .astype(str)
             .str.strip()

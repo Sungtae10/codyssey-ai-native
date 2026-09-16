@@ -1,0 +1,92 @@
+[
+  {
+    "id": 1,
+    "title": "생성형 AI 서비스 경쟁 확대",
+    "category": "생성형 AI",
+    "published_at": "2026-09-11",
+    "content": "생성형 AI 기업들의 서비스 경쟁이 확대되고 있다.",
+    "summary": "생성형 AI 기업 간 서비스 경쟁이 심화되고 있다.",
+    "status": "summarized"
+  },
+  {
+    "id": 2,
+    "title": "AI 반도체 투자 증가",
+    "category": "AI 반도체",
+    "published_at": "2026-09-11",
+    "content": "AI 데이터센터 확대와 함께 반도체 투자가 증가하고 있다.",
+    "summary": "AI 인프라 확대가 반도체 투자를 촉진하고 있다.",
+    "status": "summarized"
+  },
+  {
+    "id": 3,
+    "title": "기업용 AI 에이전트 확산",
+    "category": "AI 에이전트",
+    "published_at": "2026-09-12",
+    "content": "기업 업무 자동화를 위한 AI 에이전트가 확산되고 있다.",
+    "summary": "기업들이 AI 에이전트를 업무 자동화에 활용하고 있다.",
+    "status": "summarized"
+  },
+  {
+    "id": 4,
+    "title": "생성형 AI 신제품 발표",
+    "category": "생성형 AI",
+    "published_at": "2026-09-12",
+    "content": "새로운 생성형 AI 서비스가 공개됐다.",
+    "summary": "",
+    "status": "clean"
+  },
+  {
+    "id": 5,
+    "title": "AI 규제 논의 확대",
+    "category": "AI 규제",
+    "published_at": "2026-09-13",
+    "content": "각국에서 AI 규제와 관련한 논의가 이어지고 있다.",
+    "summary": "AI 규제를 둘러싼 국제적 논의가 확대되고 있다.",
+    "status": "summarized"
+  },
+  {
+    "id": 6,
+    "title": "로봇 산업에 AI 적용",
+    "category": "로봇",
+    "published_at": "2026-09-13",
+    "content": "로봇 산업에서 인공지능 활용이 확대되고 있다.",
+    "summary": "로봇 분야에서 AI 기술 도입이 증가하고 있다.",
+    "status": "summarized"
+  },
+  {
+    "id": 7,
+    "title": "AI 반도체 시장 경쟁",
+    "category": "AI 반도체",
+    "published_at": "2026-09-14",
+    "content": "AI 반도체 시장에서 기업 간 경쟁이 심화되고 있다.",
+    "summary": "AI 반도체 시장 경쟁이 확대되고 있다.",
+    "status": "summarized"
+  },
+  {
+    "id": 8,
+    "title": "AI 에이전트 신기능 공개",
+    "category": "AI 에이전트",
+    "published_at": "2026-09-14",
+    "content": "새로운 업무 자동화 기능이 공개됐다.",
+    "summary": "",
+    "status": "clean"
+  },
+  {
+    "id": 9,
+    "title": "생성형 AI 기업 투자 확대",
+    "category": "생성형 AI",
+    "published_at": "2026-09-15",
+    "content": "기업들의 생성형 AI 투자가 증가하고 있다.",
+    "summary": "생성형 AI에 대한 기업 투자가 확대되고 있다.",
+    "status": "summarized"
+  },
+  {
+    "id": 10,
+    "title": "데이터센터 AI 인프라 확대",
+    "category": "AI 반도체",
+    "published_at": "2026-09-15",
+    "content": "AI 연산 수요에 대응하기 위한 데이터센터 투자가 이어지고 있다.",
+    "summary": "AI 수요 증가로 데이터센터 인프라 투자가 확대되고 있다.",
+    "status": "summarized"
+  }
+]

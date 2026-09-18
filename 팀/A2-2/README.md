@@ -7,9 +7,9 @@
 | 팀원 | 역할 | 소유 파일 |
 |---|---|---|
 | A (김성태, 팀장) | 뼈대·저장소·통합·문서 | `main.py`, `config.py`, `db.py`, `seed_sample.py`, `README.md`, `AI_LOG.md` |
-| B | 데이터 수집·정제 | `fetcher.py`, `cleaner.py` |
-| C | AI 요약·분석·감성 | `ai_client.py`, `analyzer.py` |
-| D | 시각화·리포트·내보내기·조회 | `report.py`, `output/` |
+| B (박수민) | 데이터 수집·정제 | `fetcher.py`, `cleaner.py` |
+| C (한다혜) | AI 요약·분석·감성 | `ai_client.py`, `analyzer.py` |
+| D (김범근) | 시각화·리포트·내보내기·조회 | `report.py`, `output/` |
 
 남의 파일을 고쳐야 하면 직접 수정하지 말고 소유자에게 요청한다. `main.py`는 `cmd_*` 함수 본문만 각자 수정 가능하고 파서 정의는 팀장이 관리한다.
 
@@ -44,6 +44,12 @@ python main.py show --id 1                                   # 보너스
 
 각 커맨드 옵션은 `python main.py <command> --help` 로 확인.
 
+## 테스트
+
+```bash
+python -m unittest discover -s tests -t .
+```
+
 ## 구조
 
 ```
@@ -56,6 +62,7 @@ ai_client.py   AI API 호출 래퍼 (JSON 응답 강제, 실패 시 로깅 후 �
 analyzer.py    요약·분석·감성 프롬프트와 저장
 report.py      matplotlib 차트, 리포트, csv/xlsx/jsonl 내보내기
 seed_sample.py 개발용 샘플 데이터 적재
+tests/         단위 테스트 (API·DB 없이 실행)
 ```
 
 - 저장소: SQLite `data/news.db` (raw 와 clean 은 별도 테이블로 분리 저장)
@@ -65,8 +72,8 @@ seed_sample.py 개발용 샘플 데이터 적재
 ## 뉴스 소스와 크롤링 정책
 
 - 방법 1 (RSS): `config.json` 의 `sources.rss` 에 카테고리별 URL 등록. 기본은 Google News RSS.
-- 방법 2 (크롤링): `sources.crawl` 의 섹션 페이지에서 기사 링크를 추출해 본문 수집.
-- 대상 사이트 `robots.txt` 확인 결과: (팀원 B 가 Day 1 에 기록)
+- 방법 2 (크롤링): `sources.crawl` 의 섹션 페이지(기본 ZDNet Korea IT)에서 기사 링크를 추출해 본문 수집.
+- 대상 사이트 `robots.txt` 확인 완료(hani.co.kr, zdnet.co.kr, 2026-09-16 박수민): 허용 경로만 수집, User-Agent `CodysseyNewsBot/1.0` 명시
 - 요청 간 지연 `request_delay_sec` (기본 1초), 타임아웃 `request_timeout_sec` (기본 10초), 재시도 최대 2회, User-Agent 명시, 1회 실행 최대 100건.
 
 ## 정기 실행 (보너스)

@@ -9,13 +9,35 @@
   "fetch_full_body": true,
   "sources": {
     "rss": [
-      {"name": "google_it", "category": "IT", "url": "https://news.google.com/rss/search?q=IT+%EA%B8%B0%EC%88%A0&hl=ko&gl=KR&ceid=KR:ko"},
-      {"name": "google_econ", "category": "경제", "url": "https://news.google.com/rss/search?q=%EA%B2%BD%EC%A0%9C&hl=ko&gl=KR&ceid=KR:ko"},
-      {"name": "google_society", "category": "사회", "url": "https://news.google.com/rss/search?q=%EC%82%AC%ED%9A%8C&hl=ko&gl=KR&ceid=KR:ko"}
+      {
+        "name": "google_it",
+        "category": "IT",
+        "url": "https://news.google.com/rss/search?q=IT+기술&hl=ko&gl=KR&ceid=KR:ko"
+      },
+      {
+        "name": "google_econ",
+        "category": "경제",
+        "url": "https://news.google.com/rss/search?q=경제&hl=ko&gl=KR&ceid=KR:ko"
+      },
+      {
+        "name": "hani_general",
+        "category": "사회",
+        "url": "https://www.hani.co.kr/rss/"
+      },
+      {
+        "name": "khan_it",
+        "category": "IT",
+        "url": "https://www.khan.co.kr/rss/rssdata/it_news.xml"
+      }
     ],
     "crawl": [
-      {"name": "site_it", "category": "IT", "section_url": "https://<언론사 섹션 URL>",
-       "link_selector": "a", "body_selector": "article"}
+      {
+        "name": "zdnet_it",
+        "category": "IT",
+        "section_url": "https://zdnet.co.kr/news/?lstcode=0000",
+        "link_selector": "a[href*='/view/?no=']",
+        "body_selector": "div.article-feed, div.view_cont, article"
+      }
     ]
   },
   "ai": {

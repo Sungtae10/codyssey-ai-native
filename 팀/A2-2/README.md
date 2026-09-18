@@ -96,3 +96,23 @@ Windows: 작업 스케줄러 → 기본 작업 만들기 → 트리거 "매일 0
 ## 샘플 데이터
 
 `data/sample_articles.json` 의 20건은 개발용으로 팀에서 작성한 가상 기사이며 실제 언론 기사가 아니다.
+
+## 실행 결과 (2026-09-18, 실데이터)
+
+| 단계 | 결과 |
+|---|---|
+| fetch (RSS 4개 + 크롤링 1개) | raw 76건 수집, 2회차 실행 시 중복스킵 62건 |
+| clean | 33건 저장, 43건 제외 (본문 100자 미만, 대부분 Google News 리다이렉트 링크) |
+| summarize | 20건 성공, 0건 실패 (gpt-4o-mini) |
+| analyze (IT, 9/1~9/18) | 9건 종합, 트렌드·키워드·공통점·차이점·이슈·시사점 도출 |
+| report | 품질지표 3개(결측률 56.6%, 정제 통과율 43.4%, 요약 완료율 60.6%), TOP N 3종, 차트 2종 |
+| export | CSV 20건(요약본 필터), XLSX 33건 |
+
+![카테고리별 뉴스 수](docs/screenshots/chart_category.png)
+![일자별 수집 추이](docs/screenshots/chart_daily.png)
+
+단계별 터미널 캡처는 [docs/screenshots](docs/screenshots/README.md) 참고.
+
+### 알게 된 점
+- Google News RSS 링크는 자바스크립트 리다이렉트 페이지라 requests 만으로는 본문을 얻지 못한다. 언론사 직접 RSS(한겨레·경향)와 크롤링(ZDNet)은 정상 수집됐다. RSS 방식의 한계를 크롤링으로 보완하는 구조가 필요한 이유다.
+- 본문 100자 미만 제외 규칙 덕분에 요약 품질이 유지됐고, 제외 비율 자체가 소스 품질 지표가 됐다.

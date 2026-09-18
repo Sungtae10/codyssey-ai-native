@@ -38,6 +38,12 @@
 - 검증: `python -m unittest discover -s tests -t .` 통과
 - (프롬프트와 세부 검증 내용은 한다혜가 추가 기입)
 
+## 2026-09-17 | 한다혜 (C) | ai_client.py, analyzer.py, tests/test_analyzer.py
+- 작업: OpenAI 호출 래퍼(call_json: JSON 추출, 재시도 1회, 키 미설정 처리), 요약(summarize_one)·인사이트(analyze_range) 구현, 응답 형식 검증, 단위 테스트 8개 작성
+- 커밋: feat(ai) AI 요약 및 분석 기능 구현(9/17), fix(ai) 분석 저장 인터페이스 계약 맞춤(9/18)
+- 검증: python -m unittest discover -s tests -t . 통과 (팀장 재확인 9/18)
+- 프롬프트 기록: 본인 미제출
+
 ## 2026-09-18 | 김성태 (A, 팀장) | 통합
 - 프롬프트: "팀원 3명이 개인 폴더에 올린 코드를 계획서의 함수 시그니처 계약에 맞춰 루트 모듈 파일로 통합해줘"
 - 도구: Claude

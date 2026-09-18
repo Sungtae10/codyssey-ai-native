@@ -1,13 +1,13 @@
-   .env
-   config.json
-   data/news.db
-   *.db
-   output/
-   logs/
-   __pycache__/
-   *.pyc
-   .venv/
-   venv/
-   .vscode/
-   .idea/
-   .DS_Store
+.env
+config.json
+data/news.db
+*.db
+output/
+logs/
+__pycache__/
+*.pyc
+.venv/
+venv/
+.vscode/
+.idea/
+.DS_Store

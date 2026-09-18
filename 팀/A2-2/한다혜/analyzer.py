@@ -3,7 +3,7 @@
 향후 팀 공용 db.py와 아래 인터페이스를 맞춰야 한다.
 - get_clean(conn, date_from=..., date_to=..., category=...) -> 기사 목록
 - save_summary(conn, article_id=..., summary=..., keywords=..., sentiment=..., model=...)
-- save_analysis(conn, date_from=..., date_to=..., category=..., result=..., model=...)
+- save_analysis(conn, meta: dict, result: dict, model)
 기사에는 id, title, body, 선택적으로 summary가 있다고 가정한다.
 저장 함수는 성공하면 정상 반환하고 실패하면 예외를 발생시킨다고 가정한다.
 """
@@ -121,10 +121,13 @@ def analyze_range(conn, date_from, date_to, category, cfg) -> dict | None:
         ):
             logger.error("인사이트 응답 형식이 올바르지 않습니다.")
             return None
-        db.save_analysis(
-            conn, date_from=date_from, date_to=date_to, category=category,
-            result=result, model=cfg["ai"]["model"],
-        )
+        meta = {
+            "date_from": date_from,
+            "date_to": date_to,
+            "category": category,
+            "article_count": len(articles),
+        }
+        db.save_analysis(conn, meta, result, cfg["ai"]["model"])
         return result
     except Exception as exc:
         logger.error("인사이트 분석 또는 저장 실패(%s).", type(exc).__name__)

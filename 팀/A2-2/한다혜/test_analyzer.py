@@ -95,7 +95,12 @@ class AnalyzerTests(unittest.TestCase):
         self.assertNotIn("제외", prompt)
         self.assertNotIn("title-60", prompt)
         self.db.get_clean.assert_called_once_with(self.conn, date_from="start", date_to="end", category="경제")
-        self.db.save_analysis.assert_called_once_with(self.conn, date_from="start", date_to="end", category="경제", result=INSIGHT, model="test-model")
+        self.db.save_analysis.assert_called_once_with(
+            self.conn,
+            {"date_from": "start", "date_to": "end", "category": "경제", "article_count": 60},
+            INSIGHT,
+            "test-model",
+        )
 
     def test_range_failures(self):
         self.db.get_clean.return_value = [{"title": "기사"}]

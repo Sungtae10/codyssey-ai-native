@@ -1,0 +1,13 @@
+# 파이썬이 실행하면서 만드는 캐시 파일
+__pycache__/
+*.py[cod]
+
+# 가상환경 폴더
+.venv/
+venv/
+
+# 에디터와 운영체제가 만드는 설정 파일
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

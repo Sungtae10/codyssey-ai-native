@@ -181,6 +181,33 @@ def print_all_lines(prompts):
         print(format_prompt_line(number, prompt))
 
 
+def print_prompt_lines(pairs):
+    """(전체 번호, 프롬프트) 쌍 목록을 한 줄씩 출력한다. 카테고리, 검색, 즐겨찾기 결과에 쓴다."""
+    for number, prompt in pairs:
+        print(format_prompt_line(number, prompt))
+
+
+# ============================================================
+# 찾기: 조건에 맞는 프롬프트를 (전체 번호, 프롬프트) 쌍으로 모으는 함수
+# ============================================================
+def get_categories(prompts):
+    """기본 카테고리 6개 뒤에, 사용자가 직접 입력한 카테고리를 덧붙여 돌려준다."""
+    categories = list(CATEGORIES)  # 원본 상수는 그대로 두고 복사본에 덧붙인다
+    for prompt in prompts:
+        if prompt["category"] not in categories:
+            categories.append(prompt["category"])
+    return categories
+
+
+def find_by_category(prompts, category):
+    """해당 카테고리의 프롬프트만 모은다."""
+    results = []
+    for number, prompt in enumerate(prompts, start=1):
+        if prompt["category"] == category:
+            results.append((number, prompt))
+    return results
+
+
 # ============================================================
 # 필수 기능
 # ============================================================
@@ -202,6 +229,29 @@ def show_list(prompts):
         return
     print_all_lines(prompts)
     print(f"\n총 {len(prompts)}개의 프롬프트")
+
+
+def show_by_category(prompts):
+    """카테고리 목록(개수 포함)을 보여 주고, 고른 카테고리의 프롬프트만 출력한다."""
+    print_title("카테고리별 조회")
+    categories = get_categories(prompts)
+    for number, category in enumerate(categories, start=1):
+        count = len(find_by_category(prompts, category))
+        print(f"{number}) {category} ({count}개)")
+
+    number = to_number(input("선택: "))
+    if number is None or number < 1 or number > len(categories):
+        print("잘못된 번호입니다. 메뉴로 돌아갑니다.")
+        return
+
+    category = categories[number - 1]
+    results = find_by_category(prompts, category)
+    print(f"\n[{category}] 카테고리 프롬프트:")
+    if not results:
+        print("이 카테고리에는 아직 프롬프트가 없습니다.")
+        return
+    print_prompt_lines(results)
+    print(f"\n총 {len(results)}개의 프롬프트 (번호는 전체 목록 기준)")
 
 
 # ============================================================
@@ -234,7 +284,9 @@ def main():
             add_prompt(prompts)
         elif choice == "2":
             show_list(prompts)
-        elif choice in ("3", "4", "5", "6", "7"):
+        elif choice == "3":
+            show_by_category(prompts)
+        elif choice in ("4", "5", "6", "7"):
             print("아직 준비 중인 기능입니다.")
         elif choice == "0":
             print("\n프로그램을 종료합니다. 실행 중에 추가하거나 바꾼 내용은 초기화됩니다.")

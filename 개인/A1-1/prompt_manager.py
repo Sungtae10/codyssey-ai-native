@@ -208,6 +208,18 @@ def find_by_category(prompts, category):
     return results
 
 
+def find_by_keyword(prompts, keyword):
+    """제목 또는 내용에 검색어가 들어 있는 프롬프트를 모은다. 영문 대소문자는 구분하지 않는다."""
+    keyword = keyword.lower()
+    results = []
+    for number, prompt in enumerate(prompts, start=1):
+        in_title = keyword in prompt["title"].lower()
+        in_content = keyword in prompt["content"].lower()
+        if in_title or in_content:
+            results.append((number, prompt))
+    return results
+
+
 # ============================================================
 # 필수 기능
 # ============================================================
@@ -254,6 +266,19 @@ def show_by_category(prompts):
     print(f"\n총 {len(results)}개의 프롬프트 (번호는 전체 목록 기준)")
 
 
+def search_prompt(prompts):
+    """검색어를 입력받아 제목 또는 내용에 그 검색어가 있는 프롬프트를 출력한다."""
+    print_title("프롬프트 검색")
+    keyword = input_text("검색어: ")
+    results = find_by_keyword(prompts, keyword)
+    print("\n검색 결과:")
+    if not results:
+        print(f"'{keyword}'이(가) 들어간 프롬프트가 없습니다.")
+        return
+    print_prompt_lines(results)
+    print(f"\n{len(results)}개의 프롬프트를 찾았습니다. (번호는 전체 목록 기준)")
+
+
 # ============================================================
 # 메뉴와 프로그램 시작점
 # ============================================================
@@ -286,7 +311,9 @@ def main():
             show_list(prompts)
         elif choice == "3":
             show_by_category(prompts)
-        elif choice in ("4", "5", "6", "7"):
+        elif choice == "4":
+            search_prompt(prompts)
+        elif choice in ("5", "6", "7"):
             print("아직 준비 중인 기능입니다.")
         elif choice == "0":
             print("\n프로그램을 종료합니다. 실행 중에 추가하거나 바꾼 내용은 초기화됩니다.")

@@ -151,6 +151,8 @@ codyssey-a1-prompt-manager/
 
 | 요구사항 | 결과 | 확인 위치 |
 |---|---|---|
+| 개발 환경: VSCode Python 확장 설치, Python 3.10 이상, `print("Hello")` 실행 | ✅ Python 3.13.14 | 실행 화면 > 1. 개발 환경 (캡처와 텍스트 출력) |
+| Git 설정: 사용자 이름·이메일, 기본 브랜치 main, VSCode GitHub 연동 | ✅ `user.name=김성태`, `init.defaultbranch=main` | 실행 화면 > 1. 개발 환경 (`git config --global --list` 텍스트 출력) |
 | 메뉴 출력, 번호 선택, 잘못된 입력 안내 후 메뉴 재출력, 0번 종료, 기능 후 메뉴 복귀 | ✅ | `show_menu()`, `main()` |
 | 이전 미션 프롬프트 3개 이상 기본 등록 | ✅ 6개 | `create_default_prompts()` |
 | 리스트와 딕셔너리로 저장 (제목, 내용, 카테고리, 즐겨찾기) | ✅ | `make_prompt()` |
@@ -174,13 +176,55 @@ codyssey-a1-prompt-manager/
 
 ![Python, Git 버전과 Git 설정](docs/screenshots/01_env_versions.png)
 
+위 캡처의 터미널 출력을 텍스트로 옮긴 내용입니다.
+
+```text
+PS C:\Users\Sungtae\codyssey\codyssey-a1-1-kit> python --version; git --version; git config --global --list
+Python 3.13.14
+git version 2.54.0.windows.1
+filter.lfs.clean=git-lfs clean -- %f
+filter.lfs.smudge=git-lfs smudge -- %f
+filter.lfs.process=git-lfs filter-process
+filter.lfs.required=true
+user.name=김성태
+user.email=232972598+Sungtae10@users.noreply.github.com
+init.defaultbranch=main
+core.editor=code --wait
+```
+
+| 확인 항목 | 실제 값 (출력) | 설정·확인 명령 |
+|---|---|---|
+| Python 버전 (3.10 이상) | `Python 3.13.14` | `python --version` |
+| Git 버전 | `git version 2.54.0.windows.1` | `git --version` |
+| Git 사용자 이름 | `user.name=김성태` | `git config --global user.name "김성태"` |
+| Git 사용자 이메일 | `user.email=232972598+Sungtae10@users.noreply.github.com` | `git config --global user.email "232972598+Sungtae10@users.noreply.github.com"` |
+| 기본 브랜치 이름 | `init.defaultbranch=main` | `git config --global init.defaultBranch main` |
+| Git 기본 편집기 | `core.editor=code --wait` | `git config --global core.editor "code --wait"` |
+
+- 이메일은 GitHub가 계정마다 발급하는 공개용 noreply 주소입니다. 공개 저장소 커밋에 개인 메일이 남지 않도록 이 주소를 썼고, 커밋은 똑같이 GitHub 계정(Sungtae10)에 연결됩니다.
+- `filter.lfs.*` 4줄은 Git을 설치할 때 Git LFS가 자동으로 추가한 설정입니다.
+
 **VSCode 확장(Python, Korean Language Pack)과 hello.py 실행**
 
 ![VSCode 확장과 hello.py 실행](docs/screenshots/02_env_vscode_hello.png)
 
+- 설치된 확장 (`확장: 설치됨`, `@installed` 검색 결과): Korean Language Pack for Visual Studio Code (한국어), Python, Pylance, Python Debugger, Python Environments (모두 Microsoft)
+- `hello.py` 코드와 실행 결과:
+
+```python
+print("Hello")
+```
+
+```text
+PS C:\Users\Sungtae\codyssey\codyssey-a1-1-kit> python hello.py
+Hello
+```
+
 **VSCode GitHub 계정 연동**
 
 ![VSCode GitHub 로그인](docs/screenshots/03_env_github_login.png)
+
+- `Ctrl + Shift + P` → `Git: 복제` → `GitHub에서 복제`를 실행하자, GitHub 계정 `Sungtae10`으로 로그인된 상태에서 내 저장소 목록(`Sungtae10/codyssey-a2-news-pipeline`, `Sungtae10/dart-foresight-ai`, `Sungtae10/codyssey-b1-3-nocode-automation` 등)이 나타났습니다. VSCode와 GitHub 연동이 정상입니다.
 
 ### 2. 필수 기능
 
@@ -240,9 +284,65 @@ codyssey-a1-prompt-manager/
 
 ![git clone](docs/screenshots/16_git_clone.png)
 
+위 캡처의 터미널 출력을 텍스트로 옮긴 내용입니다.
+
+```text
+PS C:\Users\Sungtae\codyssey\codyssey-a1-1-kit\codyssey-a1-prompt-manager> cd ..
+>> git clone https://github.com/octocat/Hello-World.git
+>> cd Hello-World
+>> dir -Force
+>> git log --oneline
+Cloning into 'Hello-World'...
+remote: Enumerating objects: 13, done.
+remote: Total 13 (delta 0), reused 0 (delta 0), pack-reused 13 (from 1)
+Receiving objects: 100% (13/13), done.
+
+    디렉터리: C:\Users\Sungtae\codyssey\codyssey-a1-1-kit\Hello-World
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d--h--        2026-09-28  오후 10:49                .git
+-a----        2026-09-28  오후 10:49             14 README
+7fd1a60 (HEAD -> master, origin/master, origin/HEAD) Merge pull request #6 from Spaceghost/patch-1
+7629413 New line at end of file. --Signed off by Spaceghost
+553c207 first commit
+```
+
+- 확인한 뒤 `Remove-Item -Recurse -Force Hello-World`로 샘플 저장소를 지웠습니다.
+
 **`git log --oneline --graph`** (feature/prompt-list 브랜치가 갈라졌다가 main에 병합된 기록)
 
 ![git log graph](docs/screenshots/17_git_log_graph.png)
+
+위 캡처의 터미널 출력을 텍스트로 옮긴 내용입니다.
+
+```text
+PS C:\Users\Sungtae\codyssey\codyssey-a1-1-kit\codyssey-a1-prompt-manager> git log --oneline --graph
+* 881819b (HEAD -> main, origin/main, origin/HEAD) docs: document bonus features in README
+* e313764 feat: export prompts to Markdown files by category (bonus 1)
+* 4652153 feat: save and load prompts as JSON (bonus 1)
+* 8ce7203 feat: count views in detail view and show top 5 (bonus 2)
+* ae208e1 feat: add prompt edit and delete (bonus 2)
+* 06e19c2 docs: write README with usage, features and categories
+* 675b546 fix: exit cleanly on Ctrl+C or end of input
+* e0f9e14 feat: add favorites list view
+* fde136f feat: add favorite toggle by prompt number
+* f9db20e feat: add prompt detail view with number validation
+* 63cb842 feat: add keyword search on title and content
+* d783ec0 feat: add category view with prompt counts
+*   f3de1aa Merge branch 'feature/prompt-list'
+|\
+| * 46502cf (origin/feature/prompt-list, feature/prompt-list) refactor: extract prompt line formatter and guide empty list
+| * cf4735d feat: show all prompts with number, category and favorite star
+|/
+* 3954d67 feat: add prompt creation with input validation and category choice
+* 6f951d6 feat: register prompts from previous missions as default data
+* c5a0237 feat: add main menu loop and invalid input handling
+* 49f8f7a docs: add author section to README
+* ee7b8be chore: initialize project with README and .gitignore
+```
+
+- 캡처 시점 기준 커밋 20개(병합 커밋 1개 포함)입니다. 그 뒤로 캡처를 올린 커밋과 이 README 보완 커밋이 이어집니다.
 
 ## 작성자
 

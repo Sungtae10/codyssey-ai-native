@@ -236,6 +236,15 @@ def find_by_keyword(prompts, keyword):
     return results
 
 
+def find_favorites(prompts):
+    """즐겨찾기(favorite)가 True인 프롬프트만 모은다."""
+    results = []
+    for number, prompt in enumerate(prompts, start=1):
+        if prompt["favorite"]:
+            results.append((number, prompt))
+    return results
+
+
 # ============================================================
 # 필수 기능
 # ============================================================
@@ -334,6 +343,17 @@ def toggle_favorite(prompts):
         print(f"'{prompt['title']}' 프롬프트를 즐겨찾기에서 해제했습니다.")
 
 
+def show_favorites(prompts):
+    """즐겨찾기한 프롬프트만 모아서 출력한다."""
+    print_title("즐겨찾기 목록")
+    results = find_favorites(prompts)
+    if not results:
+        print("즐겨찾기한 프롬프트가 없습니다. 6번 메뉴에서 추가해 주세요.")
+        return
+    print_prompt_lines(results)
+    print(f"\n총 {len(results)}개의 즐겨찾기 (번호는 전체 목록 기준)")
+
+
 # ============================================================
 # 메뉴와 프로그램 시작점
 # ============================================================
@@ -373,7 +393,7 @@ def main():
         elif choice == "6":
             toggle_favorite(prompts)
         elif choice == "7":
-            print("아직 준비 중인 기능입니다.")
+            show_favorites(prompts)
         elif choice == "0":
             print("\n프로그램을 종료합니다. 실행 중에 추가하거나 바꾼 내용은 초기화됩니다.")
             break

@@ -1,0 +1,61 @@
+{
+  "meta": {
+    "program": "codyssey-a1-2-travel-planner",
+    "version": "2.0.0",
+    "travel_date": "2026-10-12",
+    "mode": "single",
+    "generated_at": "2026-09-29T02:43:58+09:00",
+    "last_run_at": "2026-09-29T02:43:58+09:00",
+    "llm": {
+      "provider": "openai",
+      "model": "gpt-4o-mini"
+    },
+    "place": {
+      "provider": "kakao",
+      "label": "Kakao Local"
+    },
+    "cache": {
+      "used": false
+    },
+    "cache_key": {
+      "travel_date": "2026-10-12",
+      "city_count": 1,
+      "restaurant_count": 5,
+      "keyword": "zzqqxx없는메뉴",
+      "llm_provider": "openai",
+      "llm_model": "gpt-4o-mini",
+      "place_provider": "kakao"
+    }
+  },
+  "recommendation": {
+    "recommended_city": "제주",
+    "weather": "10월 중순의 제주도는 대체로 맑고 기온이 15도에서 20도 사이로 쾌적합니다.",
+    "events": [
+      "제주 오름 축제(일정 변동 가능)",
+      "제주 감귤 축제(일정 변동 가능)"
+    ],
+    "reason": "제주는 가을에 아름다운 경관을 즐길 수 있는 최적의 장소입니다. 특히, 제주 오름의 단풍이 아름다워 산책하기 좋은 시기이며, 다양한 지역 행사도 열려서 그 분위기를 만끽할 수 있습니다. 또한, 온화한 날씨 속에서 맛있는 감귤도 즐길 수 있어 더욱 매력적입니다."
+  },
+  "restaurants": [],
+  "place_searches": [
+    {
+      "city": "제주",
+      "search_city": "제주",
+      "query": "제주 zzqqxx없는메뉴",
+      "provider": "kakao",
+      "total_count": 0,
+      "selected_region": "제주특별자치도",
+      "region_matched": 0,
+      "result_count": 0,
+      "status": "empty"
+    }
+  ],
+  "errors": [
+    {
+      "step": "place_search",
+      "type": "EMPTY_RESULT",
+      "message": "0 results for query=제주 zzqqxx없는메뉴",
+      "time": "2026-09-29T02:44:02+09:00"
+    }
+  ]
+}

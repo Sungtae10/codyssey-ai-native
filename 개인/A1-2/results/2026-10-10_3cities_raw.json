@@ -1,0 +1,256 @@
+{
+  "meta": {
+    "program": "codyssey-a1-2-travel-planner",
+    "version": "2.0.0",
+    "travel_date": "2026-10-10",
+    "mode": "multi",
+    "generated_at": "2026-09-29T02:57:17+09:00",
+    "last_run_at": "2026-09-29T02:57:17+09:00",
+    "llm": {
+      "provider": "openai",
+      "model": "gpt-4o-mini"
+    },
+    "place": {
+      "provider": "kakao",
+      "label": "Kakao Local"
+    },
+    "cache": {
+      "used": false
+    },
+    "cache_key": {
+      "travel_date": "2026-10-10",
+      "city_count": 3,
+      "restaurant_count": 5,
+      "keyword": "맛집",
+      "llm_provider": "openai",
+      "llm_model": "gpt-4o-mini",
+      "place_provider": "kakao"
+    }
+  },
+  "recommendation": {
+    "recommended_city": "제주",
+    "weather": "10월 초순 제주도는 맑고 기온이 따듯한 편으로, 낮에는 20도 내외로 쾌적합니다.",
+    "events": [
+      "제주 들불축제 (일정 변동 가능)",
+      "한라산 국립공원 단풍 행사 (일정 변동 가능)"
+    ],
+    "reason": "제주는 가을철 자연경관이 아름답고, 다양한 문화행사도 즐길 수 있어 여행하기 적합합니다. 특히, 맑은 날씨 속에 한라산의 단풍을 감상하며 트레킹을 할 수 있는 좋은 기회입니다.",
+    "recommended_cities": [
+      {
+        "recommended_city": "제주",
+        "weather": "10월 초순 제주도는 맑고 기온이 따듯한 편으로, 낮에는 20도 내외로 쾌적합니다.",
+        "events": [
+          "제주 들불축제 (일정 변동 가능)",
+          "한라산 국립공원 단풍 행사 (일정 변동 가능)"
+        ],
+        "reason": "제주는 가을철 자연경관이 아름답고, 다양한 문화행사도 즐길 수 있어 여행하기 적합합니다. 특히, 맑은 날씨 속에 한라산의 단풍을 감상하며 트레킹을 할 수 있는 좋은 기회입니다."
+      },
+      {
+        "recommended_city": "경주",
+        "weather": "가을의 경주는 맑고 선선한 날씨가 이어져 관광하기 좋은 시기입니다.",
+        "events": [
+          "경주 문화재 야행 (일정 변동 가능)",
+          "경주 벚꽃축제 (일정 변동 가능)"
+        ],
+        "reason": "경주는 역사와 문화가 어우러진 도시로, 가을철의 청명한 날씨 속에서 유적지를 탐방하기 좋습니다. 문화행사도 다양하게 열려 있어 역사적인 매력을 느끼기 좋은 시점입니다."
+      },
+      {
+        "recommended_city": "강릉",
+        "weather": "강릉은 10월 초순에 선선하고 맑은 날씨가 많아 바다와 자연을 즐기기 좋은 시기입니다.",
+        "events": [
+          "강릉 커피축제 (일정 변동 가능)",
+          "강릉 단풍축제 (일정 변동 가능)"
+        ],
+        "reason": "강릉은 해변과 가을 단풍이 어우러진 자연경관이 매력적입니다. 커피축제와 같은 다양한 지역 행사가 열려 여행의 즐거움을 더할 수 있는 기회입니다."
+      }
+    ]
+  },
+  "restaurants": [
+    {
+      "name": "중문수두리보말칼국수",
+      "address": "제주특별자치도 서귀포시 천제연로 192",
+      "category": "한식 > 국수 > 칼국수",
+      "url": "http://place.map.kakao.com/1148098112",
+      "lat": 33.25156773781329,
+      "lng": 126.42499942161753,
+      "phone": "064-739-1070",
+      "city": "제주"
+    },
+    {
+      "name": "임성반점",
+      "address": "제주특별자치도 제주시 용화로 57-1",
+      "category": "중식 > 중국요리",
+      "url": "http://place.map.kakao.com/9402213",
+      "lat": 33.50947882653039,
+      "lng": 126.50974924879313,
+      "phone": "064-711-3322",
+      "city": "제주"
+    },
+    {
+      "name": "순수한둠비",
+      "address": "제주특별자치도 제주시 서문로 37-11",
+      "category": "한식",
+      "url": "http://place.map.kakao.com/779594348",
+      "lat": 33.51109293875836,
+      "lng": 126.51439508768554,
+      "phone": "064-747-1361",
+      "city": "제주"
+    },
+    {
+      "name": "은희네해장국 본점",
+      "address": "제주특별자치도 제주시 고마로13길 8",
+      "category": "한식 > 해장국",
+      "url": "http://place.map.kakao.com/21499653",
+      "lat": 33.50852103226244,
+      "lng": 126.54072499320473,
+      "phone": "064-726-5622",
+      "city": "제주"
+    },
+    {
+      "name": "삼대국수회관 본점",
+      "address": "제주특별자치도 제주시 삼성로 41",
+      "category": "한식 > 국수",
+      "url": "http://place.map.kakao.com/1027828348",
+      "lat": 33.506901446238075,
+      "lng": 126.5300594340321,
+      "phone": "064-759-6645",
+      "city": "제주"
+    },
+    {
+      "name": "황남빵",
+      "address": "경북 경주시 태종로 783",
+      "category": "간식 > 제과,베이커리",
+      "url": "http://place.map.kakao.com/26519092",
+      "lat": 35.8408398161359,
+      "lng": 129.21364442351,
+      "phone": "054-749-7000",
+      "city": "경주"
+    },
+    {
+      "name": "향화정",
+      "address": "경북 경주시 사정로57번길 17",
+      "category": "한식",
+      "url": "http://place.map.kakao.com/632306474",
+      "lat": 35.8380095983727,
+      "lng": 129.209192577739,
+      "phone": "0507-1359-8765",
+      "city": "경주"
+    },
+    {
+      "name": "최영화빵",
+      "address": "경북 경주시 북정로 6-1",
+      "category": "간식 > 제과,베이커리",
+      "url": "http://place.map.kakao.com/26348190",
+      "lat": 35.841572474144975,
+      "lng": 129.21534906906183,
+      "phone": "054-749-5599",
+      "city": "경주"
+    },
+    {
+      "name": "맷돌순두부",
+      "address": "경북 경주시 북군길 7",
+      "category": "한식 > 두부전문점",
+      "url": "http://place.map.kakao.com/10341223",
+      "lat": 35.851776927027,
+      "lng": 129.262849554884,
+      "phone": "054-745-2791",
+      "city": "경주"
+    },
+    {
+      "name": "경춘재",
+      "address": "경북 경주시 진현로2길 61-7",
+      "category": "한식",
+      "url": "http://place.map.kakao.com/908617905",
+      "lat": 35.78689579851942,
+      "lng": 129.32679692342296,
+      "phone": "054-746-4750",
+      "city": "경주"
+    },
+    {
+      "name": "강릉부성불고기찜닭 교동택지 본점",
+      "address": "강원특별자치도 강릉시 율곡초교길39번길 16",
+      "category": "한식 > 육류,고기 > 닭요리",
+      "url": "http://place.map.kakao.com/27586424",
+      "lat": 37.7652291029009,
+      "lng": 128.8802433613894,
+      "phone": "033-641-3601",
+      "city": "강릉"
+    },
+    {
+      "name": "동화가든",
+      "address": "강원특별자치도 강릉시 초당순두부길77번길 15",
+      "category": "한식 > 두부전문점",
+      "url": "http://place.map.kakao.com/7846414",
+      "lat": 37.79114130470266,
+      "lng": 128.91466316141972,
+      "phone": "010-9850-7112",
+      "city": "강릉"
+    },
+    {
+      "name": "대동면옥 강릉본점",
+      "address": "강원특별자치도 강릉시 종합운동장길 26-8",
+      "category": "한식",
+      "url": "http://place.map.kakao.com/699701008",
+      "lat": 37.7737799232941,
+      "lng": 128.891103040523,
+      "phone": "033-644-6008",
+      "city": "강릉"
+    },
+    {
+      "name": "강릉빵다방 본점",
+      "address": "강원특별자치도 강릉시 남강초교1길 24",
+      "category": "간식 > 제과,베이커리",
+      "url": "http://place.map.kakao.com/666460441",
+      "lat": 37.7690056080449,
+      "lng": 128.91811727610298,
+      "phone": "033-642-8807",
+      "city": "강릉"
+    },
+    {
+      "name": "순두부젤라또 1호점",
+      "address": "강원특별자치도 강릉시 초당순두부길 95-5",
+      "category": "간식 > 아이스크림",
+      "url": "http://place.map.kakao.com/3222543",
+      "lat": 37.79168654379332,
+      "lng": 128.9154797999827,
+      "phone": "033-653-8344",
+      "city": "강릉"
+    }
+  ],
+  "place_searches": [
+    {
+      "city": "제주",
+      "search_city": "제주",
+      "query": "제주 맛집",
+      "provider": "kakao",
+      "total_count": 13280,
+      "selected_region": "제주특별자치도",
+      "region_matched": 10,
+      "result_count": 5,
+      "status": "ok"
+    },
+    {
+      "city": "경주",
+      "search_city": "경주",
+      "query": "경주 맛집",
+      "provider": "kakao",
+      "total_count": 5129,
+      "selected_region": "경북 경주시",
+      "region_matched": 10,
+      "result_count": 5,
+      "status": "ok"
+    },
+    {
+      "city": "강릉",
+      "search_city": "강릉",
+      "query": "강릉 맛집",
+      "provider": "kakao",
+      "total_count": 4195,
+      "selected_region": "강원 강릉시",
+      "region_matched": 10,
+      "result_count": 5,
+      "status": "ok"
+    }
+  ],
+  "errors": []
+}

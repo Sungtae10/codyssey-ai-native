@@ -318,6 +318,22 @@ def show_detail(prompts):
     print(LINE)
 
 
+def toggle_favorite(prompts):
+    """번호를 입력받아 즐겨찾기를 켜고 끈다. (True면 False로, False면 True로)"""
+    print_title("즐겨찾기 관리")
+    print_all_lines(prompts)
+    index = select_prompt(prompts, "\n프롬프트 번호 입력: ")
+    if index is None:
+        return
+
+    prompt = prompts[index]
+    prompt["favorite"] = not prompt["favorite"]
+    if prompt["favorite"]:
+        print(f"'{prompt['title']}' 프롬프트를 즐겨찾기에 추가했습니다! ⭐")
+    else:
+        print(f"'{prompt['title']}' 프롬프트를 즐겨찾기에서 해제했습니다.")
+
+
 # ============================================================
 # 메뉴와 프로그램 시작점
 # ============================================================
@@ -354,7 +370,9 @@ def main():
             search_prompt(prompts)
         elif choice == "5":
             show_detail(prompts)
-        elif choice in ("6", "7"):
+        elif choice == "6":
+            toggle_favorite(prompts)
+        elif choice == "7":
             print("아직 준비 중인 기능입니다.")
         elif choice == "0":
             print("\n프로그램을 종료합니다. 실행 중에 추가하거나 바꾼 내용은 초기화됩니다.")

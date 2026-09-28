@@ -12,6 +12,7 @@ Codyssey AI 네이티브 과정 A1-1 | Python & Git 기초
 # ============================================================
 CATEGORIES = ["텍스트 생성", "이미지 생성", "영상 생성", "페르소나", "자동화", "기타"]
 LINE = "─" * 44
+TOP_LIMIT = 5  # 보너스 2: 인기 프롬프트 목록에 보여 줄 개수
 
 
 # ============================================================
@@ -96,15 +97,16 @@ FIFA_NEWS_SUMMARY = (
 )
 
 
-def make_prompt(title, content, category, favorite=False):
+def make_prompt(title, content, category, favorite=False, views=0):
     """프롬프트 1개를 딕셔너리로 만든다.
-    모든 프롬프트가 같은 키(제목, 내용, 카테고리, 즐겨찾기)를 갖도록 이 함수 한 곳에서만 만든다.
+    모든 프롬프트가 같은 키(제목, 내용, 카테고리, 즐겨찾기, 조회수)를 갖도록 이 함수 한 곳에서만 만든다.
     """
     return {
         "title": title,
         "content": content,
         "category": category,
         "favorite": favorite,
+        "views": views,  # 보너스 2: 상세 보기로 열어 본 횟수
     }
 
 
@@ -340,6 +342,7 @@ def show_detail(prompts):
         return
 
     prompt = prompts[index]
+    prompt["views"] += 1  # 보너스 2: 상세 보기를 할 때마다 조회수 1 증가
     favorite_text = "없음"
     if prompt["favorite"]:
         favorite_text = "⭐"
@@ -348,6 +351,7 @@ def show_detail(prompts):
     print(f"제목: {prompt['title']}")
     print(f"카테고리: {prompt['category']}")
     print(f"즐겨찾기: {favorite_text}")
+    print(f"조회수: {prompt['views']}회")
     print(LINE)
     print("내용:")
     print(prompt["content"])
@@ -431,6 +435,30 @@ def delete_prompt(prompts):
     print(f"'{title}' 프롬프트를 삭제했습니다. 뒤에 있던 프롬프트 번호는 하나씩 앞당겨집니다.")
 
 
+def get_views(pair):
+    """정렬 기준 함수: (번호, 프롬프트) 쌍에서 조회수를 꺼낸다."""
+    number, prompt = pair
+    return prompt["views"]
+
+
+def show_top_prompts(prompts):
+    """상세 보기 조회수가 많은 순서로 최대 TOP_LIMIT개를 보여 준다. 조회수가 같으면 먼저 등록된 것이 앞에 온다."""
+    print_title(f"인기 프롬프트 TOP {TOP_LIMIT} (조회수 순)")
+    viewed = []
+    for number, prompt in enumerate(prompts, start=1):
+        if prompt["views"] > 0:
+            viewed.append((number, prompt))
+    if not viewed:
+        print("아직 조회 기록이 없습니다. 5번(상세 보기)으로 프롬프트를 열면 조회수가 올라갑니다.")
+        return
+
+    viewed.sort(key=get_views, reverse=True)
+    rank = 1
+    for number, prompt in viewed[:TOP_LIMIT]:
+        print(f"{rank}위 | {format_prompt_line(number, prompt)} | 조회 {prompt['views']}회")
+        rank += 1
+
+
 # ============================================================
 # 메뉴와 프로그램 시작점
 # ============================================================
@@ -448,6 +476,7 @@ def show_menu():
     print("---- 보너스 ----")
     print("8. 프롬프트 수정")
     print("9. 프롬프트 삭제")
+    print(f"10. 인기 프롬프트 TOP {TOP_LIMIT}")
     print("0. 종료")
 
 
@@ -478,6 +507,8 @@ def main():
             edit_prompt(prompts)
         elif choice == "9":
             delete_prompt(prompts)
+        elif choice == "10":
+            show_top_prompts(prompts)
         elif choice == "0":
             print("\n프로그램을 종료합니다. 실행 중에 추가하거나 바꾼 내용은 초기화됩니다.")
             break

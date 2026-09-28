@@ -142,9 +142,24 @@ def to_number(text):
     return None
 
 
-def choose_category():
-    """미리 정한 카테고리 중 하나를 번호로 고르거나, 새 이름을 직접 입력받는다."""
+def ask_yes_no(message):
+    """y 또는 n을 입력받아 True 또는 False를 돌려준다. 한글 자판 상태에서 누른 ㅛ, ㅜ도 인정한다."""
+    while True:
+        answer = input(message).strip().lower()
+        if answer in ("y", "yes", "ㅛ"):
+            return True
+        if answer in ("n", "no", "ㅜ"):
+            return False
+        print("  y 또는 n으로 입력해 주세요.")
+
+
+def choose_category(current=None):
+    """미리 정한 카테고리 중 하나를 번호로 고르거나, 새 이름을 직접 입력받는다.
+    current(지금 카테고리)를 넘기면 0번 '그대로 두기'가 생기고, 0을 고르면 None을 돌려준다. (보너스 2: 수정)
+    """
     print("\n카테고리 선택:")
+    if current is not None:
+        print(f"0) 그대로 두기 (현재: {current})")
     for number, category in enumerate(CATEGORIES, start=1):
         print(f"{number}) {category}")
     custom_number = len(CATEGORIES) + 1
@@ -152,6 +167,8 @@ def choose_category():
 
     while True:
         number = to_number(input("선택: "))
+        if current is not None and number == 0:
+            return None
         if number is not None and 1 <= number <= len(CATEGORIES):
             return CATEGORIES[number - 1]
         if number == custom_number:
@@ -201,6 +218,16 @@ def print_prompt_lines(pairs):
     """(전체 번호, 프롬프트) 쌍 목록을 한 줄씩 출력한다. 카테고리, 검색, 즐겨찾기 결과에 쓴다."""
     for number, prompt in pairs:
         print(format_prompt_line(number, prompt))
+
+
+def preview(text, limit=30):
+    """긴 내용은 첫 줄 앞부분만 잘라서 보여 준다. (보너스 2: 수정 화면에서 사용)"""
+    first_line = text.strip().split("\n")[0]
+    if len(first_line) > limit:
+        return first_line[:limit] + "..."
+    if "\n" in text.strip():
+        return first_line + " ..."
+    return first_line
 
 
 # ============================================================
@@ -355,6 +382,56 @@ def show_favorites(prompts):
 
 
 # ============================================================
+# 보너스 2: 수정, 삭제, 조회수 TOP 목록
+# ============================================================
+def edit_prompt(prompts):
+    """번호로 고른 프롬프트의 제목, 내용, 카테고리를 고친다. 아무것도 입력하지 않은 항목은 그대로 둔다."""
+    print_title("프롬프트 수정")
+    print_all_lines(prompts)
+    index = select_prompt(prompts, "\n수정할 번호: ")
+    if index is None:
+        return
+
+    prompt = prompts[index]
+    print("바꾸지 않을 항목은 아무것도 입력하지 않고 Enter를 누르세요.")
+    new_title = input(f"새 제목 (현재: {prompt['title']}): ").strip()
+    new_content = input(f"새 내용 (현재: {preview(prompt['content'])}): ").strip()
+    new_category = choose_category(current=prompt["category"])
+
+    changed = False
+    if new_title:
+        prompt["title"] = new_title
+        changed = True
+    if new_content:
+        prompt["content"] = new_content
+        changed = True
+    if new_category is not None and new_category != prompt["category"]:
+        prompt["category"] = new_category
+        changed = True
+
+    if changed:
+        print(f"\n'{prompt['title']}' 프롬프트를 수정했습니다.")
+    else:
+        print("\n바뀐 내용이 없습니다.")
+
+
+def delete_prompt(prompts):
+    """번호로 고른 프롬프트를 확인(y/n)을 받은 뒤 목록에서 지운다."""
+    print_title("프롬프트 삭제")
+    print_all_lines(prompts)
+    index = select_prompt(prompts, "\n삭제할 번호: ")
+    if index is None:
+        return
+
+    title = prompts[index]["title"]
+    if not ask_yes_no(f"'{title}' 프롬프트를 삭제할까요? (y/n): "):
+        print("삭제를 취소했습니다.")
+        return
+    prompts.pop(index)
+    print(f"'{title}' 프롬프트를 삭제했습니다. 뒤에 있던 프롬프트 번호는 하나씩 앞당겨집니다.")
+
+
+# ============================================================
 # 메뉴와 프로그램 시작점
 # ============================================================
 def show_menu():
@@ -368,6 +445,9 @@ def show_menu():
     print("5. 프롬프트 상세 보기")
     print("6. 즐겨찾기 관리")
     print("7. 즐겨찾기 목록")
+    print("---- 보너스 ----")
+    print("8. 프롬프트 수정")
+    print("9. 프롬프트 삭제")
     print("0. 종료")
 
 
@@ -394,6 +474,10 @@ def main():
             toggle_favorite(prompts)
         elif choice == "7":
             show_favorites(prompts)
+        elif choice == "8":
+            edit_prompt(prompts)
+        elif choice == "9":
+            delete_prompt(prompts)
         elif choice == "0":
             print("\n프로그램을 종료합니다. 실행 중에 추가하거나 바꾼 내용은 초기화됩니다.")
             break

@@ -167,6 +167,20 @@ def print_title(title):
     print(f"=== {title} ===")
 
 
+def format_prompt_line(number, prompt):
+    """목록에 보여 줄 한 줄을 만든다. 예: 1. [페르소나] Paper Lens ⭐"""
+    star = ""
+    if prompt["favorite"]:
+        star = " ⭐"
+    return f"{number}. [{prompt['category']}] {prompt['title']}{star}"
+
+
+def print_all_lines(prompts):
+    """모든 프롬프트를 1번부터 번호를 붙여 한 줄씩 출력한다."""
+    for number, prompt in enumerate(prompts, start=1):
+        print(format_prompt_line(number, prompt))
+
+
 # ============================================================
 # 필수 기능
 # ============================================================
@@ -178,6 +192,16 @@ def add_prompt(prompts):
     category = choose_category()
     prompts.append(make_prompt(title, content, category))
     print(f"\n'{title}' 프롬프트가 추가되었습니다! (현재 {len(prompts)}개)")
+
+
+def show_list(prompts):
+    """저장된 모든 프롬프트를 1번부터 번호를 붙여 출력한다. 즐겨찾기는 ⭐로 표시한다."""
+    print_title("프롬프트 목록")
+    if not prompts:
+        print("등록된 프롬프트가 없습니다. 1번 메뉴에서 먼저 추가해 주세요.")
+        return
+    print_all_lines(prompts)
+    print(f"\n총 {len(prompts)}개의 프롬프트")
 
 
 # ============================================================
@@ -208,7 +232,9 @@ def main():
 
         if choice == "1":
             add_prompt(prompts)
-        elif choice in ("2", "3", "4", "5", "6", "7"):
+        elif choice == "2":
+            show_list(prompts)
+        elif choice in ("3", "4", "5", "6", "7"):
             print("아직 준비 중인 기능입니다.")
         elif choice == "0":
             print("\n프로그램을 종료합니다. 실행 중에 추가하거나 바꾼 내용은 초기화됩니다.")

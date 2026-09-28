@@ -11,6 +11,7 @@ Codyssey AI 네이티브 과정 A1-1 | Python & Git 기초
 # 상수: 프로그램 전체에서 쓰는 고정 값
 # ============================================================
 CATEGORIES = ["텍스트 생성", "이미지 생성", "영상 생성", "페르소나", "자동화", "기타"]
+LINE = "─" * 44
 
 
 # ============================================================
@@ -158,6 +159,21 @@ def choose_category():
         print("  목록에 있는 번호를 골라 주세요.")
 
 
+def select_prompt(prompts, message):
+    """프롬프트 번호를 입력받아 리스트 위치(index)를 돌려준다.
+    화면 번호는 1부터, 리스트 위치는 0부터 시작하므로 '번호 - 1'을 돌려준다.
+    잘못된 번호면 안내 메시지를 출력하고 None을 돌려준다.
+    """
+    if not prompts:
+        print("등록된 프롬프트가 없습니다.")
+        return None
+    number = to_number(input(message))
+    if number is None or number < 1 or number > len(prompts):
+        print(f"잘못된 번호입니다. 1~{len(prompts)} 사이의 번호를 입력해 주세요.")
+        return None
+    return number - 1
+
+
 # ============================================================
 # 출력 도우미: 화면에 보여 주는 모양을 한 곳에서 관리
 # ============================================================
@@ -279,6 +295,29 @@ def search_prompt(prompts):
     print(f"\n{len(results)}개의 프롬프트를 찾았습니다. (번호는 전체 목록 기준)")
 
 
+def show_detail(prompts):
+    """번호를 입력받아 그 프롬프트의 제목, 카테고리, 즐겨찾기 여부, 내용 전체를 출력한다."""
+    print_title("프롬프트 상세 보기")
+    print_all_lines(prompts)
+    index = select_prompt(prompts, "\n번호 입력: ")
+    if index is None:
+        return
+
+    prompt = prompts[index]
+    favorite_text = "없음"
+    if prompt["favorite"]:
+        favorite_text = "⭐"
+    print()
+    print(LINE)
+    print(f"제목: {prompt['title']}")
+    print(f"카테고리: {prompt['category']}")
+    print(f"즐겨찾기: {favorite_text}")
+    print(LINE)
+    print("내용:")
+    print(prompt["content"])
+    print(LINE)
+
+
 # ============================================================
 # 메뉴와 프로그램 시작점
 # ============================================================
@@ -313,7 +352,9 @@ def main():
             show_by_category(prompts)
         elif choice == "4":
             search_prompt(prompts)
-        elif choice in ("5", "6", "7"):
+        elif choice == "5":
+            show_detail(prompts)
+        elif choice in ("6", "7"):
             print("아직 준비 중인 기능입니다.")
         elif choice == "0":
             print("\n프로그램을 종료합니다. 실행 중에 추가하거나 바꾼 내용은 초기화됩니다.")

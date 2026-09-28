@@ -123,9 +123,11 @@ prompts = [
 
 ```
 codyssey-a1-prompt-manager/
-├── prompt_manager.py   # 프로그램 코드 전체
-├── README.md           # 프로그램 설명서 (이 문서)
-└── .gitignore          # Git에 올리지 않을 파일 목록 (prompts.json, exports/ 포함)
+├── prompt_manager.py      # 프로그램 코드 전체
+├── README.md              # 프로그램 설명서 (이 문서)
+├── .gitignore             # Git에 올리지 않을 파일 목록 (prompts.json, exports/ 포함)
+└── docs/
+    └── screenshots/       # 개발 환경, 실행 결과, Git 기록 캡처 17장
 ```
 
 ## Git 작업 방식
@@ -163,6 +165,84 @@ codyssey-a1-prompt-manager/
 | 의미 있는 커밋 10개 이상, 브랜치 생성·병합 기록 | ✅ | `git log --oneline --graph` |
 | 보너스 1: JSON 저장·불러오기, 카테고리별 Markdown 내보내기 | ✅ | `save_to_json()`, `load_from_json()`, `export_markdown()` |
 | 보너스 2: 수정·삭제, 조회수 기록, 조회수 TOP 목록 | ✅ | `edit_prompt()`, `delete_prompt()`, `show_detail()`, `show_top_prompts()` |
+
+## 실행 화면
+
+### 1. 개발 환경
+
+**Python·Git 버전과 Git 사용자 설정** (`python --version`, `git --version`, `git config --global --list`)
+
+![Python, Git 버전과 Git 설정](docs/screenshots/01_env_versions.png)
+
+**VSCode 확장(Python, Korean Language Pack)과 hello.py 실행**
+
+![VSCode 확장과 hello.py 실행](docs/screenshots/02_env_vscode_hello.png)
+
+**VSCode GitHub 계정 연동**
+
+![VSCode GitHub 로그인](docs/screenshots/03_env_github_login.png)
+
+### 2. 필수 기능
+
+**메뉴와 잘못된 입력 처리**
+
+![메뉴](docs/screenshots/04_run_menu.png)
+
+**프롬프트 추가** (빈 값 재입력, 카테고리 선택)
+
+![추가](docs/screenshots/05_run_add.png)
+
+**프롬프트 목록**
+
+![목록](docs/screenshots/06_run_list.png)
+
+**카테고리별 조회**
+
+![카테고리별 조회](docs/screenshots/07_run_category.png)
+
+**프롬프트 검색**
+
+![검색](docs/screenshots/08_run_search.png)
+
+**프롬프트 상세 보기**
+
+![상세 보기](docs/screenshots/09_run_detail.png)
+
+**즐겨찾기 관리와 즐겨찾기 목록**
+
+![즐겨찾기](docs/screenshots/10_run_favorite.png)
+
+### 3. 보너스 기능
+
+**인기 프롬프트 TOP 5 (보너스 2)**
+
+![TOP 5](docs/screenshots/11_run_bonus2_top.png)
+
+**프롬프트 수정 (보너스 2)**
+
+![수정](docs/screenshots/12_run_bonus2_edit.png)
+
+**JSON 저장과 Markdown 내보내기 (보너스 1)**
+
+![저장과 내보내기](docs/screenshots/13_run_bonus1_save_export.png)
+
+**프롬프트 삭제 (보너스 2)**
+
+![삭제](docs/screenshots/14_run_bonus2_delete.png)
+
+**다시 실행한 뒤 JSON 불러오기 (보너스 1)**: 저장 후 삭제했던 프롬프트가 불러오기로 다시 돌아옵니다.
+
+![불러오기](docs/screenshots/15_run_bonus1_load.png)
+
+### 4. Git
+
+**공개 샘플 저장소 clone 후 폴더 구조와 로그 확인**
+
+![git clone](docs/screenshots/16_git_clone.png)
+
+**`git log --oneline --graph`** (feature/prompt-list 브랜치가 갈라졌다가 main에 병합된 기록)
+
+![git log graph](docs/screenshots/17_git_log_graph.png)
 
 ## 작성자
 

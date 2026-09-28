@@ -122,6 +122,65 @@ def create_default_prompts():
 
 
 # ============================================================
+# 입력 도우미: 잘못된 입력을 걸러 내는 함수
+# ============================================================
+def input_text(message):
+    """글자를 입력받는다. 비어 있거나 공백뿐이면 다시 입력받는다."""
+    while True:
+        text = input(message).strip()
+        if text:
+            return text
+        print("  비어 있습니다. 다시 입력해 주세요.")
+
+
+def to_number(text):
+    """'3'처럼 숫자로만 된 글자는 정수 3으로 바꾸고, 아니면 None을 돌려준다."""
+    text = text.strip()
+    if text.isdecimal():
+        return int(text)
+    return None
+
+
+def choose_category():
+    """미리 정한 카테고리 중 하나를 번호로 고르거나, 새 이름을 직접 입력받는다."""
+    print("\n카테고리 선택:")
+    for number, category in enumerate(CATEGORIES, start=1):
+        print(f"{number}) {category}")
+    custom_number = len(CATEGORIES) + 1
+    print(f"{custom_number}) 직접 입력")
+
+    while True:
+        number = to_number(input("선택: "))
+        if number is not None and 1 <= number <= len(CATEGORIES):
+            return CATEGORIES[number - 1]
+        if number == custom_number:
+            return input_text("새 카테고리 이름: ")
+        print("  목록에 있는 번호를 골라 주세요.")
+
+
+# ============================================================
+# 출력 도우미: 화면에 보여 주는 모양을 한 곳에서 관리
+# ============================================================
+def print_title(title):
+    """기능 화면의 제목 줄을 출력한다. 예: === 프롬프트 추가 ==="""
+    print()
+    print(f"=== {title} ===")
+
+
+# ============================================================
+# 필수 기능
+# ============================================================
+def add_prompt(prompts):
+    """제목, 내용, 카테고리를 입력받아 새 프롬프트를 목록 끝에 추가한다. 즐겨찾기는 False로 시작한다."""
+    print_title("프롬프트 추가")
+    title = input_text("제목: ")
+    content = input_text("내용: ")
+    category = choose_category()
+    prompts.append(make_prompt(title, content, category))
+    print(f"\n'{title}' 프롬프트가 추가되었습니다! (현재 {len(prompts)}개)")
+
+
+# ============================================================
 # 메뉴와 프로그램 시작점
 # ============================================================
 def show_menu():
@@ -147,7 +206,9 @@ def main():
         show_menu()
         choice = input("선택: ").strip()
 
-        if choice in ("1", "2", "3", "4", "5", "6", "7"):
+        if choice == "1":
+            add_prompt(prompts)
+        elif choice in ("2", "3", "4", "5", "6", "7"):
             print("아직 준비 중인 기능입니다.")
         elif choice == "0":
             print("\n프로그램을 종료합니다. 실행 중에 추가하거나 바꾼 내용은 초기화됩니다.")

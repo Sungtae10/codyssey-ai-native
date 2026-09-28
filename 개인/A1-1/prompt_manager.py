@@ -167,6 +167,20 @@ def print_title(title):
     print(f"=== {title} ===")
 
 
+def format_prompt_line(number, prompt):
+    """목록에 보여 줄 한 줄을 만든다. 예: 1. [페르소나] Paper Lens ⭐"""
+    star = ""
+    if prompt["favorite"]:
+        star = " ⭐"
+    return f"{number}. [{prompt['category']}] {prompt['title']}{star}"
+
+
+def print_all_lines(prompts):
+    """모든 프롬프트를 1번부터 번호를 붙여 한 줄씩 출력한다."""
+    for number, prompt in enumerate(prompts, start=1):
+        print(format_prompt_line(number, prompt))
+
+
 # ============================================================
 # 필수 기능
 # ============================================================
@@ -183,11 +197,10 @@ def add_prompt(prompts):
 def show_list(prompts):
     """저장된 모든 프롬프트를 1번부터 번호를 붙여 출력한다. 즐겨찾기는 ⭐로 표시한다."""
     print_title("프롬프트 목록")
-    for number, prompt in enumerate(prompts, start=1):
-        star = ""
-        if prompt["favorite"]:
-            star = " ⭐"
-        print(f"{number}. [{prompt['category']}] {prompt['title']}{star}")
+    if not prompts:
+        print("등록된 프롬프트가 없습니다. 1번 메뉴에서 먼저 추가해 주세요.")
+        return
+    print_all_lines(prompts)
     print(f"\n총 {len(prompts)}개의 프롬프트")
 
 

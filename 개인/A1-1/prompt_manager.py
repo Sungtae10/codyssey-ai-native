@@ -402,4 +402,8 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except (KeyboardInterrupt, EOFError):
+        # Ctrl+C를 누르거나 입력이 끊겨도 빨간 오류(Traceback) 대신 안내만 보여 주고 끝낸다.
+        print("\n\n프로그램을 종료합니다.")

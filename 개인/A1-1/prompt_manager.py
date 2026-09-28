@@ -7,6 +7,7 @@ Codyssey AI 네이티브 과정 A1-1 | Python & Git 기초
 """
 
 import json  # 보너스 1: JSON 파일 저장과 불러오기
+from datetime import datetime  # 보너스 1: Markdown 내보낸 시각 기록
 from pathlib import Path  # 보너스 1: 파일과 폴더 경로 다루기
 
 
@@ -18,6 +19,7 @@ LINE = "─" * 44
 TOP_LIMIT = 5  # 보너스 2: 인기 프롬프트 목록에 보여 줄 개수
 BASE_DIR = Path(__file__).resolve().parent  # 보너스 1: 이 파일(prompt_manager.py)이 있는 폴더
 DATA_FILE = BASE_DIR / "prompts.json"  # 보너스 1: JSON 저장 파일 위치
+EXPORT_DIR = BASE_DIR / "exports"  # 보너스 1: Markdown 내보내기 폴더
 
 
 # ============================================================
@@ -541,6 +543,72 @@ def load_from_json(prompts):
         print(f"(형식이 맞지 않는 {skipped}개는 건너뛰었습니다)")
 
 
+def safe_filename(name):
+    """파일 이름에 쓸 수 없는 글자(\\ / : * ? " < > |)와 공백을 밑줄(_)로 바꾼다."""
+    result = ""
+    for char in name:
+        if char in '\\/:*?"<>| ':
+            result += "_"
+        else:
+            result += char
+    return result
+
+
+def build_markdown(category, pairs, exported_at):
+    """카테고리 하나에 속한 프롬프트들을 Markdown 글 한 편으로 만든다."""
+    lines = [
+        f"# {category} 프롬프트",
+        "",
+        f"- 내보낸 시각: {exported_at}",
+        f"- 프롬프트 수: {len(pairs)}개",
+        "",
+    ]
+    for number, prompt in pairs:
+        star = ""
+        if prompt["favorite"]:
+            star = " ⭐"
+        fence = "```"
+        while fence in prompt["content"]:  # 내용 안에 ``` 가 있으면 더 긴 울타리로 감싼다
+            fence += "`"
+        lines.append(f"## {number}. {prompt['title']}{star}")
+        lines.append("")
+        lines.append(f"- 조회수: {prompt['views']}회")
+        lines.append("")
+        lines.append(fence + "text")
+        lines.append(prompt["content"])
+        lines.append(fence)
+        lines.append("")
+    return "\n".join(lines)
+
+
+def export_markdown(prompts):
+    """카테고리마다 Markdown 파일을 1개씩 만든다. 내보낼 때마다 exports 안에 '날짜_시각' 폴더를 새로 만든다."""
+    print_title("카테고리별 Markdown 내보내기")
+    if not prompts:
+        print("내보낼 프롬프트가 없습니다.")
+        return
+
+    now = datetime.now()
+    folder = EXPORT_DIR / now.strftime("%Y%m%d_%H%M%S")
+    exported_at = now.strftime("%Y-%m-%d %H:%M")
+    file_count = 0
+    try:
+        folder.mkdir(parents=True, exist_ok=True)
+        for position, category in enumerate(get_categories(prompts), start=1):
+            pairs = find_by_category(prompts, category)
+            if not pairs:
+                continue  # 프롬프트가 없는 카테고리는 파일을 만들지 않는다
+            path = folder / f"{position:02d}_{safe_filename(category)}.md"
+            with open(path, "w", encoding="utf-8") as file:
+                file.write(build_markdown(category, pairs, exported_at))
+            file_count += 1
+            print(f"- {path.name} ({len(pairs)}개)")
+    except OSError as error:
+        print(f"내보내지 못했습니다: {error}")
+        return
+    print(f"\n{file_count}개 파일을 만들었습니다: exports/{folder.name}/")
+
+
 # ============================================================
 # 메뉴와 프로그램 시작점
 # ============================================================
@@ -561,6 +629,7 @@ def show_menu():
     print(f"10. 인기 프롬프트 TOP {TOP_LIMIT}")
     print("11. JSON 파일로 저장")
     print("12. JSON 파일에서 불러오기")
+    print("13. 카테고리별 Markdown 내보내기")
     print("0. 종료")
 
 
@@ -597,6 +666,8 @@ def main():
             save_to_json(prompts)
         elif choice == "12":
             load_from_json(prompts)
+        elif choice == "13":
+            export_markdown(prompts)
         elif choice == "0":
             print("\n프로그램을 종료합니다. JSON으로 저장하지 않은 변경 내용은 초기화됩니다.")
             break

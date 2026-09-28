@@ -11,3 +11,6 @@ venv/
 .idea/
 .DS_Store
 Thumbs.db
+
+# 프로그램이 실행 중에 만드는 파일 (보너스 1)
+prompts.json

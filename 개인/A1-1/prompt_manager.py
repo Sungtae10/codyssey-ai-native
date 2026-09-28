@@ -6,6 +6,9 @@ Codyssey AI 네이티브 과정 A1-1 | Python & Git 기초
 실행 방법: python prompt_manager.py
 """
 
+import json  # 보너스 1: JSON 파일 저장과 불러오기
+from pathlib import Path  # 보너스 1: 파일과 폴더 경로 다루기
+
 
 # ============================================================
 # 상수: 프로그램 전체에서 쓰는 고정 값
@@ -13,6 +16,8 @@ Codyssey AI 네이티브 과정 A1-1 | Python & Git 기초
 CATEGORIES = ["텍스트 생성", "이미지 생성", "영상 생성", "페르소나", "자동화", "기타"]
 LINE = "─" * 44
 TOP_LIMIT = 5  # 보너스 2: 인기 프롬프트 목록에 보여 줄 개수
+BASE_DIR = Path(__file__).resolve().parent  # 보너스 1: 이 파일(prompt_manager.py)이 있는 폴더
+DATA_FILE = BASE_DIR / "prompts.json"  # 보너스 1: JSON 저장 파일 위치
 
 
 # ============================================================
@@ -460,6 +465,83 @@ def show_top_prompts(prompts):
 
 
 # ============================================================
+# 보너스 1: JSON 저장·불러오기, Markdown 내보내기
+# ============================================================
+def is_valid_prompt(item):
+    """JSON에서 읽은 값 하나가 프롬프트 모양(제목, 내용, 카테고리가 비어 있지 않은 글자)인지 검사한다."""
+    if not isinstance(item, dict):
+        return False
+    for key in ("title", "content", "category"):
+        value = item.get(key)
+        if not isinstance(value, str) or not value.strip():
+            return False
+    return True
+
+
+def read_views(item):
+    """조회수가 0 이상의 정수일 때만 그대로 쓰고, 이상한 값이면 0으로 둔다."""
+    views = item.get("views", 0)
+    if isinstance(views, int) and not isinstance(views, bool) and views >= 0:
+        return views
+    return 0
+
+
+def save_to_json(prompts):
+    """현재 프롬프트 목록을 prompts.json 파일로 저장한다. 한글은 그대로, 들여쓰기를 넣어 보기 좋게 저장한다."""
+    print_title("JSON 파일로 저장")
+    try:
+        with open(DATA_FILE, "w", encoding="utf-8") as file:
+            json.dump(prompts, file, ensure_ascii=False, indent=2)
+    except OSError as error:
+        print(f"저장하지 못했습니다: {error}")
+        return
+    print(f"{len(prompts)}개의 프롬프트를 저장했습니다. ({DATA_FILE.name})")
+    print("다음에 실행할 때 12번 메뉴로 불러올 수 있습니다.")
+
+
+def load_from_json(prompts):
+    """prompts.json을 읽어 현재 목록을 파일 내용으로 바꾼다. 바꾸기 전에 y/n으로 한 번 더 묻는다."""
+    print_title("JSON 파일에서 불러오기")
+    if not DATA_FILE.exists():
+        print(f"저장된 파일({DATA_FILE.name})이 없습니다. 먼저 11번 메뉴로 저장해 주세요.")
+        return
+    try:
+        with open(DATA_FILE, encoding="utf-8") as file:
+            data = json.load(file)
+    except (OSError, ValueError):
+        print("파일을 읽지 못했습니다. 파일 내용이 올바른 JSON인지 확인해 주세요.")
+        return
+    if not isinstance(data, list):
+        print("파일 형식이 맞지 않습니다. 프롬프트 목록(리스트)이 아닙니다.")
+        return
+
+    loaded = []
+    for item in data:
+        if is_valid_prompt(item):
+            prompt = make_prompt(
+                item["title"].strip(),
+                item["content"],
+                item["category"].strip(),
+                favorite=item.get("favorite") is True,
+                views=read_views(item),
+            )
+            loaded.append(prompt)
+    if not loaded:
+        print("불러올 수 있는 프롬프트가 없습니다.")
+        return
+
+    skipped = len(data) - len(loaded)
+    if not ask_yes_no(f"지금 목록({len(prompts)}개)을 파일 내용({len(loaded)}개)으로 바꿀까요? (y/n): "):
+        print("불러오기를 취소했습니다.")
+        return
+    prompts.clear()  # main()이 쓰는 리스트를 그대로 두고, 안의 내용만 비운 뒤 다시 채운다
+    prompts.extend(loaded)
+    print(f"{len(loaded)}개의 프롬프트를 불러왔습니다.")
+    if skipped > 0:
+        print(f"(형식이 맞지 않는 {skipped}개는 건너뛰었습니다)")
+
+
+# ============================================================
 # 메뉴와 프로그램 시작점
 # ============================================================
 def show_menu():
@@ -477,6 +559,8 @@ def show_menu():
     print("8. 프롬프트 수정")
     print("9. 프롬프트 삭제")
     print(f"10. 인기 프롬프트 TOP {TOP_LIMIT}")
+    print("11. JSON 파일로 저장")
+    print("12. JSON 파일에서 불러오기")
     print("0. 종료")
 
 
@@ -509,8 +593,12 @@ def main():
             delete_prompt(prompts)
         elif choice == "10":
             show_top_prompts(prompts)
+        elif choice == "11":
+            save_to_json(prompts)
+        elif choice == "12":
+            load_from_json(prompts)
         elif choice == "0":
-            print("\n프로그램을 종료합니다. 실행 중에 추가하거나 바꾼 내용은 초기화됩니다.")
+            print("\n프로그램을 종료합니다. JSON으로 저장하지 않은 변경 내용은 초기화됩니다.")
             break
         else:
             print("잘못된 입력입니다. 메뉴에 있는 번호를 입력해 주세요.")

@@ -4,7 +4,7 @@
 
 Codyssey AI 네이티브 과정 **A1-1 미션(Python & Git 기초)** 결과물입니다.
 터미널에서 메뉴 번호를 입력해 프롬프트를 추가하고, 목록·카테고리·검색으로 찾고, 자주 쓰는 프롬프트는 즐겨찾기로 모아 둡니다.
-외부 라이브러리 없이 파이썬 기본 문법만으로 만들었습니다.
+필수 기능은 외부 라이브러리 없이 파이썬 기본 문법만으로 만들었고, 보너스 기능에만 파이썬에 기본으로 들어 있는 표준 라이브러리(`json`, `pathlib`, `datetime`)를 썼습니다. 따로 설치할 패키지는 없습니다.
 
 ## 실행 방법
 
@@ -18,7 +18,8 @@ Codyssey AI 네이티브 과정 **A1-1 미션(Python & Git 기초)** 결과물�
 - 실행하면 메뉴가 나오고, 번호를 입력하면 그 기능이 실행됩니다.
 - 기능이 끝나면 메뉴로 돌아오고, `0`을 입력하면 종료합니다.
 - 메뉴에 없는 값(예: `abc`, `99`)을 입력하면 안내 메시지를 보여 주고 메뉴를 다시 출력합니다.
-- 추가하거나 바꾼 내용은 **실행 중에만 유지**되고, 종료하면 처음 상태로 돌아갑니다.
+- 추가하거나 바꾼 내용은 **실행 중에만 유지**되고, 종료하면 처음 상태로 돌아갑니다. (보너스: 11번으로 저장해 두면 다음 실행에서 12번으로 불러올 수 있습니다)
+- 내용은 한 줄로 입력합니다. 여러 줄짜리 프롬프트는 기본 데이터처럼 코드에 넣거나 JSON 파일로 불러오면 줄바꿈이 그대로 유지됩니다.
 
 ## 기능 목록
 
@@ -31,9 +32,40 @@ Codyssey AI 네이티브 과정 **A1-1 미션(Python & Git 기초)** 결과물�
 | 5 | 프롬프트 상세 보기 | 번호를 입력하면 제목, 카테고리, 즐겨찾기 여부, 내용 전체를 출력, 잘못된 번호는 안내 |
 | 6 | 즐겨찾기 관리 | 번호를 입력하면 즐겨찾기 추가, 같은 번호를 한 번 더 입력하면 해제 |
 | 7 | 즐겨찾기 목록 | 즐겨찾기한 프롬프트만 모아서 출력, 없으면 안내 |
+| 8 | 프롬프트 수정 (보너스 2) | 번호를 고른 뒤 제목, 내용, 카테고리를 바꿈 (아무것도 입력하지 않은 항목은 그대로) |
+| 9 | 프롬프트 삭제 (보너스 2) | 번호를 고른 뒤 y/n 확인을 받고 삭제 |
+| 10 | 인기 프롬프트 TOP 5 (보너스 2) | 상세 보기(5번) 조회수가 많은 순서로 최대 5개 출력 |
+| 11 | JSON 파일로 저장 (보너스 1) | 현재 목록을 `prompts.json` 으로 저장 |
+| 12 | JSON 파일에서 불러오기 (보너스 1) | `prompts.json` 을 읽어 현재 목록을 바꿈 (y/n 확인, 형식이 틀린 항목은 건너뜀) |
+| 13 | 카테고리별 Markdown 내보내기 (보너스 1) | `exports/날짜_시각/` 폴더에 카테고리마다 `.md` 파일을 1개씩 만듦 |
 | 0 | 종료 | 프로그램 종료 |
 
 > 카테고리, 검색, 즐겨찾기 결과 앞의 번호는 **전체 목록 번호**입니다. 이 번호를 5번(상세 보기)이나 6번(즐겨찾기 관리)에 그대로 입력하면 됩니다.
+
+## 보너스 기능 상세
+
+**보너스 1: 저장, 불러오기, 내보내기**
+
+- 저장 파일은 `prompt_manager.py` 와 같은 폴더의 `prompts.json` 입니다. 한글이 그대로 보이도록 저장합니다.
+- 불러오기 전에 y/n으로 한 번 더 묻고, 제목·내용·카테고리가 비어 있는 항목처럼 형식이 틀린 데이터는 건너뜁니다.
+- Markdown은 내보낼 때마다 새 폴더를 만들어 예전 파일과 섞이지 않게 했습니다. 파일 이름 앞 번호는 카테고리 순서이고, 프롬프트가 없는 카테고리는 파일을 만들지 않습니다.
+
+```
+exports/
+└── 20261001_143000/
+    ├── 01_텍스트_생성.md
+    ├── 03_영상_생성.md
+    └── 04_페르소나.md
+```
+
+- `prompts.json` 과 `exports/` 는 실행할 때마다 새로 생기는 결과물이라 `.gitignore` 로 Git에서 제외했습니다.
+
+**보너스 2: 관리(CRUD)와 사용 기록**
+
+- 수정: 바꿀 항목만 입력하고, 카테고리는 0번을 고르면 그대로 둡니다.
+- 삭제: y/n 확인 후 지우며, 뒤에 있던 프롬프트 번호는 하나씩 앞당겨집니다.
+- 조회수: 상세 보기(5번)로 열 때마다 `views` 가 1씩 올라갑니다.
+- TOP 5: 조회수가 많은 순서로 보여 주고, 조회수가 같으면 먼저 등록된 프롬프트가 앞에 옵니다.
 
 ## 등록된 프롬프트 카테고리
 
@@ -60,12 +92,14 @@ prompts = [
         "content": "당신은 기술경영 분야 논문 리뷰 보조 연구원 \"Paper Lens\"입니다. ...",
         "category": "페르소나",
         "favorite": True,
+        "views": 0,  # 보너스 2: 상세 보기 조회수
     },
     {
         "title": "FIFA 2026 뉴스 3줄 요약 (B2-2, Make+Gemini)",
         "content": "FIFA 2026 관련 뉴스를 한국어 3줄로만 요약해줘. ...",
         "category": "자동화",
         "favorite": False,
+        "views": 0,
     },
 ]
 ```
@@ -77,10 +111,12 @@ prompts = [
 | 구분 | 함수 | 하는 일 |
 |---|---|---|
 | 기본 데이터 | `make_prompt()`, `create_default_prompts()` | 프롬프트 딕셔너리 만들기, 기본 6개 등록 |
-| 입력 도우미 | `input_text()`, `to_number()`, `choose_category()`, `select_prompt()` | 빈 값 재입력, 숫자 변환, 카테고리 선택, 번호 검사 |
-| 출력 도우미 | `print_title()`, `format_prompt_line()`, `print_all_lines()`, `print_prompt_lines()` | 제목 줄과 목록 한 줄 모양 통일 |
+| 입력 도우미 | `input_text()`, `to_number()`, `ask_yes_no()`, `choose_category()`, `select_prompt()` | 빈 값 재입력, 숫자 변환, y/n 확인, 카테고리 선택, 번호 검사 |
+| 출력 도우미 | `print_title()`, `format_prompt_line()`, `print_all_lines()`, `print_prompt_lines()`, `preview()` | 제목 줄과 목록 한 줄 모양 통일 |
 | 찾기 | `get_categories()`, `find_by_category()`, `find_by_keyword()`, `find_favorites()` | 조건에 맞는 프롬프트 모으기 |
-| 기능 | `add_prompt()`, `show_list()`, `show_by_category()`, `search_prompt()`, `show_detail()`, `toggle_favorite()`, `show_favorites()` | 메뉴 1~7번 |
+| 필수 기능 | `add_prompt()`, `show_list()`, `show_by_category()`, `search_prompt()`, `show_detail()`, `toggle_favorite()`, `show_favorites()` | 메뉴 1~7번 |
+| 보너스 2 | `edit_prompt()`, `delete_prompt()`, `show_top_prompts()` | 메뉴 8~10번 |
+| 보너스 1 | `save_to_json()`, `load_from_json()`, `export_markdown()` | 메뉴 11~13번 |
 | 시작점 | `show_menu()`, `main()` | 메뉴 출력, 입력한 번호에 맞는 기능 호출 반복 |
 
 ## 프로젝트 구조
@@ -89,7 +125,7 @@ prompts = [
 codyssey-a1-prompt-manager/
 ├── prompt_manager.py   # 프로그램 코드 전체
 ├── README.md           # 프로그램 설명서 (이 문서)
-└── .gitignore          # Git에 올리지 않을 파일 목록
+└── .gitignore          # Git에 올리지 않을 파일 목록 (prompts.json, exports/ 포함)
 ```
 
 ## Git 작업 방식
@@ -123,8 +159,10 @@ codyssey-a1-prompt-manager/
 | 상세 보기: 전체 내용, 잘못된 번호 안내 | ✅ | `show_detail()` |
 | 즐겨찾기 추가/해제, 즐겨찾기 목록 | ✅ | `toggle_favorite()`, `show_favorites()` |
 | 기능별 함수 분리 | ✅ | 코드 구조 표 |
-| 외부 라이브러리 없이 기본 문법만 사용 | ✅ | `import` 문 없음 |
+| 필수 기능은 외부 라이브러리 없이 기본 문법만 사용 | ✅ | 필수 기능 함수는 `import` 한 모듈을 쓰지 않음 (보너스만 표준 라이브러리 사용) |
 | 의미 있는 커밋 10개 이상, 브랜치 생성·병합 기록 | ✅ | `git log --oneline --graph` |
+| 보너스 1: JSON 저장·불러오기, 카테고리별 Markdown 내보내기 | ✅ | `save_to_json()`, `load_from_json()`, `export_markdown()` |
+| 보너스 2: 수정·삭제, 조회수 기록, 조회수 TOP 목록 | ✅ | `edit_prompt()`, `delete_prompt()`, `show_detail()`, `show_top_prompts()` |
 
 ## 작성자
 

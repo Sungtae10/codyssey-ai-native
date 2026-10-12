@@ -1,0 +1,474 @@
+{
+  "meta": {
+    "is_sample": true,
+    "notice": "예시 데이터입니다. 실제 기업이나 실제 공시 내용이 아닙니다.",
+    "schema_version": "0.1",
+    "updated": "2026-10-07"
+  },
+  "labels": {
+    "service_name": "AI Promise",
+    "service_subtitle": "기업 AI 약속 검증",
+    "tagline": "면접 전 5분 기업 AI 체크",
+    "disclaimers": [
+      "공시 범위 안에서 확인한 결과입니다.",
+      "AI가 생성한 분석입니다."
+    ],
+    "verdicts": {
+      "evidence_found": {
+        "label": "근거 확인",
+        "short_label": "근거 확인",
+        "meaning": "약속과 같은 대상이 후속 공시에 실행한 것으로 적혀 있음"
+      },
+      "partial": {
+        "label": "일부 확인",
+        "short_label": "일부 확인",
+        "meaning": "관련 활동은 있으나 범위, 시점, 수치가 약속에 못 미치거나 불분명함"
+      },
+      "not_verifiable": {
+        "label": "공시에서 확인 불가",
+        "short_label": "확인 불가",
+        "meaning": "읽은 공시 범위에서 찾지 못함. 미이행이라는 뜻이 아님"
+      },
+      "company_reported_not_pursued": {
+        "label": "회사가 미추진으로 공시",
+        "short_label": "미추진 공시",
+        "meaning": "회사가 추진하지 않았다고 직접 적음"
+      }
+    },
+    "promise_types": {
+      "specific": {
+        "label": "구체적 약속",
+        "note": "판정하고 개수에 넣습니다."
+      },
+      "directional": {
+        "label": "방향성 약속",
+        "note": "방향이 넓어 판정하지 않고 관련 활동만 보여줍니다. 개수에는 넣지 않습니다."
+      }
+    },
+    "not_verifiable_message": "읽은 공시 범위에서 관련 내용을 찾지 못했습니다. 면접에서 추진 방향을 질문해 보세요.",
+    "no_related_activity_message": "읽은 공시 범위에서 관련 활동을 찾지 못했습니다.",
+    "citation_verified_label": "원문 확인됨",
+    "interview_card_notice": "완성된 답변이 아니라 근거가 붙은 소재입니다. 자신의 말로 바꿔 쓰세요."
+  },
+  "companies": [
+    {
+      "id": "demo-a",
+      "name": "예시전자 (가상 회사)",
+      "reports": {
+        "promise": [
+          {
+            "title": "2024 사업보고서",
+            "url": "https://example.com/sample/demo-a/2024-annual"
+          }
+        ],
+        "evidence": [
+          {
+            "title": "2025 사업보고서",
+            "url": "https://example.com/sample/demo-a/2025-annual"
+          },
+          {
+            "title": "2026 반기보고서",
+            "url": "https://example.com/sample/demo-a/2026-half"
+          }
+        ]
+      },
+      "promises": [
+        {
+          "id": "demo-a-p1",
+          "type": "specific",
+          "title": "A공장 조립 라인 AI 외관 검사 도입",
+          "sentence": "2025년 중 A공장 조립 라인에 AI 기반 외관 검사 시스템을 도입할 계획입니다.",
+          "source": {
+            "report": "2024 사업보고서",
+            "section": "II. 사업의 내용",
+            "url": "https://example.com/sample/demo-a/2024-annual#business"
+          },
+          "verdict": "evidence_found",
+          "reason": "약속한 대상인 A공장 조립 라인의 AI 외관 검사가 후속 보고서에 적용한 것으로 적혀 있습니다. 시점도 약속한 2025년 안입니다.",
+          "evidence": [
+            {
+              "sentence": "당기 중 A공장 조립 2개 라인에 AI 기반 외관 검사 시스템을 적용하였습니다.",
+              "source": {
+                "report": "2025 사업보고서",
+                "section": "II. 사업의 내용",
+                "url": "https://example.com/sample/demo-a/2025-annual#business"
+              },
+              "citation_verified": true
+            }
+          ],
+          "search_attempts": 1
+        },
+        {
+          "id": "demo-a-p2",
+          "type": "specific",
+          "title": "고객센터 생성형 AI 상담 서비스 출시",
+          "sentence": "2025년 상반기까지 고객센터에 생성형 AI 상담 서비스를 출시할 예정입니다.",
+          "source": {
+            "report": "2024 사업보고서",
+            "section": "II. 사업의 내용",
+            "url": "https://example.com/sample/demo-a/2024-annual#business"
+          },
+          "verdict": "evidence_found",
+          "reason": "약속한 서비스가 약속한 기한인 2025년 상반기 안에 출시된 것으로 적혀 있습니다.",
+          "evidence": [
+            {
+              "sentence": "2025년 4월 고객센터에 생성형 AI 상담 서비스를 출시하였습니다.",
+              "source": {
+                "report": "2025 사업보고서",
+                "section": "II. 사업의 내용",
+                "url": "https://example.com/sample/demo-a/2025-annual#business"
+              },
+              "citation_verified": true
+            }
+          ],
+          "search_attempts": 1
+        },
+        {
+          "id": "demo-a-p3",
+          "type": "specific",
+          "title": "AI 전환 전담 조직 신설",
+          "sentence": "AI 전환을 전담하는 조직을 2025년에 신설할 계획입니다.",
+          "source": {
+            "report": "2024 사업보고서",
+            "section": "IV. 이사의 경영진단 및 분석의견",
+            "url": "https://example.com/sample/demo-a/2024-annual#mda"
+          },
+          "verdict": "evidence_found",
+          "reason": "약속한 전담 조직이 2025년에 신설된 것으로 적혀 있습니다.",
+          "evidence": [
+            {
+              "sentence": "2025년 1월 대표이사 직속 AI전환실을 신설하였습니다.",
+              "source": {
+                "report": "2025 사업보고서",
+                "section": "IV. 이사의 경영진단 및 분석의견",
+                "url": "https://example.com/sample/demo-a/2025-annual#mda"
+              },
+              "citation_verified": true
+            }
+          ],
+          "search_attempts": 1
+        },
+        {
+          "id": "demo-a-p4",
+          "type": "specific",
+          "title": "물류센터 3곳 AI 수요 예측 적용",
+          "sentence": "국내 물류센터 3곳에 AI 수요 예측 시스템을 2025년까지 적용할 계획입니다.",
+          "source": {
+            "report": "2024 사업보고서",
+            "section": "II. 사업의 내용",
+            "url": "https://example.com/sample/demo-a/2024-annual#business"
+          },
+          "verdict": "partial",
+          "reason": "관련 활동은 확인됩니다. 다만 약속한 3곳 중 1곳의 시범 적용만 적혀 있어 범위가 약속에 못 미칩니다.",
+          "evidence": [
+            {
+              "sentence": "국내 물류센터 1곳에 AI 수요 예측 시스템을 시범 적용하였습니다.",
+              "source": {
+                "report": "2025 사업보고서",
+                "section": "II. 사업의 내용",
+                "url": "https://example.com/sample/demo-a/2025-annual#business"
+              },
+              "citation_verified": true
+            }
+          ],
+          "search_attempts": 2
+        },
+        {
+          "id": "demo-a-p5",
+          "type": "specific",
+          "title": "해외 법인 5곳 사내 AI 번역 도구 도입",
+          "sentence": "2025년 중 해외 법인 5곳에 사내 AI 번역 도구를 도입할 예정입니다.",
+          "source": {
+            "report": "2024 사업보고서",
+            "section": "II. 사업의 내용",
+            "url": "https://example.com/sample/demo-a/2024-annual#business"
+          },
+          "verdict": "not_verifiable",
+          "reason": "읽은 공시 범위(2025 사업보고서, 2026 반기보고서)에서 관련 내용을 찾지 못했습니다. 검색어를 바꿔 2번 다시 찾았지만 결과가 같았습니다.",
+          "evidence": [],
+          "search_attempts": 3
+        },
+        {
+          "id": "demo-a-p6",
+          "type": "specific",
+          "title": "AI 학습용 데이터 판매업 추진 (정관 추가 사업)",
+          "sentence": "신규 사업목적으로 추가한 AI 학습용 데이터 판매업을 2025년부터 추진할 계획입니다.",
+          "source": {
+            "report": "2024 사업보고서",
+            "section": "I. 회사의 개요 > 5. 정관에 관한 사항",
+            "url": "https://example.com/sample/demo-a/2024-annual#articles"
+          },
+          "verdict": "company_reported_not_pursued",
+          "reason": "회사가 후속 보고서에 이 사업을 추진하지 않고 있다고 직접 적었습니다.",
+          "evidence": [
+            {
+              "sentence": "AI 학습용 데이터 판매업은 시장 여건 변화로 현재 추진하지 않고 있으며, 향후 1년 이내 추진 계획은 없습니다.",
+              "source": {
+                "report": "2026 반기보고서",
+                "section": "I. 회사의 개요 > 5. 정관에 관한 사항",
+                "url": "https://example.com/sample/demo-a/2026-half#articles"
+              },
+              "citation_verified": true
+            }
+          ],
+          "search_attempts": 1
+        },
+        {
+          "id": "demo-a-d1",
+          "type": "directional",
+          "title": "AI로 제조 경쟁력 강화",
+          "sentence": "AI를 활용하여 제조 경쟁력을 지속적으로 강화해 나가겠습니다.",
+          "source": {
+            "report": "2024 사업보고서",
+            "section": "IV. 이사의 경영진단 및 분석의견",
+            "url": "https://example.com/sample/demo-a/2024-annual#mda"
+          },
+          "verdict": null,
+          "reason": null,
+          "evidence": [
+            {
+              "sentence": "당기 중 A공장 조립 2개 라인에 AI 기반 외관 검사 시스템을 적용하였습니다.",
+              "source": {
+                "report": "2025 사업보고서",
+                "section": "II. 사업의 내용",
+                "url": "https://example.com/sample/demo-a/2025-annual#business"
+              },
+              "citation_verified": true
+            }
+          ],
+          "search_attempts": 1
+        },
+        {
+          "id": "demo-a-d2",
+          "type": "directional",
+          "title": "AI 인재 확보",
+          "sentence": "AI 분야 우수 인재 확보에 힘쓰겠습니다.",
+          "source": {
+            "report": "2024 사업보고서",
+            "section": "IV. 이사의 경영진단 및 분석의견",
+            "url": "https://example.com/sample/demo-a/2024-annual#mda"
+          },
+          "verdict": null,
+          "reason": null,
+          "evidence": [],
+          "search_attempts": 3
+        }
+      ],
+      "interview_card": {
+        "issues": [
+          {
+            "text": "A공장 조립 2개 라인에 AI 외관 검사를 적용함 (근거 확인)",
+            "promise_id": "demo-a-p1"
+          },
+          {
+            "text": "물류센터 AI 수요 예측은 3곳 계획 중 1곳 시범 적용까지 확인됨 (일부 확인)",
+            "promise_id": "demo-a-p4"
+          },
+          {
+            "text": "대표이사 직속 AI전환실을 신설함 (근거 확인)",
+            "promise_id": "demo-a-p3"
+          }
+        ],
+        "talking_points": [
+          {
+            "text": "공시에서 A공장 조립 2개 라인에 AI 외관 검사를 적용했다고 밝힌 점에 주목했습니다. 이 경험을 다른 라인으로 넓히는 일에 기여하고 싶습니다.",
+            "promise_id": "demo-a-p1",
+            "evidence_url": "https://example.com/sample/demo-a/2025-annual#business"
+          },
+          {
+            "text": "고객센터 생성형 AI 상담 서비스가 2025년 4월에 출시된 것을 확인했습니다. 출시 이후의 품질 관리 방식에 관심이 있습니다.",
+            "promise_id": "demo-a-p2",
+            "evidence_url": "https://example.com/sample/demo-a/2025-annual#business"
+          },
+          {
+            "text": "AI전환실이 대표이사 직속으로 신설된 점에서, 회사가 AI 전환을 전사 과제로 다룬다고 이해했습니다.",
+            "promise_id": "demo-a-p3",
+            "evidence_url": "https://example.com/sample/demo-a/2025-annual#mda"
+          }
+        ],
+        "questions": [
+          {
+            "text": "해외 법인의 사내 AI 번역 도구 도입 계획은 공시에서 후속 내용을 확인하기 어려웠습니다. 현재 추진 방향이 궁금합니다.",
+            "promise_id": "demo-a-p5"
+          },
+          {
+            "text": "물류센터 AI 수요 예측은 1곳 시범 적용까지 확인했습니다. 나머지 센터로 확대하는 일정이 궁금합니다.",
+            "promise_id": "demo-a-p4"
+          }
+        ]
+      }
+    },
+    {
+      "id": "demo-b",
+      "name": "샘플모터스 (가상 회사)",
+      "reports": {
+        "promise": [
+          {
+            "title": "2024 사업보고서",
+            "url": "https://example.com/sample/demo-b/2024-annual"
+          }
+        ],
+        "evidence": [
+          {
+            "title": "2025 사업보고서",
+            "url": "https://example.com/sample/demo-b/2025-annual"
+          },
+          {
+            "title": "2026 반기보고서",
+            "url": "https://example.com/sample/demo-b/2026-half"
+          }
+        ]
+      },
+      "promises": [
+        {
+          "id": "demo-b-p1",
+          "type": "specific",
+          "title": "용접 공정 AI 품질 예측 모델 적용",
+          "sentence": "2025년 중 용접 공정에 AI 품질 예측 모델을 적용할 계획입니다.",
+          "source": {
+            "report": "2024 사업보고서",
+            "section": "II. 사업의 내용",
+            "url": "https://example.com/sample/demo-b/2024-annual#business"
+          },
+          "verdict": "evidence_found",
+          "reason": "약속한 대상인 용접 공정의 AI 품질 예측 모델이 후속 보고서에 적용해 운영 중인 것으로 적혀 있습니다.",
+          "evidence": [
+            {
+              "sentence": "용접 공정에 AI 품질 예측 모델을 적용하여 운영하고 있습니다.",
+              "source": {
+                "report": "2025 사업보고서",
+                "section": "II. 사업의 내용",
+                "url": "https://example.com/sample/demo-b/2025-annual#business"
+              },
+              "citation_verified": true
+            }
+          ],
+          "search_attempts": 1
+        },
+        {
+          "id": "demo-b-p2",
+          "type": "specific",
+          "title": "협력사 20곳 AI 납기 관리 시스템 연동",
+          "sentence": "협력사 20곳과 AI 기반 납기 관리 시스템을 2025년까지 연동할 예정입니다.",
+          "source": {
+            "report": "2024 사업보고서",
+            "section": "II. 사업의 내용",
+            "url": "https://example.com/sample/demo-b/2024-annual#business"
+          },
+          "verdict": "partial",
+          "reason": "관련 활동은 확인됩니다. 다만 약속한 20곳 중 8곳의 연동만 적혀 있어 범위가 약속에 못 미칩니다.",
+          "evidence": [
+            {
+              "sentence": "협력사 8곳과 AI 기반 납기 관리 시스템을 연동하였습니다.",
+              "source": {
+                "report": "2025 사업보고서",
+                "section": "II. 사업의 내용",
+                "url": "https://example.com/sample/demo-b/2025-annual#business"
+              },
+              "citation_verified": true
+            }
+          ],
+          "search_attempts": 1
+        },
+        {
+          "id": "demo-b-p3",
+          "type": "specific",
+          "title": "차량용 AI 음성 비서 시범 서비스",
+          "sentence": "2025년 하반기에 차량용 AI 음성 비서의 시범 서비스를 시작할 계획입니다.",
+          "source": {
+            "report": "2024 사업보고서",
+            "section": "II. 사업의 내용",
+            "url": "https://example.com/sample/demo-b/2024-annual#business"
+          },
+          "verdict": "not_verifiable",
+          "reason": "읽은 공시 범위(2025 사업보고서, 2026 반기보고서)에서 관련 내용을 찾지 못했습니다. 검색어를 바꿔 2번 다시 찾았지만 결과가 같았습니다.",
+          "evidence": [],
+          "search_attempts": 3
+        },
+        {
+          "id": "demo-b-p4",
+          "type": "specific",
+          "title": "전 직원 AI 활용 교육",
+          "sentence": "2025년까지 전 직원을 대상으로 AI 활용 교육을 실시할 계획입니다.",
+          "source": {
+            "report": "2024 사업보고서",
+            "section": "IV. 이사의 경영진단 및 분석의견",
+            "url": "https://example.com/sample/demo-b/2024-annual#mda"
+          },
+          "verdict": "evidence_found",
+          "reason": "약속한 교육이 약속한 기한 안에 전 직원 대상으로 실시된 것으로 적혀 있습니다.",
+          "evidence": [
+            {
+              "sentence": "당기 중 전 직원을 대상으로 AI 활용 교육을 실시하였습니다.",
+              "source": {
+                "report": "2025 사업보고서",
+                "section": "IV. 이사의 경영진단 및 분석의견",
+                "url": "https://example.com/sample/demo-b/2025-annual#mda"
+              },
+              "citation_verified": true
+            }
+          ],
+          "search_attempts": 1
+        },
+        {
+          "id": "demo-b-d1",
+          "type": "directional",
+          "title": "AI로 미래 모빌리티 경쟁력 확보",
+          "sentence": "AI 기술을 활용한 미래 모빌리티 경쟁력 확보에 주력하겠습니다.",
+          "source": {
+            "report": "2024 사업보고서",
+            "section": "IV. 이사의 경영진단 및 분석의견",
+            "url": "https://example.com/sample/demo-b/2024-annual#mda"
+          },
+          "verdict": null,
+          "reason": null,
+          "evidence": [],
+          "search_attempts": 3
+        }
+      ],
+      "interview_card": {
+        "issues": [
+          {
+            "text": "용접 공정에 AI 품질 예측 모델을 적용해 운영 중임 (근거 확인)",
+            "promise_id": "demo-b-p1"
+          },
+          {
+            "text": "협력사 AI 납기 관리 연동은 20곳 계획 중 8곳까지 확인됨 (일부 확인)",
+            "promise_id": "demo-b-p2"
+          },
+          {
+            "text": "전 직원 대상 AI 활용 교육을 실시함 (근거 확인)",
+            "promise_id": "demo-b-p4"
+          }
+        ],
+        "talking_points": [
+          {
+            "text": "공시에서 용접 공정에 AI 품질 예측 모델을 적용해 운영한다고 밝힌 점에 주목했습니다. 품질 데이터를 다뤄 본 경험을 이 영역에 보태고 싶습니다.",
+            "promise_id": "demo-b-p1",
+            "evidence_url": "https://example.com/sample/demo-b/2025-annual#business"
+          },
+          {
+            "text": "협력사 8곳과 AI 납기 관리 시스템을 연동했다는 내용을 확인했습니다. 협력사까지 연결하는 방식이 인상 깊었습니다.",
+            "promise_id": "demo-b-p2",
+            "evidence_url": "https://example.com/sample/demo-b/2025-annual#business"
+          },
+          {
+            "text": "전 직원 AI 활용 교육을 실시했다는 점에서, 회사가 AI를 특정 부서의 일이 아닌 전사의 일로 다룬다고 이해했습니다.",
+            "promise_id": "demo-b-p4",
+            "evidence_url": "https://example.com/sample/demo-b/2025-annual#mda"
+          }
+        ],
+        "questions": [
+          {
+            "text": "차량용 AI 음성 비서 시범 서비스 계획은 공시에서 후속 내용을 확인하기 어려웠습니다. 현재 추진 방향이 궁금합니다.",
+            "promise_id": "demo-b-p3"
+          },
+          {
+            "text": "협력사 연동은 8곳까지 확인했습니다. 나머지 협력사로 확대하는 일정이 궁금합니다.",
+            "promise_id": "demo-b-p2"
+          }
+        ]
+      }
+    }
+  ]
+}

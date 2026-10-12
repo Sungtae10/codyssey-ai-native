@@ -1,0 +1,45 @@
+{
+ "service_name": "AI Promise",
+ "service_subtitle": "기업 AI 약속 검증",
+ "tagline": "면접 전 5분 기업 AI 체크",
+ "disclaimers": [
+  "공시 범위 안에서 확인한 결과입니다.",
+  "AI가 생성한 분석입니다."
+ ],
+ "verdicts": {
+  "evidence_found": {
+   "label": "근거 확인",
+   "short_label": "근거 확인",
+   "meaning": "약속과 같은 대상이 후속 공시에 실행한 것으로 적혀 있음"
+  },
+  "partial": {
+   "label": "일부 확인",
+   "short_label": "일부 확인",
+   "meaning": "관련 활동은 있으나 범위, 시점, 수치가 약속에 못 미치거나 불분명함"
+  },
+  "not_verifiable": {
+   "label": "공시에서 확인 불가",
+   "short_label": "확인 불가",
+   "meaning": "읽은 공시 범위에서 찾지 못함. 미이행이라는 뜻이 아님"
+  },
+  "company_reported_not_pursued": {
+   "label": "회사가 미추진으로 공시",
+   "short_label": "미추진 공시",
+   "meaning": "회사가 추진하지 않았다고 직접 적음"
+  }
+ },
+ "promise_types": {
+  "specific": {
+   "label": "구체적 약속",
+   "note": "판정하고 개수에 넣습니다."
+  },
+  "directional": {
+   "label": "방향성 약속",
+   "note": "방향이 넓어 판정하지 않고 관련 활동만 보여줍니다. 개수에는 넣지 않습니다."
+  }
+ },
+ "not_verifiable_message": "읽은 공시 범위에서 관련 내용을 찾지 못했습니다. 면접에서 추진 방향을 질문해 보세요.",
+ "no_related_activity_message": "읽은 공시 범위에서 관련 활동을 찾지 못했습니다.",
+ "citation_verified_label": "원문 확인됨",
+ "interview_card_notice": "완성된 답변이 아니라 근거가 붙은 소재입니다. 자신의 말로 바꿔 쓰세요."
+}

@@ -1,0 +1,17 @@
+# 키와 개인정보
+.env
+engine/.env
+eval/gold/*참여자*
+*명단*
+
+# 큰 파일과 다시 만들 수 있는 파일
+data/pdf/
+data/work/*/chroma_db/
+chroma_db/
+__pycache__/
+*.pyc
+tests/tmp/
+
+# 화면
+node_modules/
+.next/

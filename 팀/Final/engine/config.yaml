@@ -1,0 +1,50 @@
+# AI Promise 엔진 설정. 경로는 engine 폴더 기준입니다.
+
+llm:
+  extract_model: gpt-4o-mini        # 2~3단계 약속 추출·분류
+  judge_model: gpt-4o-mini          # 5단계 판정. 정확도가 낮으면 이 줄만 더 좋은 모델로 바꿔 다시 재 보세요
+  card_model: gpt-4o-mini           # 7단계 면접 카드
+  embed_model: text-embedding-3-small
+  temperature: 0
+
+paths:
+  pdf_dir: ../data/pdf                          # DART에서 받은 PDF 6개를 여기에
+  work_dir: ../data/work                        # 단계별 중간 결과 (저장소에 올려도 됨, chroma_db는 제외)
+  results_file: ../data/results/ai_promise_data.json   # 화면에 넣을 결과 파일
+  labels_file: labels.json                      # 화면 문구 (sample_data.json의 labels와 같음)
+  eval_dir: ../eval                             # 정답 매길 목록, 평가 결과
+
+sections: [I5, II, IV]   # 읽는 장: I5=정관에 관한 사항, II=사업의 내용, IV=이사의 경영진단 및 분석의견
+keywords: [AI, 인공지능, 머신러닝, 딥러닝, 생성형, 자동화, 지능형]   # 사람이 공시를 읽을 때 쓰는 검색어와 같게
+
+retrieval:
+  use_vector: true      # 의미 검색(ChromaDB) 함께 쓰기
+  top_windows: 8        # 검색 결과 상위 몇 곳을 볼지
+  max_candidates: 24    # 판정 때 AI에게 보여 줄 후보 문장 수
+  max_attempts: 3       # 근거를 못 찾으면 검색어를 바꿔 다시 찾는 횟수 (처음 포함)
+
+# url: DART에서 그 보고서를 열었을 때 주소창의 주소를 그대로 붙여 넣으세요. 화면의 "원문 링크"가 됩니다.
+companies:
+  samsung:
+    name: 삼성전자
+    promise_reports:
+      - {key: y2024, title: "2024 사업보고서", pdf: samsung_2024.pdf, url: ""}
+    evidence_reports:
+      - {key: y2025, title: "2025 사업보고서", pdf: samsung_2025.pdf, url: ""}
+      - {key: h2026, title: "2026 반기보고서", pdf: samsung_2026h1.pdf, url: ""}
+  skhynix:
+    name: SK하이닉스
+    promise_reports:
+      - {key: y2024, title: "2024 사업보고서", pdf: skhynix_2024.pdf, url: ""}
+    evidence_reports:
+      - {key: y2025, title: "2025 사업보고서", pdf: skhynix_2025.pdf, url: ""}
+      - {key: h2026, title: "2026 반기보고서", pdf: skhynix_2026h1.pdf, url: ""}
+
+# 장을 자동으로 못 찾을 때만 적습니다. 쪽 번호는 PDF 뷰어 기준(1부터, 양끝 포함).
+section_pages: {}
+# 예)
+# section_pages:
+#   samsung:
+#     y2024:
+#       II: [10, 85]
+#       IV: [130, 141]

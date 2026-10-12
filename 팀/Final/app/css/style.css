@@ -1,0 +1,276 @@
+/* =========================================================
+   AI Promise 화면 스타일
+   - 색은 모두 맨 위 "디자인 값"에서만 바꿔요.
+   - 다크: [data-theme="dark"], 라이트: [data-theme="light"]
+   ========================================================= */
+
+/* ---------- 1. 디자인 값 (여기만 바꾸면 전체가 바뀌어요) ---------- */
+:root {
+  --font: 'Noto Sans KR', system-ui, -apple-system, sans-serif;
+  --radius-lg: 18px;
+  --radius-md: 14px;
+  --radius-sm: 12px;
+  --page-max: 480px;          /* 큰 화면에서도 휴대폰 폭으로 보여줘요 */
+}
+
+[data-theme="dark"] {
+  --bg: #13161B;
+  --surface: #1C2027;
+  --chip: #262B33;
+  --line: #2C313A;
+  --text: #ECEEF1;
+  --sub: #A8AEB8;
+  --body: #C9CDD4;
+  --muted: #6F7680;
+  --cta: #ECEEF1;
+  --cta-text: #13161B;
+  --outside: #0B0D10;
+
+  /* 판정 4색 */
+  --confirmed: #5ED39A;   --confirmed-bg: #15301F;   --confirmed-line: #2F6B4D;
+  --partial: #F2A65A;     --partial-bg: #33240F;     --partial-line: #6B4A1F;
+  --not_found: #A3A9B3;   --not_found-bg: #262A31;   --not_found-line: #3A3F48;
+  --not_pursued: #9DAAFF; --not_pursued-bg: #1F2442; --not_pursued-line: #3A4380;
+}
+
+[data-theme="light"] {
+  --bg: #F5F6F8;
+  --surface: #FFFFFF;
+  --chip: #EEF0F3;
+  --line: #E1E4E9;
+  --text: #161A20;
+  --sub: #5A616C;
+  --body: #3A414C;
+  --muted: #8A919C;
+  --cta: #161A20;
+  --cta-text: #FFFFFF;
+  --outside: #E6E8EC;
+
+  --confirmed: #1E7A4C;   --confirmed-bg: #E3F3EA;   --confirmed-line: #A9D8BE;
+  --partial: #A85A00;     --partial-bg: #FCEBD5;     --partial-line: #EFC793;
+  --not_found: #5B6270;   --not_found-bg: #ECEEF1;   --not_found-line: #CDD1D7;
+  --not_pursued: #3F4FB8; --not_pursued-bg: #E5E8F8; --not_pursued-line: #B9C1EE;
+}
+
+/* ---------- 2. 기본 ---------- */
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font);
+  background: var(--outside);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  word-break: keep-all;          /* 한글이 단어 중간에서 끊기지 않게 */
+  overflow-wrap: break-word;
+}
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; }
+:focus-visible { outline: 2px solid var(--confirmed); outline-offset: 2px; }
+
+/* ---------- 3. 앱 틀: 위 고정 / 가운데 스크롤 / 아래 고정 ---------- */
+.app {
+  max-width: var(--page-max);
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0 auto;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+}
+.topbar {
+  position: sticky; top: 0; z-index: 10;
+  display: flex; justify-content: space-between; align-items: center;
+  min-height: 60px;
+  padding: 8px 18px;
+  background: var(--bg);
+}
+.content {
+  flex: 1;
+  padding: 8px 18px 24px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.bottombar {
+  position: sticky; bottom: 0; z-index: 10;
+  padding: 12px 18px calc(18px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--line);
+  background: var(--bg);
+}
+.bottombar.two { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+/* ---------- 4. 위쪽 바 ---------- */
+.brand { display: flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 700; }
+.brand svg { color: var(--confirmed); }
+.back {
+  display: flex; align-items: center; gap: 4px;
+  min-height: 44px; font-size: 14px; color: var(--sub);
+}
+.icon-btn {
+  width: 44px; height: 44px; padding: 0;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  background: var(--surface); color: var(--text);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+}
+
+/* ---------- 5. 공통 부품 ---------- */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 14px 16px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.card-title { font-size: 15px; font-weight: 700; margin: 0; }
+.eyebrow { font-size: 14px; color: var(--sub); margin: 0; }
+.headline { font-size: 26px; font-weight: 900; line-height: 1.35; margin: 0; }
+.headline .hl { color: var(--confirmed); }
+.lead { font-size: 15px; line-height: 1.65; color: var(--sub); margin: 0; }
+.note { font-size: 12px; line-height: 1.6; color: var(--sub); margin: 0; }
+.section-label { font-size: 14px; font-weight: 700; color: var(--sub); margin: 0; }
+
+.btn {
+  display: flex; justify-content: center; align-items: center; gap: 6px;
+  min-height: 54px; border-radius: var(--radius-md);
+  font-size: 15px; font-weight: 700; cursor: pointer;
+}
+.btn-primary { background: var(--cta); color: var(--cta-text); border: 0; }
+.btn-secondary { background: var(--surface); color: var(--text); border: 1px solid var(--line); }
+.btn-sm { min-height: 50px; font-size: 14px; font-weight: 500; }
+
+/* 판정 표시: class에 verdict-<코드>를 붙이면 색이 바뀌어요 */
+.verdict-text { font-size: 12px; font-weight: 700; color: var(--v); }
+.verdict-dot { width: 10px; height: 10px; flex: none; border-radius: 50%; background: var(--v); }
+.verdict-pill {
+  align-self: flex-start;
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13px; font-weight: 700;
+  padding: 5px 12px; border-radius: 999px;
+  color: var(--v); background: var(--v-bg); border: 1px solid var(--v-line);
+}
+.verdict-confirmed   { --v: var(--confirmed);   --v-bg: var(--confirmed-bg);   --v-line: var(--confirmed-line); }
+.verdict-partial     { --v: var(--partial);     --v-bg: var(--partial-bg);     --v-line: var(--partial-line); }
+.verdict-not_found   { --v: var(--not_found);   --v-bg: var(--not_found-bg);   --v-line: var(--not_found-line); }
+.verdict-not_pursued { --v: var(--not_pursued); --v-bg: var(--not_pursued-bg); --v-line: var(--not_pursued-line); }
+
+/* ---------- 6. 화면 1: 기업 고르기 ---------- */
+.hero { display: flex; flex-direction: column; gap: 10px; padding-top: 18px; }
+.company-list { display: flex; flex-direction: column; gap: 10px; }
+.company {
+  display: flex; align-items: center; gap: 14px;
+  padding: 18px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg);
+}
+.company[aria-disabled="true"] { opacity: 0.6; cursor: default; }
+.company-logo {
+  width: 48px; height: 48px; flex: none; border-radius: 14px;
+  background: var(--chip);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; font-weight: 900;
+}
+.company-info { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.company-name { font-size: 17px; font-weight: 700; }
+.company-meta { font-size: 13px; color: var(--sub); }
+.steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.steps li { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--body); }
+.step-num {
+  width: 22px; height: 22px; flex: none; border-radius: 50%;
+  background: var(--confirmed-bg); color: var(--confirmed);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700;
+}
+
+/* ---------- 7. 화면 2: 약속 목록 ---------- */
+.summary-bar { display: flex; gap: 4px; height: 6px; }
+.summary-bar span { border-radius: 3px; background: var(--v); }
+.summary-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; }
+.summary-num { font-size: 22px; font-weight: 900; color: var(--v); }
+.summary-label { font-size: 11px; line-height: 1.3; color: var(--sub); }
+.promise-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.promise-item {
+  display: flex; align-items: center; gap: 12px;
+  min-height: 44px; padding: 12px 14px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md);
+}
+.promise-item-body { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.promise-item-title { font-size: 14px; line-height: 1.45; font-weight: 500; }
+.chevron { color: var(--muted); flex: none; }
+
+/* ---------- 8. 화면 3: 약속 자세히 보기 ---------- */
+.detail-title { font-size: 22px; font-weight: 900; line-height: 1.4; margin: 0; }
+.compare { padding: 0; gap: 0; overflow: hidden; }
+.quote-block { padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
+.quote-meta { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--sub); }
+.quote-meta.is-evidence { color: var(--v, var(--confirmed)); }
+.quote-text { font-size: 15px; line-height: 1.7; margin: 0; }
+.quote-empty { font-size: 14px; line-height: 1.7; color: var(--sub); margin: 0; }
+.divider { display: flex; align-items: center; gap: 8px; padding: 0 16px; color: var(--sub); font-size: 11px; }
+.divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.checks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.checks li { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--body); }
+.check-icon {
+  width: 20px; height: 20px; flex: none; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
+.check-icon.ok { background: var(--confirmed-bg); color: var(--confirmed); }
+.check-icon.no { background: var(--chip); color: var(--muted); }
+.reason { font-size: 14px; line-height: 1.75; color: var(--body); margin: 0; }
+
+/* ---------- 9. 화면 4: 면접 카드 ---------- */
+.issue { display: flex; gap: 12px; align-items: flex-start; }
+.issue-num { font-size: 15px; font-weight: 900; color: var(--muted); width: 14px; }
+.issue-body { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.issue-text { font-size: 14px; line-height: 1.55; }
+.answer { background: var(--chip); border-radius: var(--radius-sm); padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
+.answer-tag { font-size: 12px; font-weight: 700; color: var(--confirmed); }
+.answer-text { font-size: 14px; line-height: 1.6; color: var(--body); }
+.question { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; line-height: 1.6; }
+.question svg { flex: none; margin-top: 2px; color: var(--confirmed); }
+
+/* ---------- 10. 기타 ---------- */
+.empty { text-align: center; padding: 48px 12px; color: var(--sub); font-size: 14px; line-height: 1.7; }
+.toast {
+  position: fixed; left: 50%; bottom: 96px; transform: translateX(-50%);
+  background: var(--cta); color: var(--cta-text);
+  padding: 10px 16px; border-radius: 999px; font-size: 13px; font-weight: 700;
+  z-index: 50;
+}
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ---------- 11. 1012 데이터 연결 수정에서 더한 부품 ---------- */
+/* 규칙 9: 예시 데이터 안내 (화면 맨 위) */
+.sample-banner {
+  padding: 8px 18px;
+  font-size: 12px; font-weight: 700; line-height: 1.5; text-align: center;
+  background: var(--chip); color: var(--text);
+  border-bottom: 1px solid var(--line);
+}
+/* 규칙 1: 안내 문구 2개 (모든 화면) */
+.disclaimer { margin: 0; font-size: 12px; line-height: 1.6; color: var(--sub); }
+/* 규칙 3: 개수 요약 한 줄 */
+.count-line { margin: 0; font-size: 15px; font-weight: 700; line-height: 1.6; color: var(--body); }
+.company-reports { font-size: 12px; color: var(--muted); }
+/* 방향성 약속 묶음: 판정 색 없이 회색 */
+.verdict-none { --v: var(--muted); --v-bg: var(--chip); --v-line: var(--line); }
+.directional {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md);
+  padding: 12px 14px; display: flex; flex-direction: column; gap: 10px;
+}
+.directional summary { cursor: pointer; font-size: 14px; font-weight: 700; color: var(--sub); min-height: 28px; }
+.directional[open] summary { margin-bottom: 8px; }
+.directional .promise-list { margin-top: 8px; }
+/* 근거 문장 아래: 원문 확인됨, 원문 보기 */
+.ev-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.verified {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 12px; font-weight: 700; color: var(--confirmed);
+}
+.ev-link {
+  display: inline-flex; align-items: center; gap: 4px; min-height: 32px;
+  font-size: 12px; font-weight: 700; color: var(--sub); text-decoration: underline;
+}
+/* 면접 카드: 항목을 누르면 화면 3으로 */
+a.issue { align-items: center; }
+a.issue .chevron { margin-left: auto; }
+a.answer-tag { text-decoration: underline; }
+a.question { color: inherit; }

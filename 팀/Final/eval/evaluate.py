@@ -5,11 +5,19 @@
   python eval/evaluate.py                       # 기본: samsung, skhynix / samsung은 '개발에 쓴 기업'
   python eval/evaluate.py --companies skhynix   # 한 기업만
 
-필요한 파일 (eval/gold 폴더, 모두 '정답매길목록.csv'를 복사해 판정 칸을 채운 것)
-  <기업>_김성태.csv, <기업>_서원.csv   두 사람이 따로 매긴 판정 (일치도 계산용)
+필요한 파일 (eval/gold 폴더)
+  <기업>_김성태.csv, <기업>_서원.csv   두 사람이 같은 약속 목록에 따로 매긴 판정 (일치도 계산용)
   <기업>_합의.csv                     판정이 다른 건을 합의해 정한 최종 정답
   <기업>_사람약속목록.csv (선택)       사람이 직접 찾은 약속 문장 ('약속 문장' 칸) → 약속을 찾은 비율
+                                      없으면 promise_id 칸이 빈 <기업>_서원.csv(서원님이 직접 찾은 목록)를 대신 씁니다.
 AI 판정은 data/work/<기업>/judged.json에서 읽습니다.
+
+정답과 AI 약속 맞추기
+  - promise_id가 있으면 번호로 맞춥니다. (엔진의 '정답매길목록.csv'를 복사해 판정한 경우)
+  - promise_id가 없으면 '약속 문장'으로 맞춥니다. (서원님이 직접 찾은 목록에 판정한 경우)
+    띄어쓰기를 무시하고, 한쪽이 다른 쪽을 포함하거나 비슷한 정도가 0.6 이상이면 같은 약속으로 봅니다.
+  - 사람은 구체적으로 봤는데 AI가 방향성으로 둔 약속은 AI 판정이 없어 판정 비교에서 빼고,
+    errors_<기업>.csv에 원인 '분류가 다름'으로 적습니다. AI가 찾지 못한 약속도 판정 비교에서 빠집니다.
 
 약속을 찾은 비율 (판정기준 v2, 2장)
   - 사람 약속 목록 중 문장 안에 AI 관련 말(엔진과 같은 검색어)이 없는 문장은 약속이 아니므로 비율 계산에서 빼고,
@@ -93,18 +101,47 @@ def read_table(path):
     return out
 
 
-def read_gold(path):
-    """promise_id → 판정 코드 (판정 칸이 빈 줄과 방향성은 뺌)"""
+def read_gold_rows(path):
+    """판정이 매겨진 구체적 약속 줄 목록: [{pid, sentence, label}] (판정 칸이 빈 줄과 방향성은 뺌)"""
     if not os.path.exists(path):
         return None
-    out = {}
+    out = []
     for row in read_table(path):
-        pid = row.get("promise_id", "")
         lab = MAP.get(row.get("판정", ""))
-        kind = row.get("분류", "")
-        if pid and lab and kind != "방향성":
-            out[pid] = lab
+        pid, sent = row.get("promise_id", ""), row.get("약속 문장", "")
+        if lab and row.get("분류", "") != "방향성" and (pid or sent):
+            out.append({"pid": pid, "sentence": sent, "label": lab})
     return out
+
+
+def gold_key(r):
+    """번호가 있으면 번호, 없으면 정규화한 약속 문장 (두 사람이 같은 목록에 판정했을 때 서로 맞춰짐)"""
+    return r["pid"] or "s:" + norm(r["sentence"])
+
+
+def read_gold(path):
+    """약속 → 판정 코드"""
+    rows = read_gold_rows(path)
+    if rows is None:
+        return None
+    return {gold_key(r): r["label"] for r in rows}
+
+
+def match_promise(sentence, ai_norm):
+    """사람 약속 문장과 같은 AI 약속을 찾습니다. ai_norm: [(약속, 정규화한 문장)]. 못 찾으면 None."""
+    hn = norm(sentence)
+    if not hn:
+        return None
+    best, best_r = None, 0.0
+    for p, x in ai_norm:
+        if not x:
+            continue
+        if hn in x or x in hn:
+            return p
+        r = difflib.SequenceMatcher(None, hn, x).ratio()
+        if r >= 0.6 and r > best_r:
+            best, best_r = p, r
+    return best
 
 
 def wilson(k, n, z=1.959964):
@@ -153,11 +190,10 @@ def extraction_recall(human_path, ai_promises):
     kw = keyword_regex(DEFAULT_KEYWORDS)
     human = [h for h in rows if kw.search(unicodedata.normalize("NFKC", h))]
     excluded = [h for h in rows if h not in human]
-    ai = [norm(p["sentence"]) for p in ai_promises]
+    ai_norm = [(p, norm(p["sentence"])) for p in ai_promises]
     found, missed = 0, []
     for h in human:
-        hn = norm(h)
-        ok = any(hn in x or x in hn or difflib.SequenceMatcher(None, hn, x).ratio() >= 0.6 for x in ai)
+        ok = match_promise(h, ai_norm) is not None
         found += ok
         if not ok:
             missed.append(h)
@@ -169,16 +205,33 @@ def evaluate(company, dev_companies, gold_dir, work_root, out_dir):
     with open(os.path.join(work_root, company, "judged.json"), encoding="utf-8") as f:
         judged = json.load(f)["promises"]
     spec = {j["id"]: j for j in judged if j["type"] == "specific"}
-    gold = read_gold(os.path.join(gold_dir, f"{company}_합의.csv")) or {}
+    gold_rows = read_gold_rows(os.path.join(gold_dir, f"{company}_합의.csv")) or []
+    ai_norm = [(j, norm(j["sentence"])) for j in judged]
     pairs, errors = [], []
-    for pid, g in gold.items():
-        if pid not in spec:
-            continue
-        a = spec[pid]["verdict"]
+    by_sentence = {"rows": 0, "matched": 0, "ai_directional": 0, "unmatched": 0}
+    for r in gold_rows:
+        g = r["label"]
+        if r["pid"]:
+            j = spec.get(r["pid"])
+            if j is None:
+                continue
+        else:
+            by_sentence["rows"] += 1
+            j = match_promise(r["sentence"], ai_norm)
+            if j is None:
+                by_sentence["unmatched"] += 1
+                continue
+            by_sentence["matched"] += 1
+            if j["type"] != "specific":
+                by_sentence["ai_directional"] += 1
+                errors.append({"promise_id": j["id"], "제목": j["title"], "정답": KO[g], "AI": "방향성(판정 없음)",
+                               "AI 이유": "", "원인": "분류가 다름"})
+                continue
+        a = j["verdict"]
         pairs.append((g, a))
         if g != a:
-            errors.append({"promise_id": pid, "제목": spec[pid]["title"], "정답": KO[g], "AI": KO.get(a, a),
-                           "AI 이유": spec[pid]["reason"], "원인": ""})
+            errors.append({"promise_id": j["id"], "제목": j["title"], "정답": KO[g], "AI": KO.get(a, a),
+                           "AI 이유": j["reason"], "원인": ""})
     n = len(pairs)
     correct = sum(1 for g, a in pairs if g == a)
     lo, hi = wilson(correct, n)
@@ -197,7 +250,15 @@ def evaluate(company, dev_companies, gold_dir, work_root, out_dir):
     verified = sum(1 for e in quotes if e["citation_verified"])
     unsupported = sum(1 for j in specs if j["verdict"] in ("evidence_found", "partial") and
                       not any(e["citation_verified"] for e in j["evidence"]))
-    rec = extraction_recall(os.path.join(gold_dir, f"{company}_사람약속목록.csv"), judged)
+    rec_path = os.path.join(gold_dir, f"{company}_사람약속목록.csv")
+    if not os.path.exists(rec_path):
+        # 서원님이 직접 찾은 목록에 판정한 파일(promise_id 없음)이면 그 목록으로 약속을 찾은 비율을 잽니다.
+        alt = os.path.join(gold_dir, f"{company}_서원.csv")
+        if os.path.exists(alt) and not any(r.get("promise_id") for r in read_table(alt)):
+            rec_path = alt
+    rec = extraction_recall(rec_path, judged)
+    if rec:
+        rec["source"] = os.path.basename(rec_path)
 
     res = {
         "company": company, "dev_set": company in dev_companies, "n": n, "correct": correct,
@@ -209,6 +270,7 @@ def evaluate(company, dev_companies, gold_dir, work_root, out_dir):
         "citation_verified": verified / len(quotes) if quotes else None,
         "unsupported_execution_claims": unsupported,
         "extraction": rec, "downgraded": sum(1 for j in specs if any("낮춤" in f for f in j.get("flags", []))),
+        "gold_by_sentence": by_sentence if by_sentence["rows"] else None,
     }
     os.makedirs(out_dir, exist_ok=True)
     with open(os.path.join(out_dir, f"confusion_{company}.csv"), "w", encoding="utf-8-sig", newline="") as f:
@@ -241,13 +303,19 @@ def to_md(results):
                      f"{pct(ha['percent'])} (n={ha['n']}) | {kap} | {pct(r['citation_inclusion'])} | {pct(r['citation_verified'])} | "
                      f"{r['unsupported_execution_claims']} | {exs} |")
     lines.append("")
+    notes = []
     for r in results:
         ex = r["extraction"]
         if ex and ex.get("excluded_no_ai_word"):
-            lines.append(f"- {r['company']}: 사람 약속 목록 중 문장 안에 AI 관련 말이 없는 {ex['excluded_no_ai_word']}개는 "
+            notes.append(f"- {r['company']}: 사람 약속 목록 중 문장 안에 AI 관련 말이 없는 {ex['excluded_no_ai_word']}개는 "
                          "약속이 아니라서 '약속을 찾은 비율'에서 뺐습니다. (판정기준 v2, 2장)")
-    if any(r["extraction"] and r["extraction"].get("excluded_no_ai_word") for r in results):
-        lines.append("")
+        bs = r.get("gold_by_sentence")
+        if bs:
+            notes.append(f"- {r['company']}: 정답 {bs['rows']}건을 약속 문장으로 AI 약속과 맞췄습니다. 맞춘 {bs['matched']}건 중 "
+                         f"AI가 방향성으로 둔 {bs['ai_directional']}건은 판정 비교에서 빼고 errors 파일에 '분류가 다름'으로 적었습니다. "
+                         f"AI 약속과 맞지 않은 {bs['unmatched']}건도 판정 비교에서 뺐습니다.")
+    if notes:
+        lines.extend(notes + [""])
     for r in results:
         lines.append(f"## {r['company']} 혼동표 (행: 정답, 열: AI)")
         lines.append("| 정답 \\ AI | " + " | ".join(KO[a] for a in LABELS) + " |")

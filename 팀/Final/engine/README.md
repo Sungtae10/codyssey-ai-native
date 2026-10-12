@@ -60,12 +60,13 @@
 | --- | --- | --- |
 | 10/10 | `python run.py doctor --company samsung` | "준비 완료" |
 | 10/10 | `python run.py collect --company samsung` (skhynix도) | 장의 시작 쪽과 끝 쪽이 PDF 목차와 맞는지. 관문 1에서 손으로 찾은 약속 문장이 `collected_y2024.json`에 있는지 |
-| 10/10 | `python run.py extract --company samsung` (skhynix도) | 화면에 찍힌 약속 목록. `eval/gold/skhynix_정답매길목록.csv`는 10/11 밤까지 서원님에게 전달 |
+| 10/10 | `python run.py extract --company samsung` (skhynix도) | 화면에 찍힌 약속 목록. SK하이닉스 AI 목록은 서원님에게 보내지 않습니다 (서원님은 직접 찾은 약속 목록에 판정) |
 | 10/10 | **1건 완주:** `python run.py judge --company samsung --limit 1` 다음 `card`, `export --companies samsung` | 구체적 약속 1건이 근거 검색, 판정, 인용 검사, 면접 카드까지 실제 API로 끝남. 1건이라 화면 점검에서 개수 부족 문제가 나오는 것은 정상 |
 | 10/10 밤~10/11 | `python run.py judge --company samsung` (전체) | 판정 개수와 ※ 표시가 붙은 약속 |
 | 10/12 | `python run.py card --company samsung` 다음 `python run.py export --companies samsung --copy-to <화면의 데이터 파일 경로>` | "화면 점검 통과" |
-| 10/12 | 내 SK하이닉스 판정을 `eval/gold/skhynix_김성태.csv`로 저장하고 저장소에 먼저 올리기 | AI를 돌리기 전에 판정했다는 기록 |
+| 10/12~13 | 서원님이 올린 SK하이닉스 약속 목록(약속 문장·위치·분류)을 복사해 내 판정을 v2로 매기고 `eval/gold/skhynix_김성태.csv`로 저장소에 먼저 올리기 | AI를 돌리기 전에 판정했다는 기록. 서원님 판정 칸은 보지 않고 매김 |
 | 10/13 | `python run.py judge --company skhynix`, `python run.py card --company skhynix`, `python run.py export --companies samsung skhynix --copy-to <경로>` | "화면 점검 통과" |
+| 10/13 밤 | 서원님 SK하이닉스 정답 표를 `eval/gold/skhynix_서원.csv`로 저장, 판정이 다른 건은 원문을 보며 합의해 `skhynix_합의.csv` | 서원님은 이때까지 AI 결과와 화면을 보지 않음 |
 | 10/14 | `python ../eval/evaluate.py` | `eval/results/results.md` |
 
 한 번에 돌릴 때: `python run.py all --company samsung` (1~7단계)
@@ -82,13 +83,14 @@
 
 | 파일 | 내용 |
 | --- | --- |
-| `skhynix_김성태.csv`, `skhynix_서원.csv` | `skhynix_정답매길목록.csv`를 복사해 각자 판정을 채운 파일 (일치도 계산용) |
+| `skhynix_김성태.csv`, `skhynix_서원.csv` | 서원님이 직접 찾은 SK하이닉스 약속 목록에 각자 따로 판정을 채운 파일 (일치도 계산용). promise_id 칸은 없어도 됩니다 |
 | `skhynix_합의.csv` | 판정이 다른 건을 원문을 보며 정한 최종 정답 |
 | `samsung_합의.csv` | 삼성전자 정답 ("개발에 쓴 기업"으로 따로 표시됨) |
-| `skhynix_사람약속목록.csv`, `samsung_사람약속목록.csv` | 사람이 직접 찾은 약속 문장 ("약속 문장" 칸). AI가 약속을 빠뜨렸는지 재는 데 씁니다 |
+| `skhynix_사람약속목록.csv`, `samsung_사람약속목록.csv` | 사람이 직접 찾은 약속 문장 ("약속 문장" 칸). AI가 약속을 빠뜨렸는지 재는 데 씁니다. SK하이닉스는 이 파일이 없으면 promise_id 칸이 빈 `skhynix_서원.csv`를 대신 씁니다 |
 
 - 판정 칸에는 `근거 확인`, `일부 확인`, `공시에서 확인 불가`, `회사가 미추진으로 공시` 중 하나를 그대로 씁니다.
 - 판정은 분류가 "구체적"인 줄만 매깁니다. 분류가 틀렸다고 보면 "메모" 칸에 적습니다.
+- 정답 파일에 promise_id가 있으면 번호로, 없으면 "약속 문장"으로 AI 약속과 맞춥니다 (띄어쓰기 무시, 한쪽이 다른 쪽을 포함하거나 비슷한 정도 0.6 이상). 사람은 구체적으로 봤는데 AI가 방향성으로 둔 약속은 판정 비교에서 빼고 `errors_<기업>.csv`에 원인 "분류가 다름"으로 적습니다.
 - 엑셀에서 저장할 때는 "CSV UTF-8" 형식으로 저장합니다. (그냥 "CSV"로 저장했거나 구글 시트에서 CSV로 받은 파일도 읽습니다)
 - 공유 폴더의 시트를 CSV로 받으면 맨 위 안내 줄, "예" 줄, "약속 문장 (원문 그대로)" 같은 칸 이름이 그대로 남는데, 평가 코드가 알아서 건너뛰고 읽습니다. 연습5건 시트는 `samsung_사람약속목록.csv`, 서원님 약속 목록은 `skhynix_사람약속목록.csv`로 저장합니다.
 

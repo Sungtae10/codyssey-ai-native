@@ -153,6 +153,7 @@ def main():
     md = open(os.path.join(TMP, "eval", "results", "results.md"), encoding="utf-8").read()
     assert "AI 관련 말이 없는 1개" in md, "결과표에 뺀 개수가 없음"
     assert res["human_agreement"]["n"] >= 5, "cp949로 저장한 판정 파일 읽기 실패"
+    check_sentence_gold()
 
     # 첫 실제 실행용 1건 시험: --limit 1이면 구체적 약속 1건만 판정
     out = run("judge", "--company", "demo", "--mock", "--limit", "1")
@@ -161,6 +162,54 @@ def main():
     run("card", "--company", "demo", "--mock")
     check_extract_filter()
     print("시험 통과")
+
+
+def check_sentence_gold():
+    """서원님 방식: promise_id 없이 직접 찾은 약속 목록에 판정한 파일을 약속 문장으로 AI 약속과 맞추는지 시험합니다."""
+    judged = json.load(open(os.path.join(TMP, "work", "demo", "judged.json"), encoding="utf-8"))["promises"]
+    spec = [j for j in judged if j["type"] == "specific"]
+    dire = [j for j in judged if j["type"] == "directional"]
+    assert len(spec) >= 3 and dire, "시험용 약속이 모자랍니다"
+    ko = {"evidence_found": "근거 확인", "partial": "일부 확인", "not_verifiable": "공시에서 확인 불가",
+          "company_reported_not_pursued": "회사가 미추진으로 공시"}
+    other = {"evidence_found": "일부 확인", "partial": "근거 확인", "not_verifiable": "근거 확인",
+             "company_reported_not_pursued": "근거 확인"}  # AI와 다른 판정
+    rows = [
+        (spec[0]["sentence"], ko[spec[0]["verdict"]]),                        # AI와 같은 판정
+        (spec[1]["sentence"].replace(" ", "  ", 1), ko[spec[1]["verdict"]]),  # 띄어쓰기가 달라도 맞춰야 함
+        (spec[2]["sentence"], other[spec[2]["verdict"]]),                     # AI와 다른 판정
+        (dire[0]["sentence"], "근거 확인"),                                    # 사람은 구체적, AI는 방향성
+        ("당사는 2026년까지 사내 AI 교육을 전 직원으로 넓힐 계획입니다.", "공시에서 확인 불가"),  # AI가 못 찾은 약속
+    ]
+    gdir = os.path.join(TMP, "eval_s", "gold")
+    os.makedirs(gdir, exist_ok=True)
+    head = ["번호", "약속 문장 (원문 그대로)", "약속 위치 (보고서, 장)", "분류 (구체적/방향성)", "근거 문장 (원문 그대로)",
+            "근거 위치 (보고서, 장)", "판정", "걸린 시간(분)"]
+    for who in ("합의", "김성태", "서원"):
+        with open(os.path.join(gdir, f"demo_{who}.csv"), "w", encoding="utf-8-sig", newline="") as f:
+            w = csv.writer(f)
+            w.writerow(["서원님이 직접 찾은 약속 목록 (시험용, 가상 회사)"])
+            w.writerow(head)
+            for n, (s, lab) in enumerate(rows, 1):
+                if who == "김성태" and n == 1:
+                    lab = other[spec[0]["verdict"]]  # 일부러 한 건 다르게
+                w.writerow([n, s, "2024 사업보고서", "구체적", "", "", lab, ""])
+    out = os.path.join(TMP, "eval_s", "results")
+    r = subprocess.run([sys.executable, os.path.join(ROOT, "eval", "evaluate.py"), "--companies", "demo", "--dev",
+                        "--gold-dir", gdir, "--work-root", os.path.join(TMP, "work"), "--out-dir", out],
+                       capture_output=True, text=True)
+    print(r.stdout)
+    if r.returncode != 0:
+        print(r.stderr)
+        raise SystemExit("평가 스크립트 실패 (약속 문장으로 맞추기)")
+    res = json.load(open(os.path.join(out, "results.json"), encoding="utf-8"))[0]
+    assert res["gold_by_sentence"] == {"rows": 5, "matched": 4, "ai_directional": 1, "unmatched": 1}, res["gold_by_sentence"]
+    assert res["n"] == 3 and res["correct"] == 2, (res["n"], res["correct"])
+    assert res["human_agreement"]["n"] == 5, res["human_agreement"]
+    ex = res["extraction"]
+    assert ex["source"] == "demo_서원.csv" and ex["human"] == 5 and ex["found"] == 4, ex
+    errs = list(csv.DictReader(open(os.path.join(out, "errors_demo.csv"), encoding="utf-8-sig")))
+    assert len(errs) == 2 and sum(1 for e in errs if e["원인"] == "분류가 다름") == 1, errs
 
 
 def check_extract_filter():

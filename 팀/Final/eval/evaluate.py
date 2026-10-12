@@ -278,8 +278,11 @@ def evaluate(company, dev_companies, gold_dir, work_root, out_dir):
             errors.append({"promise_id": j["id"], "제목": j["title"], "정답": KO[g], "AI": KO.get(a, a),
                            "AI 이유": j["reason"], "원인": ""})
     n = len(pairs)
+    gold_total = len(gold_rows)
     correct = sum(1 for g, a in pairs if g == a)
     lo, hi = wilson(correct, n)
+    comparison_coverage = n / gold_total if gold_total else None
+    end_to_end_accuracy = correct / gold_total if gold_total else None
     mf1, f1s = macro_f1(pairs) if pairs else (0.0, {})
     conf = {g: {a: sum(1 for x, y in pairs if x == g and y == a) for a in LABELS} for g in LABELS}
     critical = conf["not_verifiable"]["evidence_found"]
@@ -307,8 +310,9 @@ def evaluate(company, dev_companies, gold_dir, work_root, out_dir):
     compare = extraction_compare(rec_path, judged, os.path.join(work_root, company))
 
     res = {
-        "company": company, "dev_set": company in dev_companies, "n": n, "correct": correct,
+        "company": company, "dev_set": company in dev_companies, "n": n, "gold_total": gold_total, "correct": correct,
         "accuracy": correct / n if n else None, "accuracy_ci95": [lo, hi], "macro_f1": mf1,
+        "comparison_coverage": comparison_coverage, "end_to_end_accuracy": end_to_end_accuracy,
         "f1_by_label": f1s, "support": {lab: sum(1 for g, _ in pairs if g == lab) for lab in LABELS},
         "confusion": conf, "critical_errors": critical,
         "human_agreement": {"percent": agree[0], "n": agree[1], "kappa": agree[2]},
@@ -338,14 +342,15 @@ def pct(x):
 
 def to_md(results):
     lines = ["# AI 판정 평가 결과 (시범 평가)", ""]
-    lines.append("| 기업 | 구분 | 건수 | 정확도 | 95% 신뢰구간 | macro-F1 | 치명 오류 | 사람 일치율 | kappa | 인용 포함 | 인용 원문 일치 | 근거 없는 실행 판정 | 약속을 찾은 비율 |")
-    lines.append("| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |")
+    lines.append("| 기업 | 구분 | 비교건수/Gold | 비교 coverage | 조건부 정확도 | End-to-end 정확도 | 95% 신뢰구간 | macro-F1 | 치명 오류 | 사람 일치율 | kappa | 인용 포함 | 인용 원문 일치 | 근거 없는 실행 판정 | 약속을 찾은 비율 |")
+    lines.append("| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |")
     for r in results:
         ex = r["extraction"]
         exs = "-" if not ex else f"{ex['found']}/{ex['human']} ({pct(ex['rate'])})"
         ha = r["human_agreement"]
         kap = "-" if ha["kappa"] is None else f"{ha['kappa']:.2f}"
-        lines.append(f"| {r['company']} | {'개발에 쓴 기업' if r['dev_set'] else '평가용'} | {r['n']} | {pct(r['accuracy'])} | "
+        lines.append(f"| {r['company']} | {'개발에 쓴 기업' if r['dev_set'] else '평가용'} | {r['n']}/{r['gold_total']} | "
+                     f"{pct(r['comparison_coverage'])} | {pct(r['accuracy'])} | {pct(r['end_to_end_accuracy'])} | "
                      f"{pct(r['accuracy_ci95'][0])}~{pct(r['accuracy_ci95'][1])} | {r['macro_f1']:.2f} | {r['critical_errors']} | "
                      f"{pct(ha['percent'])} (n={ha['n']}) | {kap} | {pct(r['citation_inclusion'])} | {pct(r['citation_verified'])} | "
                      f"{r['unsupported_execution_claims']} | {exs} |")
@@ -386,7 +391,10 @@ def to_md(results):
         if small:
             lines.append(f"\n건수가 5건 미만인 판정: {', '.join(small)} (해석에 주의)")
         lines.append("")
-    lines.append("- 건수가 적어 '시범 평가'로 표기합니다. 신뢰구간은 Wilson 방법으로 계산했습니다.")
+    lines.append("- 조건부 정확도는 실제 AI 판정 비교가 가능했던 항목만 계산합니다.")
+    lines.append("- 비교 coverage는 Gold Label 중 실제 판정 비교까지 간 비율입니다.")
+    lines.append("- End-to-end 정확도는 AI가 약속을 놓치거나 방향성으로 잘못 분류해 비교에서 빠진 경우도 실패로 간주해 Gold 전체를 분모로 계산합니다.")
+    lines.append("- 건수가 적어 '시범 평가'로 표기합니다. 조건부 정확도의 신뢰구간은 Wilson 방법으로 계산했습니다.")
     lines.append("- '개발에 쓴 기업'은 엔진을 만들며 결과를 본 기업이라 평가용 결과와 따로 봅니다.")
     return "\n".join(lines)
 

@@ -1,0 +1,2 @@
+participant_id,quantitative,order,service_company,baseline_company,service_seconds,baseline_seconds,service_correct,baseline_correct,understanding_1_5,trust_1_5,interview_use_1_5,feedback
+P01,1,service_first,,,,,,,,,,

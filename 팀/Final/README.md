@@ -2,7 +2,9 @@
 
 회사가 사업보고서에 "AI로 이것을 하겠다"고 쓴 약속을 찾고, 다음 보고서에 실행 근거가 있는지 찾아 4가지(근거 확인, 일부 확인, 공시에서 확인 불가, 회사가 미추진으로 공시)로 판정해 보여주는 웹 서비스입니다. Codyssey Final Project입니다.
 
-- 대상 기업: 삼성전자(개발용), SK하이닉스(평가용)
+- 핵심 기업: 삼성전자(개발용), SK하이닉스(평가용)
+- 최종 제품 목표: 5개 기업
+- 확장 후보: 현대자동차, LG전자, NAVER (공시 feasibility 확인 후 확정)
 - 약속을 찾는 보고서: 2024 사업보고서 / 근거를 찾는 보고서: 2025 사업보고서, 2026 반기보고서
 
 ## 1. 폴더
@@ -57,3 +59,21 @@ python tests/test_mock.py   # 마지막 줄에 "시험 통과"
 ## 7. AI 사용
 
 엔진 코드의 첫 버전과 화면의 엔진 결과 연결 수정은 AI 도구(Claude)로 작성했습니다. 실행, 점검, 수정은 김성태가 합니다. 엔진의 모든 AI 호출 기록은 실행할 때 `data/work/<기업>/llm_log.jsonl`에 남습니다.
+
+
+## 8. 프로젝트 문서
+
+- [아키텍처](docs/architecture.md)
+- [평가 계획](docs/evaluation-plan.md)
+- [10분 비대면 사용자 테스트](docs/user-test-protocol.md)
+- [5개 기업 확장 계획](docs/company-expansion-plan.md)
+- [AI 윤리·신뢰성](docs/ai-ethics.md)
+- [Vercel 배포](docs/deploy.md)
+- [Google Drive ↔ GitHub 동기화](docs/drive-sync.md)
+- [제출 증빙 체크리스트](docs/submission-evidence-checklist.md)
+- [팀 협업 규칙](CONTRIBUTING.md)
+
+## 9. 추가 평가
+
+- 사용자 테스트: `eval/user_test/`
+- ML baseline: `eval/ml/` — 5개 기업 약 300문장의 PROMISE / EVIDENCE / OTHER 분류 실험

@@ -13,19 +13,34 @@ PACKAGES = [("langchain_openai", "langchain-openai"), ("langchain_chroma", "lang
             ("chromadb", "chromadb"), ("pypdf", "pypdf"), ("dotenv", "python-dotenv"), ("yaml", "PyYAML")]
 
 
+def _hangul_ratio(text):
+    """띄어쓰기를 뺀 글자 중 한글 비율. 사업보고서는 대부분 한글이라, 낮으면 PDF 글자가 깨져 읽힌 것입니다."""
+    chars = [ch for ch in text if not ch.isspace()]
+    if not chars:
+        return 0.0
+    return sum(1 for ch in chars if "가" <= ch <= "힣") / len(chars)
+
+
 def _text_sample(path):
-    """앞쪽 몇 쪽의 글자 수와 전체 쪽 수. 글자가 거의 없으면 스캔본(그림 PDF)일 수 있습니다."""
+    """전체 쪽 수, 앞쪽 몇 쪽의 글자 수, 그 글자 중 한글 비율. 글자가 거의 없으면 스캔본(그림 PDF)일 수 있습니다."""
     if path.lower().endswith(".txt"):
         with open(path, encoding="utf-8") as f:
             pages = f.read().split("\f")
-        return len(pages), sum(len(p) for p in pages[:5])
+        sample = "".join(pages[:5])
+        return len(pages), len(sample), _hangul_ratio(sample)
     from pypdf import PdfReader
     reader = PdfReader(path)
     n = len(reader.pages)
-    chars = 0
-    for i in range(min(n, 5)):
-        chars += len((reader.pages[i].extract_text() or "").strip())
-    return n, chars
+    sample = "".join((reader.pages[i].extract_text() or "").strip() for i in range(min(n, 5)))
+    return n, len(sample), _hangul_ratio(sample)
+
+
+def _section_preview(cfg, company, report, path):
+    """읽는 장 3곳을 제목으로 찾을 수 있는지 미리 봅니다. (collect와 같은 방법, AI 호출 없음)"""
+    from .collect import read_pages, locate_sections, SECTIONS
+    overrides = (cfg.get("section_pages") or {}).get(company["key"], {}).get(report["key"], {})
+    loc = locate_sections(read_pages(path), cfg["sections"], overrides)
+    return [(SECTIONS[k]["name"], loc.get(k) is not None) for k in cfg["sections"]]
 
 
 def run_doctor(cfg, keys, api=True):
@@ -73,16 +88,29 @@ def run_doctor(cfg, keys, api=True):
                 problems.append(f"{r['pdf']} 를 {cfg['paths']['pdf_dir']} 에 넣으세요.")
                 continue
             try:
-                n, chars = _text_sample(path)
+                n, chars, ko = _text_sample(path)
             except Exception as e:
                 print(label + f": 열지 못함 ({type(e).__name__})")
                 problems.append(f"{r['pdf']} 가 깨졌을 수 있습니다. DART에서 다시 받으세요.")
                 continue
             if chars < 200:
                 print(label + f": {n}쪽, 앞쪽 글자가 거의 없음")
-                problems.append(f"{r['pdf']} 에서 글자를 읽지 못했습니다. 스캔본이면 DART 화면 글을 .txt로 저장해 쓰세요 (README 6장).")
-            else:
-                print(label + f": {n}쪽 OK")
+                problems.append(f"{r['pdf']} 에서 글자를 읽지 못했습니다. 스캔본이면 DART 화면 글을 .txt로 저장해 쓰세요 (README 7장).")
+                continue
+            if ko < 0.2:
+                print(label + f": {n}쪽, 글자가 깨져 보임 (한글 비율 {ko:.0%})")
+                problems.append(f"{r['pdf']} 의 글자가 깨져 읽힙니다. DART 화면에서 장별 글을 복사해 .txt로 저장해 쓰세요 (README 7장).")
+                continue
+            print(label + f": {n}쪽 OK")
+            try:
+                found = _section_preview(cfg, c, r, path)
+                print("      장 찾기: " + ", ".join(f"{name} {'OK' if ok else '못 찾음'}" for name, ok in found))
+                missing_sec = [name for name, ok in found if not ok]
+                if missing_sec:
+                    notes.append(f"{c['name']} {r['title']}: {', '.join(missing_sec)} 장을 제목으로 못 찾았습니다. "
+                                 "보고서에 원래 없는 장(예: 반기보고서의 정관 장)이면 그대로 두고, 있으면 config.yaml의 section_pages에 쪽 번호를 적으세요.")
+            except Exception as e:
+                notes.append(f"{c['name']} {r['title']}: 장 찾기 미리 보기 실패 ({type(e).__name__}). collect에서 다시 확인하세요.")
             if not r.get("url"):
                 notes.append(f"{c['name']} {r['title']}: config.yaml의 url이 비어 있어 화면의 원문 링크가 비게 됩니다.")
 

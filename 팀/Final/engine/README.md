@@ -20,14 +20,14 @@
 
 ## 2. 준비 (약 30분)
 
-1. 이 압축 파일의 `engine`, `eval`, `tests` 폴더와 `.gitignore`를 저장소 맨 위에 넣습니다. (`data` 폴더는 처음 실행할 때 생깁니다)
+1. 코드 받기: GitHub의 [ai-promise](https://github.com/Sungtae10/ai-promise) 저장소에서 `Code` → `Download ZIP`으로 받아 풀거나, `git clone https://github.com/Sungtae10/ai-promise`로 받습니다. (`data` 폴더 안의 `pdf` 폴더에 PDF를 넣습니다)
 2. 설치
    ```bash
    cd engine
    pip install -r requirements.txt
    ```
    DART-Foresight AI와 같은 버전입니다.
-3. 키: `engine/.env.example`을 `engine/.env`로 복사하고 OpenAI 키를 넣습니다. `.env`는 GitHub에 올리지 않습니다.
+3. 키: `engine/.env.example`을 `engine/.env`로 복사하고 OpenAI 키를 넣습니다. `.env`는 GitHub에 올리지 않고, 채팅과 단톡에도 붙여 넣지 않습니다.
 4. PDF 6개: DART에서 받아 `data/pdf` 폴더에 아래 이름으로 저장합니다.
 
    | 파일 이름 | 보고서 |
@@ -52,23 +52,27 @@
    python run.py doctor --company samsung
    ```
    마지막 줄에 "준비 완료"가 나오면 됩니다. "고칠 것"이 나오면 적힌 대로 고친 뒤 다시 실행합니다.
+   PDF마다 "장 찾기" 줄에서 읽는 장 3곳이 OK인지 봅니다. "글자가 깨져 보임"이 나오면 7장의 .txt 방법을 씁니다.
 
 ## 3. 실행 순서 (팀 일정과 맞춤)
 
 명령은 모두 `engine` 폴더에서 실행합니다.
 
-| 날짜 | 명령 | 확인할 것 |
+| 언제 | 명령 | 확인할 것 |
 | --- | --- | --- |
-| 10/10 | `python run.py doctor --company samsung` | "준비 완료" |
-| 10/10 | `python run.py collect --company samsung` (skhynix도) | 장의 시작 쪽과 끝 쪽이 PDF 목차와 맞는지. 관문 1에서 손으로 찾은 약속 문장이 `collected_y2024.json`에 있는지 |
-| 10/10 | `python run.py extract --company samsung` (skhynix도) | 화면에 찍힌 약속 목록. SK하이닉스 AI 목록은 서원님에게 보내지 않습니다 (서원님은 직접 찾은 약속 목록에 판정) |
-| 10/10 | **1건 완주:** `python run.py judge --company samsung --limit 1` 다음 `card`, `export --companies samsung` | 구체적 약속 1건이 근거 검색, 판정, 인용 검사, 면접 카드까지 실제 API로 끝남. 1건이라 화면 점검에서 개수 부족 문제가 나오는 것은 정상 |
-| 10/10 밤~10/11 | `python run.py judge --company samsung` (전체) | 판정 개수와 ※ 표시가 붙은 약속 |
-| 10/12 | `python run.py card --company samsung` 다음 `python run.py export --companies samsung --copy-to <화면의 데이터 파일 경로>` | "화면 점검 통과" |
-| 10/12~13 | 서원님이 올린 SK하이닉스 약속 목록(약속 문장·위치·분류)을 복사해 내 판정을 v2로 매기고 `eval/gold/skhynix_김성태.csv`로 저장소에 먼저 올리기 | AI를 돌리기 전에 판정했다는 기록. 서원님 판정 칸은 보지 않고 매김 |
-| 10/13 | `python run.py judge --company skhynix`, `python run.py card --company skhynix`, `python run.py export --companies samsung skhynix --copy-to <경로>` | "화면 점검 통과" |
+| 10/12 밤 | `python run.py doctor --company samsung` | "준비 완료", 장 찾기 3곳 OK |
+| 10/12 밤 | **1건 완주:** `python run.py collect --company samsung`, `extract`, `judge --limit 1`, `card` | 구체적 약속 1건이 근거 검색, 판정, 인용 검사, 면접 카드까지 실제 API로 끝남 |
+| 10/12 밤 | `python run.py judge --company samsung` (전체), `card`, `export --companies samsung --copy-to ../app/data/results.json` | "화면 점검 통과". 결과를 올리면(아래) 서비스 주소에 삼성전자가 뜸 |
+| 10/12 밤~10/13 | `python run.py doctor --company skhynix`, `collect`, `extract` | SK하이닉스 AI 약속 목록은 서원님에게 보내지 않습니다 |
+| 10/13 | 서원님이 올린 SK하이닉스 약속 목록(약속 문장·위치·분류)을 복사해 내 판정을 v2로 매기고 `eval/gold/skhynix_김성태.csv`로 먼저 올리기 | AI 판정을 돌리기 전에 판정했다는 기록. 서원님 판정 칸은 보지 않고 매김 |
+| 10/13 | `python run.py judge --company skhynix`, `card`, `export --companies samsung skhynix --copy-to ../app/data/results.json` | "화면 점검 통과", 관문 2 |
 | 10/13 밤 | 서원님 SK하이닉스 정답 표를 `eval/gold/skhynix_서원.csv`로 저장, 판정이 다른 건은 원문을 보며 합의해 `skhynix_합의.csv` | 서원님은 이때까지 AI 결과와 화면을 보지 않음 |
 | 10/14 | `python ../eval/evaluate.py` | `eval/results/results.md` |
+| 10/14 정오 이후 | 관문 2를 통과했을 때만 후보 기업 `scan` (6장) | 통과한 후보만 브랜치에서 추가 |
+
+**결과 올리기** (둘 중 하나)
+- git을 쓰면: `app/data/results.json`, `data/work`, `data/results`, `eval/gold`를 커밋하고 main에 올립니다. 올리면 Vercel이 서비스 주소를 다시 배포합니다.
+- git이 어려우면: `app/data/results.json`과 `data/work` 폴더를 압축해 Claude와의 채팅에 첨부합니다. 저장소에 대신 올립니다. (`.env`와 PDF는 넣지 않습니다)
 
 한 번에 돌릴 때: `python run.py all --company samsung` (1~7단계)
 

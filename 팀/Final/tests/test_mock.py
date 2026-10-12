@@ -73,6 +73,11 @@ candidates:
       - {key: y2024, title: "2024 사업보고서", pdf: demo_2024.txt, url: ""}
     evidence_reports:
       - {key: y2025, title: "2025 사업보고서", pdf: no_such_2025.txt, url: ""}
+  junk:
+    name: 깨진글자 (가상 회사)
+    promise_reports:
+      - {key: y2024, title: "2024 사업보고서", pdf: junk_2024.txt, url: ""}
+    evidence_reports: []
 section_pages: {}
 """
 
@@ -103,6 +108,16 @@ def main():
     d = subprocess.run(cmd, capture_output=True, text=True, cwd=ENGINE, env={**os.environ, "OPENAI_API_KEY": ""})
     print(d.stdout)
     assert "[시작 전 점검]" in d.stdout and d.stdout.count("쪽 OK") == 3, "doctor 점검 실패"
+    # 장 찾기 미리 보기: 보고서 3개 모두 한 줄씩, 반기보고서에는 정관 장이 없어 (주의)가 나와야 함
+    assert d.stdout.count("장 찾기:") == 3 and "II. 사업의 내용 OK" in d.stdout, "doctor 장 찾기 미리 보기 실패"
+    assert "2026 반기보고서: I. 회사의 개요 > 5. 정관에 관한 사항 장을 제목으로 못 찾았습니다" in d.stdout, d.stdout
+    # 글자가 깨져 읽히는 PDF(예: "(cid:123)"만 나오는 경우)는 doctor가 먼저 알려 줘야 함
+    with open(os.path.join(TMP, "pdf", "junk_2024.txt"), "w", encoding="utf-8") as f:
+        f.write("(cid:123)(cid:45) " * 60)
+    cmd_j = [sys.executable, os.path.join(ENGINE, "run.py"), "doctor", "--company", "junk", "--no-api",
+             "--config", os.path.join(TMP, "config.yaml")]
+    dj = subprocess.run(cmd_j, capture_output=True, text=True, cwd=ENGINE, env={**os.environ, "OPENAI_API_KEY": ""})
+    assert "글자가 깨져 보임" in dj.stdout and "글자가 깨져 읽힙니다" in dj.stdout, dj.stdout
     run("all", "--company", "demo", "--mock")
     exp = run("export")  # --companies 없이: companies만 내보내고 후보 기업(candidates)은 넣지 않아야 함
     assert "demo_scan" not in exp and "후보전자" not in exp, "후보 기업이 기본 내보내기에 들어감"

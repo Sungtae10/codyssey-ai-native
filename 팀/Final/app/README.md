@@ -43,7 +43,7 @@
 - **가장 쉬운 방법**: `index.html`을 더블클릭하면 브라우저에서 열려요. 이때는 예시 데이터로 보여요.
 - **실제 결과로 보기**: `data/results.json`을 넣고, 폴더를 웹 서버로 열어야 해요.
   ```
-  cd ai-promise-screens
+  cd app        # 저장소 맨 위 폴더에서
   python3 -m http.server 8000
   ```
   그다음 브라우저에서 `http://localhost:8000`을 열어요.

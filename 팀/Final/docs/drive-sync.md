@@ -19,7 +19,7 @@
 - 실제 `app/data/results.json`
 - SK하이닉스 blind Gold Label
 - 사용자 테스트 실측 결과
-- 추가 3개 기업 실제 결과
-- 서준용 UX/디자인 산출물
+- (관문 2를 통과했을 때만) 시연용 추가 기업의 실제 결과
+- 서준용 디자인 시안 원본 zip (화면 반영은 PR #9로 완료, `app/css/style.css`)
 
 판정기준 v2가 팀 합의로 확정되면 Drive와 GitHub 제목·내용을 같은 버전으로 맞춥니다.

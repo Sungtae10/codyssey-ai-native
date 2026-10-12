@@ -56,15 +56,17 @@ def is_main_test(r):
 
 
 def valid_quant(r):
+    """두 과제 모두 '4분 안에 끝냄'이 적혀 있어야 하고, 정답 칸은 4분 안에 끝낸 과제에만 필요합니다.
+    시간 초과(끝냄=아니오)면 정답 칸이 비어 있어도 '실패'로 셉니다. (빈칸이라고 빼면 시간 초과가 빠져 성공률이 부풀려짐)"""
     if not is_main_test(r):
         return False
-    required = [
-        "서비스 4분 안에 끝냄",
-        "서비스 정답",
-        "직접 검색 4분 안에 끝냄",
-        "직접 검색 정답",
-    ]
-    return all(as_bool(r.get(k)) is not None for k in required)
+    for prefix in ("서비스", "직접 검색"):
+        finished = as_bool(r.get(f"{prefix} 4분 안에 끝냄"))
+        if finished is None:
+            return False
+        if finished and as_bool(r.get(f"{prefix} 정답")) is None:
+            return False
+    return True
 
 
 def success(r, prefix):
@@ -174,13 +176,17 @@ def main(path):
         for k, v in tools.most_common():
             print(f"- {k}: {v}명")
 
+    # 설문 점수는 본 테스트 참가자와 의견 참여를 섞지 않습니다 (과제를 한 조건이 달라서)
     print("\n## 설문")
     for col, label in [
         ("설문1 이해(1~5)", "이해도"),
         ("설문2 신뢰(1~5)", "신뢰도"),
         ("설문3 활용 의향(1~5)", "면접 활용 의향"),
     ]:
-        print(f"- {label} 평균: {fmt(survey_mean(survey_rows, col))}/5")
+        line = f"- {label} 평균: 본 테스트 {fmt(survey_mean(main_rows, col))}/5"
+        if opinion:
+            line += f", 의견 참여(참고) {fmt(survey_mean(opinion, col))}/5"
+        print(line)
 
     feedback = [norm(r.get("설문4 개선 의견")) for r in survey_rows if norm(r.get("설문4 개선 의견"))]
     if feedback:

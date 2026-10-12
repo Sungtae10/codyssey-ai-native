@@ -193,6 +193,7 @@ def main():
     assert "시험 실행" in out and len(one) == 1 and one[0]["type"] == "specific", "--limit 1 시험 실패"
     run("card", "--company", "demo", "--mock")
     check_extract_filter()
+    check_user_test_analysis()
 
     # 후보 기업 미리 보기: 약속 보고서 PDF 1개만 있어도 돌아가고(근거 PDF 없음), 기준 통과 여부를 알려 줘야 함
     out = run("scan", "--company", "demo_scan", "--mock")
@@ -249,6 +250,39 @@ def check_sentence_gold():
     assert ex["source"] == "demo_서원.csv" and ex["human"] == 5 and ex["found"] == 4, ex
     errs = list(csv.DictReader(open(os.path.join(out, "errors_demo.csv"), encoding="utf-8-sig")))
     assert len(errs) == 2 and sum(1 for e in errs if e["원인"] == "분류가 다름") == 1, errs
+
+
+def check_user_test_analysis():
+    """사용자 테스트 기록지 요약: 시간 초과(정답 칸 빈칸)도 실패로 세고, 예행연습·미동의·빈 기록·의견 참여는 정량에서 빼는지 시험합니다."""
+    tpl = os.path.join(ROOT, "eval", "user_test", "template.csv")
+    with open(tpl, encoding="utf-8-sig") as f:
+        head = next(csv.reader(f))
+    rows = [
+        {"번호": "R0", "구분": "예행연습", "동의": "예", "서비스 4분 안에 끝냄": "예", "서비스 정답": "예"},
+        {"번호": "1", "구분": "본 테스트", "동의": "예", "서비스 걸린 시간(초)": "90", "서비스 4분 안에 끝냄": "예", "서비스 정답": "예",
+         "직접 검색 4분 안에 끝냄": "아니오", "직접 검색 쓴 도구": "포털", "설문1 이해(1~5)": "5", "설문2 신뢰(1~5)": "4"},
+        {"번호": "2", "구분": "본 테스트", "동의": "예", "서비스 걸린 시간(초)": "120", "서비스 4분 안에 끝냄": "예", "서비스 정답": "아니오",
+         "직접 검색 걸린 시간(초)": "200", "직접 검색 4분 안에 끝냄": "예", "직접 검색 정답": "예", "설문1 이해(1~5)": "3"},
+        {"번호": "3", "구분": "본 테스트", "동의": "아니오"},
+        {"번호": "4", "구분": "본 테스트", "동의": "예", "서비스 정답": "예"},
+        {"번호": "의견1", "구분": "의견 참여", "설문1 이해(1~5)": "1"},
+    ]
+    path = os.path.join(TMP, "user_test.csv")
+    with open(path, "w", encoding="utf-8-sig", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=head)
+        w.writeheader()
+        for r in rows:
+            assert set(r) <= set(head), f"기록지 칸 이름이 템플릿과 다름: {set(r) - set(head)}"
+            w.writerow(r)
+    r = subprocess.run([sys.executable, os.path.join(ROOT, "eval", "user_test", "analyze.py"), path],
+                       capture_output=True, text=True)
+    print(r.stdout)
+    assert r.returncode == 0, r.stderr
+    out = r.stdout
+    assert "정량 분석 가능: 2명" in out, "시간 초과(정답 빈칸) 참가자가 빠지거나 다른 행이 섞임"
+    assert "AI Promise: 50.0% (1/2)" in out and "직접 검색: 50.0% (1/2)" in out, out
+    assert "직접검색 시간 초과: 1/2" in out, out
+    assert "본 테스트 4.0/5, 의견 참여(참고) 1.0/5" in out, "설문 평균에 의견 참여가 섞임"
 
 
 def check_extract_filter():

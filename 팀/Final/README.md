@@ -76,4 +76,4 @@ python tests/test_mock.py   # 마지막 줄에 "시험 통과"
 ## 9. 추가 평가
 
 - 사용자 테스트: `eval/user_test/`
-- ML baseline: `eval/ml/` — 5개 기업 약 300문장의 PROMISE / EVIDENCE / OTHER 분류 실험
+- ML baseline (`eval/ml/`): 5개 기업 약 300문장의 PROMISE / EVIDENCE / OTHER 분류 실험

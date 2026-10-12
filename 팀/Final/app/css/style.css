@@ -1,55 +1,64 @@
 /* =========================================================
-   AI Promise 화면 스타일
+   AI Promise 화면 스타일 (서준용 디자인 시안 v4, 10/12)
    - 색은 모두 맨 위 "디자인 값"에서만 바꿔요.
    - 다크: [data-theme="dark"], 라이트: [data-theme="light"]
+   - 12번은 10/12 엔진 결과 연결에서 더한 부품이에요. 지우면 화면 일부가 깨져요.
    ========================================================= */
 
 /* ---------- 1. 디자인 값 (여기만 바꾸면 전체가 바뀌어요) ---------- */
 :root {
-  --font: 'Noto Sans KR', system-ui, -apple-system, sans-serif;
-  --radius-lg: 18px;
-  --radius-md: 14px;
+  --font: 'Pretendard Variable', system-ui, -apple-system, sans-serif;
+  --radius-lg: 20px;
+  --radius-md: 16px;
   --radius-sm: 12px;
-  --page-max: 480px;          /* 큰 화면에서도 휴대폰 폭으로 보여줘요 */
+  --page-max: 480px;
 }
 
 [data-theme="dark"] {
-  --bg: #13161B;
-  --surface: #1C2027;
-  --chip: #262B33;
-  --line: #2C313A;
-  --text: #ECEEF1;
-  --sub: #A8AEB8;
-  --body: #C9CDD4;
-  --muted: #6F7680;
-  --cta: #ECEEF1;
-  --cta-text: #13161B;
-  --outside: #0B0D10;
+  --bg: #111315;
+  --surface: #1A1D21;
+  --chip: #22262B;
+  --line: #2A2E34;
+  --text: #F0F1F3;
+  --sub: #7E8590;
+  --body: #B8BCC4;
+  --muted: #555B65;
+  --cta: #4ECBA0;
+  --cta-text: #0A1A14;
+  --outside: #0A0C0E;
+
+  /* 카드에 쓰는 반투명 */
+  --glass: rgba(255,255,255, 0.04);
+  --glass-line: rgba(255,255,255, 0.06);
 
   /* 판정 4색 */
-  --confirmed: #5ED39A;   --confirmed-bg: #15301F;   --confirmed-line: #2F6B4D;
-  --partial: #F2A65A;     --partial-bg: #33240F;     --partial-line: #6B4A1F;
-  --not_found: #A3A9B3;   --not_found-bg: #262A31;   --not_found-line: #3A3F48;
-  --not_pursued: #9DAAFF; --not_pursued-bg: #1F2442; --not_pursued-line: #3A4380;
+  --confirmed: #4ECBA0;   --confirmed-bg: #14271E;   --confirmed-line: #26573F;
+  --partial: #F2A65A;     --partial-bg: #2B1F0C;     --partial-line: #5C3D16;
+  --not_found: #8B919C;   --not_found-bg: #1E2128;   --not_found-line: #343942;
+  --not_pursued: #9DAAFF; --not_pursued-bg: #1A1A2E; --not_pursued-line: #3D3D6B;
 }
 
 [data-theme="light"] {
-  --bg: #F5F6F8;
+  --bg: #F0F2F5;
   --surface: #FFFFFF;
-  --chip: #EEF0F3;
-  --line: #E1E4E9;
-  --text: #161A20;
-  --sub: #5A616C;
-  --body: #3A414C;
-  --muted: #8A919C;
-  --cta: #161A20;
+  --chip: #E8EBF0;
+  --line: #D8DCE4;
+  --text: #111318;
+  --sub: #5A6170;
+  --body: #2E3440;
+  --muted: #8C939F;
+  /* 라이트 초록·주황은 글자 대비 4.5:1(WCAG AA)을 넘게 시안 색보다 조금 진하게 (시안: #0D9B6A, #C06800) */
+  --cta: #0B855B;
   --cta-text: #FFFFFF;
-  --outside: #E6E8EC;
+  --outside: #E2E5EB;
 
-  --confirmed: #1E7A4C;   --confirmed-bg: #E3F3EA;   --confirmed-line: #A9D8BE;
-  --partial: #A85A00;     --partial-bg: #FCEBD5;     --partial-line: #EFC793;
-  --not_found: #5B6270;   --not_found-bg: #ECEEF1;   --not_found-line: #CDD1D7;
-  --not_pursued: #3F4FB8; --not_pursued-bg: #E5E8F8; --not_pursued-line: #B9C1EE;
+  --glass: rgba(255,255,255, 0.75);
+  --glass-line: rgba(0,0,0, 0.07);
+
+  --confirmed: #0A7751;   --confirmed-bg: #D4F3E6;   --confirmed-line: #7AD4AC;
+  --partial: #A55A00;     --partial-bg: #FFF0DB;     --partial-line: #E8BC70;
+  --not_found: #515868;   --not_found-bg: #E4E7ED;   --not_found-line: #B8BEC9;
+  --not_pursued: #5B5FC7; --not_pursued-bg: #EBEBFF; --not_pursued-line: #B3B5E6;
 }
 
 /* ---------- 2. 기본 ---------- */
@@ -60,14 +69,14 @@ body {
   background: var(--outside);
   color: var(--text);
   -webkit-font-smoothing: antialiased;
-  word-break: keep-all;          /* 한글이 단어 중간에서 끊기지 않게 */
+  word-break: keep-all;
   overflow-wrap: break-word;
 }
 a { color: inherit; text-decoration: none; }
 button { font-family: inherit; }
 :focus-visible { outline: 2px solid var(--confirmed); outline-offset: 2px; }
 
-/* ---------- 3. 앱 틀: 위 고정 / 가운데 스크롤 / 아래 고정 ---------- */
+/* ---------- 3. 앱 틀 ---------- */
 .app {
   max-width: var(--page-max);
   min-height: 100vh;
@@ -77,25 +86,34 @@ button { font-family: inherit; }
   display: flex;
   flex-direction: column;
 }
+
+/* 위쪽 바: 블러 배경 */
 .topbar {
   position: sticky; top: 0; z-index: 10;
   display: flex; justify-content: space-between; align-items: center;
   min-height: 60px;
-  padding: 8px 18px;
-  background: var(--bg);
+  padding: 8px 20px;
+  background: var(--bg); /* color-mix를 모르는 브라우저용 */
+  background: color-mix(in srgb, var(--bg) 80%, transparent);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  backdrop-filter: blur(16px) saturate(1.4);
+  border-bottom: 1px solid var(--glass-line);
 }
 .content {
   flex: 1;
-  padding: 8px 18px 24px;
-  display: flex; flex-direction: column; gap: 14px;
+  padding: 8px 20px 28px;
+  display: flex; flex-direction: column; gap: 16px;
 }
 .bottombar {
   position: sticky; bottom: 0; z-index: 10;
-  padding: 12px 18px calc(18px + env(safe-area-inset-bottom));
-  border-top: 1px solid var(--line);
-  background: var(--bg);
+  padding: 14px 20px calc(18px + env(safe-area-inset-bottom));
+  background: var(--bg); /* color-mix를 모르는 브라우저용 */
+  background: color-mix(in srgb, var(--bg) 80%, transparent);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  backdrop-filter: blur(16px) saturate(1.4);
+  border-top: 1px solid var(--glass-line);
 }
-.bottombar.two { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.bottombar.two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
 /* ---------- 4. 위쪽 바 ---------- */
 .brand { display: flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 700; }
@@ -107,45 +125,50 @@ button { font-family: inherit; }
 .icon-btn {
   width: 44px; height: 44px; padding: 0;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--line);
-  background: var(--surface); color: var(--text);
+  border: none;
+  background: var(--glass); color: var(--text);
   display: flex; align-items: center; justify-content: center;
   cursor: pointer;
+  transition: background 0.15s;
 }
+.icon-btn:active { background: var(--chip); }
 
 /* ---------- 5. 공통 부품 ---------- */
 .card {
   background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  padding: 14px 16px;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 16px 18px;
   display: flex; flex-direction: column; gap: 10px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 0 0 1px var(--glass-line);
 }
 .card-title { font-size: 15px; font-weight: 700; margin: 0; }
-.eyebrow { font-size: 14px; color: var(--sub); margin: 0; }
-.headline { font-size: 26px; font-weight: 900; line-height: 1.35; margin: 0; }
+.eyebrow { font-size: 13px; color: var(--sub); margin: 0; letter-spacing: 0.02em; }
+.headline { font-size: 28px; font-weight: 900; line-height: 1.32; margin: 0; letter-spacing: -0.025em; }
 .headline .hl { color: var(--confirmed); }
 .lead { font-size: 15px; line-height: 1.65; color: var(--sub); margin: 0; }
 .note { font-size: 12px; line-height: 1.6; color: var(--sub); margin: 0; }
-.section-label { font-size: 14px; font-weight: 700; color: var(--sub); margin: 0; }
+.section-label { font-size: 12px; font-weight: 700; color: var(--sub); margin: 0; text-transform: uppercase; letter-spacing: 0.06em; }
 
 .btn {
   display: flex; justify-content: center; align-items: center; gap: 6px;
   min-height: 54px; border-radius: var(--radius-md);
   font-size: 15px; font-weight: 700; cursor: pointer;
+  transition: transform 0.1s, opacity 0.15s;
 }
+.btn:active { transform: scale(0.98); opacity: 0.85; }
 .btn-primary { background: var(--cta); color: var(--cta-text); border: 0; }
 .btn-secondary { background: var(--surface); color: var(--text); border: 1px solid var(--line); }
 .btn-sm { min-height: 50px; font-size: 14px; font-weight: 500; }
 
-/* 판정 표시: class에 verdict-<코드>를 붙이면 색이 바뀌어요 */
+/* 판정 표시 */
 .verdict-text { font-size: 12px; font-weight: 700; color: var(--v); }
 .verdict-dot { width: 10px; height: 10px; flex: none; border-radius: 50%; background: var(--v); }
 .verdict-pill {
   align-self: flex-start;
   display: inline-flex; align-items: center; gap: 6px;
-  font-size: 13px; font-weight: 700;
-  padding: 5px 12px; border-radius: 999px;
+  font-size: 12px; font-weight: 700;
+  padding: 5px 14px; border-radius: 999px;
   color: var(--v); background: var(--v-bg); border: 1px solid var(--v-line);
 }
 .verdict-confirmed   { --v: var(--confirmed);   --v-bg: var(--confirmed-bg);   --v-line: var(--confirmed-line); }
@@ -154,17 +177,21 @@ button { font-family: inherit; }
 .verdict-not_pursued { --v: var(--not_pursued); --v-bg: var(--not_pursued-bg); --v-line: var(--not_pursued-line); }
 
 /* ---------- 6. 화면 1: 기업 고르기 ---------- */
-.hero { display: flex; flex-direction: column; gap: 10px; padding-top: 18px; }
+.hero { display: flex; flex-direction: column; gap: 12px; padding-top: 20px; }
 .company-list { display: flex; flex-direction: column; gap: 10px; }
 .company {
   display: flex; align-items: center; gap: 14px;
   padding: 18px;
-  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg);
+  background: var(--surface); border: none; border-radius: var(--radius-lg);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 0 0 1px var(--glass-line);
+  transition: transform 0.12s, box-shadow 0.15s;
+  cursor: pointer;
 }
-.company[aria-disabled="true"] { opacity: 0.6; cursor: default; }
+.company:active { transform: scale(0.985); }
+.company[aria-disabled="true"] { opacity: 0.45; cursor: default; pointer-events: none; }
 .company-logo {
   width: 48px; height: 48px; flex: none; border-radius: 14px;
-  background: var(--chip);
+  background: linear-gradient(135deg, var(--confirmed-bg), var(--chip));
   display: flex; align-items: center; justify-content: center;
   font-size: 17px; font-weight: 900;
 }
@@ -174,56 +201,65 @@ button { font-family: inherit; }
 .steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
 .steps li { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--body); }
 .step-num {
-  width: 22px; height: 22px; flex: none; border-radius: 50%;
-  background: var(--confirmed-bg); color: var(--confirmed);
+  width: 24px; height: 24px; flex: none; border-radius: 50%;
+  background: var(--confirmed); color: var(--cta-text);
   display: flex; align-items: center; justify-content: center;
-  font-size: 12px; font-weight: 700;
+  font-size: 11px; font-weight: 800;
 }
 
 /* ---------- 7. 화면 2: 약속 목록 ---------- */
-.summary-bar { display: flex; gap: 4px; height: 6px; }
-.summary-bar span { border-radius: 3px; background: var(--v); }
-.summary-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; }
-.summary-num { font-size: 22px; font-weight: 900; color: var(--v); }
+.summary-bar { display: flex; gap: 3px; height: 8px; }
+.summary-bar span { border-radius: 4px; background: var(--v); }
+.summary-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.summary-num { font-size: 28px; font-weight: 900; color: var(--v); font-variant-numeric: tabular-nums; }
 .summary-label { font-size: 11px; line-height: 1.3; color: var(--sub); }
 .promise-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
 .promise-item {
   display: flex; align-items: center; gap: 12px;
-  min-height: 44px; padding: 12px 14px;
-  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md);
+  min-height: 48px; padding: 14px 16px;
+  background: var(--surface); border: none; border-radius: var(--radius-md);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 0 0 1px var(--glass-line);
+  border-left: 3px solid var(--v, var(--line));
+  transition: transform 0.12s;
+  cursor: pointer;
 }
+.promise-item:active { transform: scale(0.985); }
 .promise-item-body { flex: 1; display: flex; flex-direction: column; gap: 4px; }
-.promise-item-title { font-size: 14px; line-height: 1.45; font-weight: 500; }
+.promise-item-title { font-size: 14px; line-height: 1.5; font-weight: 500; }
 .chevron { color: var(--muted); flex: none; }
 
 /* ---------- 8. 화면 3: 약속 자세히 보기 ---------- */
-.detail-title { font-size: 22px; font-weight: 900; line-height: 1.4; margin: 0; }
+.detail-title { font-size: 22px; font-weight: 900; line-height: 1.4; margin: 0; letter-spacing: -0.02em; }
 .compare { padding: 0; gap: 0; overflow: hidden; }
-.quote-block { padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
+.quote-block { padding: 16px 18px; display: flex; flex-direction: column; gap: 6px; }
 .quote-meta { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--sub); }
 .quote-meta.is-evidence { color: var(--v, var(--confirmed)); }
-.quote-text { font-size: 15px; line-height: 1.7; margin: 0; }
+.quote-text { font-size: 15px; line-height: 1.75; margin: 0; }
 .quote-empty { font-size: 14px; line-height: 1.7; color: var(--sub); margin: 0; }
-.divider { display: flex; align-items: center; gap: 8px; padding: 0 16px; color: var(--sub); font-size: 11px; }
+.divider { display: flex; align-items: center; gap: 8px; padding: 0 18px; color: var(--sub); font-size: 11px; font-weight: 600; letter-spacing: 0.03em; }
 .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--line); }
 .checks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
 .checks li { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--body); }
 .check-icon {
-  width: 20px; height: 20px; flex: none; border-radius: 50%;
+  width: 22px; height: 22px; flex: none; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
 }
-.check-icon.ok { background: var(--confirmed-bg); color: var(--confirmed); }
+.check-icon.ok { background: var(--confirmed); color: var(--cta-text); }
 .check-icon.no { background: var(--chip); color: var(--muted); }
 .reason { font-size: 14px; line-height: 1.75; color: var(--body); margin: 0; }
 
 /* ---------- 9. 화면 4: 면접 카드 ---------- */
 .issue { display: flex; gap: 12px; align-items: flex-start; }
-.issue-num { font-size: 15px; font-weight: 900; color: var(--muted); width: 14px; }
+.issue-num { font-size: 16px; font-weight: 900; color: var(--confirmed); width: 18px; font-variant-numeric: tabular-nums; }
 .issue-body { flex: 1; display: flex; flex-direction: column; gap: 4px; }
 .issue-text { font-size: 14px; line-height: 1.55; }
-.answer { background: var(--chip); border-radius: var(--radius-sm); padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
-.answer-tag { font-size: 12px; font-weight: 700; color: var(--confirmed); }
-.answer-text { font-size: 14px; line-height: 1.6; color: var(--body); }
+.answer {
+  background: var(--chip); border-radius: var(--radius-sm);
+  padding: 14px 16px; display: flex; flex-direction: column; gap: 6px;
+  border-left: 3px solid var(--confirmed);
+}
+.answer-tag { font-size: 11px; font-weight: 700; color: var(--confirmed); letter-spacing: 0.02em; }
+.answer-text { font-size: 14px; line-height: 1.65; color: var(--body); }
 .question { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; line-height: 1.6; }
 .question svg { flex: none; margin-top: 2px; color: var(--confirmed); }
 
@@ -232,33 +268,94 @@ button { font-family: inherit; }
 .toast {
   position: fixed; left: 50%; bottom: 96px; transform: translateX(-50%);
   background: var(--cta); color: var(--cta-text);
-  padding: 10px 16px; border-radius: 999px; font-size: 13px; font-weight: 700;
+  padding: 10px 18px; border-radius: 999px; font-size: 13px; font-weight: 700;
   z-index: 50;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
 }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
-/* ---------- 11. 1012 데이터 연결 수정에서 더한 부품 ---------- */
-/* 규칙 9: 예시 데이터 안내 (화면 맨 위) */
+/* ---------- 11. 라이트 모드 보강 ---------- */
+[data-theme="light"] .card {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04);
+}
+[data-theme="light"] .company {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04);
+}
+[data-theme="light"] .promise-item {
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05), 0 0 0 1px rgba(0,0,0,0.03);
+}
+[data-theme="light"] .company-logo {
+  background: linear-gradient(135deg, #D4F3E6, #E8EBF0);
+}
+[data-theme="light"] .step-num {
+  background: var(--cta);
+  color: #FFFFFF;
+}
+[data-theme="light"] .headline .hl {
+  color: #0D9B6A;
+}
+[data-theme="light"] .btn-primary {
+  background: var(--cta);
+  color: #FFFFFF;
+}
+[data-theme="light"] .icon-btn {
+  background: rgba(0,0,0,0.04);
+  border: none;
+}
+[data-theme="light"] .icon-btn:active {
+  background: rgba(0,0,0,0.08);
+}
+[data-theme="light"] .summary-bar {
+  height: 10px;
+}
+[data-theme="light"] .check-icon.ok {
+  background: var(--cta);
+  color: #FFFFFF;
+}
+[data-theme="light"] .answer {
+  border-left-color: #0D9B6A;
+}
+[data-theme="light"] .answer-tag {
+  color: var(--confirmed);
+}
+[data-theme="light"] .issue-num {
+  color: var(--confirmed);
+}
+[data-theme="light"] .toast {
+  background: var(--cta);
+  color: #FFFFFF;
+  box-shadow: 0 4px 16px rgba(13,155,106,0.3);
+}
+
+/* ---------- 12. 엔진 결과 연결에서 더한 부품 (10/12 김성태, 새 디자인 값에 맞춤) ---------- */
+/* 예시 데이터 안내 (화면 맨 위) */
 .sample-banner {
-  padding: 8px 18px;
+  padding: 8px 20px;
   font-size: 12px; font-weight: 700; line-height: 1.5; text-align: center;
   background: var(--chip); color: var(--text);
   border-bottom: 1px solid var(--line);
 }
-/* 규칙 1: 안내 문구 2개 (모든 화면) */
+/* 안내 문구 2개 (모든 화면) */
 .disclaimer { margin: 0; font-size: 12px; line-height: 1.6; color: var(--sub); }
-/* 규칙 3: 개수 요약 한 줄 */
+/* 개수 요약 한 줄 */
 .count-line { margin: 0; font-size: 15px; font-weight: 700; line-height: 1.6; color: var(--body); }
-.company-reports { font-size: 12px; color: var(--muted); }
-/* 방향성 약속 묶음: 판정 색 없이 회색 */
-.verdict-none { --v: var(--muted); --v-bg: var(--chip); --v-line: var(--line); }
+/* 기업 카드의 보고서 이름, 검증 안내 (새 muted 색은 너무 흐려서 sub 색으로) */
+.company-reports { font-size: 12px; line-height: 1.5; color: var(--sub); }
+/* 방향성 약속 묶음: 판정 색 없이 회색 (muted는 글자로 쓰기엔 흐려서 sub) */
+.verdict-none { --v: var(--sub); --v-bg: var(--chip); --v-line: var(--line); }
+/* 방향성 약속 자세히 보기의 배지: 회색 칩 위 sub 글자는 다크 4.09:1이라 body 색으로 */
+.verdict-none .verdict-pill { color: var(--body); }
 .directional {
-  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md);
-  padding: 12px 14px; display: flex; flex-direction: column; gap: 10px;
+  background: var(--surface); border: none; border-radius: var(--radius-md);
+  padding: 14px 16px; display: flex; flex-direction: column; gap: 10px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 0 0 1px var(--glass-line);
 }
 .directional summary { cursor: pointer; font-size: 14px; font-weight: 700; color: var(--sub); min-height: 28px; }
 .directional[open] summary { margin-bottom: 8px; }
 .directional .promise-list { margin-top: 8px; }
+[data-theme="light"] .directional {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04);
+}
 /* 근거 문장 아래: 원문 확인됨, 원문 보기 */
 .ev-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
 .verified {
@@ -269,6 +366,7 @@ button { font-family: inherit; }
   display: inline-flex; align-items: center; gap: 4px; min-height: 32px;
   font-size: 12px; font-weight: 700; color: var(--sub); text-decoration: underline;
 }
+.answer .ev-link { color: var(--body); } /* 회색 칩 위에서는 sub 색 대비가 4.09:1이라 */
 /* 면접 카드: 항목을 누르면 화면 3으로 */
 a.issue { align-items: center; }
 a.issue .chevron { margin-left: auto; }

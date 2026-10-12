@@ -47,17 +47,18 @@
   --sub: #5A6170;
   --body: #2E3440;
   --muted: #8C939F;
-  --cta: #0D9B6A;
+  /* 라이트 초록·주황·빨강은 글자 대비 4.5:1(WCAG AA)을 넘게 시안 색보다 조금 진하게 (시안: #0D9B6A, #C06800, #CC2E2E) */
+  --cta: #0B855B;
   --cta-text: #FFFFFF;
   --outside: #E2E5EB;
 
   --glass: rgba(255,255,255, 0.75);
   --glass-line: rgba(0,0,0, 0.07);
 
-  --confirmed: #0D9B6A;   --confirmed-bg: #D4F3E6;   --confirmed-line: #7AD4AC;
-  --partial: #C06800;     --partial-bg: #FFF0DB;     --partial-line: #E8BC70;
+  --confirmed: #0A7751;   --confirmed-bg: #D4F3E6;   --confirmed-line: #7AD4AC;
+  --partial: #A55A00;     --partial-bg: #FFF0DB;     --partial-line: #E8BC70;
   --not_found: #515868;   --not_found-bg: #E4E7ED;   --not_found-line: #B8BEC9;
-  --not_pursued: #CC2E2E; --not_pursued-bg: #FFE5E5; --not_pursued-line: #E09A9A;
+  --not_pursued: #C62D2D; --not_pursued-bg: #FFE5E5; --not_pursued-line: #E09A9A;
 }
 
 /* ---------- 2. 기본 ---------- */
@@ -287,14 +288,14 @@ button { font-family: inherit; }
   background: linear-gradient(135deg, #D4F3E6, #E8EBF0);
 }
 [data-theme="light"] .step-num {
-  background: #0D9B6A;
+  background: var(--cta);
   color: #FFFFFF;
 }
 [data-theme="light"] .headline .hl {
   color: #0D9B6A;
 }
 [data-theme="light"] .btn-primary {
-  background: #0D9B6A;
+  background: var(--cta);
   color: #FFFFFF;
 }
 [data-theme="light"] .icon-btn {
@@ -308,20 +309,20 @@ button { font-family: inherit; }
   height: 10px;
 }
 [data-theme="light"] .check-icon.ok {
-  background: #0D9B6A;
+  background: var(--cta);
   color: #FFFFFF;
 }
 [data-theme="light"] .answer {
   border-left-color: #0D9B6A;
 }
 [data-theme="light"] .answer-tag {
-  color: #0D9B6A;
+  color: var(--confirmed);
 }
 [data-theme="light"] .issue-num {
-  color: #0D9B6A;
+  color: var(--confirmed);
 }
 [data-theme="light"] .toast {
-  background: #0D9B6A;
+  background: var(--cta);
   color: #FFFFFF;
   box-shadow: 0 4px 16px rgba(13,155,106,0.3);
 }
@@ -363,6 +364,7 @@ button { font-family: inherit; }
   display: inline-flex; align-items: center; gap: 4px; min-height: 32px;
   font-size: 12px; font-weight: 700; color: var(--sub); text-decoration: underline;
 }
+.answer .ev-link { color: var(--body); } /* 회색 칩 위에서는 sub 색 대비가 4.09:1이라 */
 /* 면접 카드: 항목을 누르면 화면 3으로 */
 a.issue { align-items: center; }
 a.issue .chevron { margin-left: auto; }

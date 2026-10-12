@@ -35,7 +35,7 @@
   --confirmed: #4ECBA0;   --confirmed-bg: #14271E;   --confirmed-line: #26573F;
   --partial: #F2A65A;     --partial-bg: #2B1F0C;     --partial-line: #5C3D16;
   --not_found: #8B919C;   --not_found-bg: #1E2128;   --not_found-line: #343942;
-  --not_pursued: #F27A7A; --not_pursued-bg: #2A1414; --not_pursued-line: #5C2424;
+  --not_pursued: #9DAAFF; --not_pursued-bg: #1A1A2E; --not_pursued-line: #3D3D6B;
 }
 
 [data-theme="light"] {
@@ -47,7 +47,7 @@
   --sub: #5A6170;
   --body: #2E3440;
   --muted: #8C939F;
-  /* 라이트 초록·주황·빨강은 글자 대비 4.5:1(WCAG AA)을 넘게 시안 색보다 조금 진하게 (시안: #0D9B6A, #C06800, #CC2E2E) */
+  /* 라이트 초록·주황은 글자 대비 4.5:1(WCAG AA)을 넘게 시안 색보다 조금 진하게 (시안: #0D9B6A, #C06800) */
   --cta: #0B855B;
   --cta-text: #FFFFFF;
   --outside: #E2E5EB;
@@ -58,7 +58,7 @@
   --confirmed: #0A7751;   --confirmed-bg: #D4F3E6;   --confirmed-line: #7AD4AC;
   --partial: #A55A00;     --partial-bg: #FFF0DB;     --partial-line: #E8BC70;
   --not_found: #515868;   --not_found-bg: #E4E7ED;   --not_found-line: #B8BEC9;
-  --not_pursued: #C62D2D; --not_pursued-bg: #FFE5E5; --not_pursued-line: #E09A9A;
+  --not_pursued: #5B5FC7; --not_pursued-bg: #EBEBFF; --not_pursued-line: #B3B5E6;
 }
 
 /* ---------- 2. 기본 ---------- */

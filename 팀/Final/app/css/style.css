@@ -343,6 +343,8 @@ button { font-family: inherit; }
 .company-reports { font-size: 12px; line-height: 1.5; color: var(--sub); }
 /* 방향성 약속 묶음: 판정 색 없이 회색 (muted는 글자로 쓰기엔 흐려서 sub) */
 .verdict-none { --v: var(--sub); --v-bg: var(--chip); --v-line: var(--line); }
+/* 방향성 약속 자세히 보기의 배지: 회색 칩 위 sub 글자는 다크 4.09:1이라 body 색으로 */
+.verdict-none .verdict-pill { color: var(--body); }
 .directional {
   background: var(--surface); border: none; border-radius: var(--radius-md);
   padding: 14px 16px; display: flex; flex-direction: column; gap: 10px;

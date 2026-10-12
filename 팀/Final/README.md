@@ -2,16 +2,15 @@
 
 회사가 사업보고서에 "AI로 이것을 하겠다"고 쓴 약속을 찾고, 다음 보고서에 실행 근거가 있는지 찾아 4가지(근거 확인, 일부 확인, 공시에서 확인 불가, 회사가 미추진으로 공시)로 판정해 보여주는 웹 서비스입니다. Codyssey Final Project입니다.
 
-- 핵심 기업: 삼성전자(개발용), SK하이닉스(평가용)
-- 최종 제품 목표: 5개 기업
-- 확장 후보: 현대자동차, LG전자, NAVER (공시 feasibility 확인 후 확정)
+- 핵심 기업: 삼성전자(개발·시연용), SK하이닉스(평가용)
+- 기업 추가: 관문 2를 통과하면 업종이 다른 시연용 기업을 최대 3곳 (후보: 현대자동차, NAVER, LG전자). 시연용 기업은 사람 정답과 비교하지 않고 화면에 시연용으로 표시합니다.
 - 약속을 찾는 보고서: 2024 사업보고서 / 근거를 찾는 보고서: 2025 사업보고서, 2026 반기보고서
 
 ## 1. 폴더
 
 | 폴더 | 내용 | 만든 사람 |
 | --- | --- | --- |
-| `app/` | 웹 화면 4개 (HTML, CSS, JS). Vercel이 이 폴더를 배포합니다 | 화면: 박수민 (`1011_수민_화면.zip`) / 엔진 결과 연결: 김성태 (`1012_김성태_화면_데이터연결.zip`) |
+| `app/` | 웹 화면 4개 (HTML, CSS, JS). Vercel이 이 폴더를 배포합니다 | 화면: 박수민 (`1011_수민_화면.zip`) / 디자인: 서준용 (시안 v4, 10/12·10/13) / 엔진 결과 연결: 김성태 (`1012_김성태_화면_데이터연결.zip`) |
 | `engine/` | 공시 PDF에서 약속을 찾고, 근거를 검색해 판정하고, 면접 카드를 만드는 AI 엔진 | 김성태 |
 | `eval/` | 판정 기준(v1, v2)과 사람 정답으로 AI를 평가하는 코드 | 김성태 (정답: 김서원, 김성태) |
 | `tests/` | 인터넷과 API 키 없이 가상 회사로 끝까지 도는 시험 | 김성태 |
@@ -34,13 +33,18 @@ python run.py export --companies samsung skhynix --copy-to ../app/data/results.j
 코드 점검(키 없이 가상 회사로 시험):
 
 ```bash
-python tests/test_mock.py   # 마지막 줄에 "시험 통과"
+python tests/test_mock.py        # 엔진·평가: 마지막 줄에 "시험 통과"
+python tests/test_ui_static.py   # 화면: app.js가 쓰는 class가 CSS에 모두 있는지 (브라우저 없이)
+python tests/ui_check.py         # 화면: 모든 화면(예시 데이터 18개) x 다크/라이트의 글자 대비, 가로 넘침, 필수 부품 (Playwright 필요)
 ```
+
+세 검사는 GitHub에 올릴 때마다 CI에서도 자동으로 돌아갑니다.
 
 ## 4. 작업 규칙
 
 - main에 올라간 것은 바로 서비스 주소에 배포됩니다. main에 올리기 전에 `python tests/test_mock.py`가 "시험 통과"여야 합니다.
-- 사용자 테스트 기간(10/14~16)에는 main의 화면을 바꾸지 않습니다. 고칠 것은 브랜치에서 만들고 테스트가 끝난 뒤 합칩니다.
+- 화면은 10/13(화) 17:00에 고정합니다. 사용자 테스트 기간(10/14~16)에는 main의 화면을 바꾸지 않습니다. 고칠 것은 브랜치에서 만들고 테스트가 끝난 뒤 합칩니다.
+- 디자인을 바꾸면 `tests/ui_check.py`로 글자 대비(작은 글자 4.5:1, 큰 글자 3:1 이상)와 화면 깨짐을 확인합니다.
 - 다른 AI 도구에 저장소 접근을 주면 main에 직접 올리지 않고 브랜치와 Pull Request로만 작업하고, 김성태가 확인한 뒤 합칩니다. (두 도구가 main을 동시에 고치면 서로 덮어씁니다)
 
 ## 5. 지키는 것
@@ -58,7 +62,7 @@ python tests/test_mock.py   # 마지막 줄에 "시험 통과"
 
 ## 7. AI 사용
 
-엔진 코드의 첫 버전과 화면의 엔진 결과 연결 수정은 AI 도구(Claude)로 작성했습니다. 실행, 점검, 수정은 김성태가 합니다. 엔진의 모든 AI 호출 기록은 실행할 때 `data/work/<기업>/llm_log.jsonl`에 남습니다.
+엔진 코드의 첫 버전, 화면의 엔진 결과 연결 수정, 디자인 시안 반영과 접근성 보정, 화면 자동 검사는 AI 도구(Claude)로 작성했습니다. 문서와 CI 일부는 ChatGPT가 Pull Request로 올렸습니다 (PR #1, #2). 실행, 점검, 수정은 김성태가 합니다. 엔진의 모든 AI 호출 기록은 실행할 때 `data/work/<기업>/llm_log.jsonl`에 남습니다.
 
 
 ## 8. 프로젝트 문서
@@ -66,7 +70,7 @@ python tests/test_mock.py   # 마지막 줄에 "시험 통과"
 - [아키텍처](docs/architecture.md)
 - [평가 계획](docs/evaluation-plan.md)
 - [10분 비대면 사용자 테스트](docs/user-test-protocol.md)
-- [5개 기업 확장 계획](docs/company-expansion-plan.md)
+- [시연용 기업 확장 계획 (관문 2 통과 시)](docs/company-expansion-plan.md)
 - [AI 윤리·신뢰성](docs/ai-ethics.md)
 - [Vercel 배포](docs/deploy.md)
 - [Google Drive ↔ GitHub 동기화](docs/drive-sync.md)
@@ -76,4 +80,4 @@ python tests/test_mock.py   # 마지막 줄에 "시험 통과"
 ## 9. 추가 평가
 
 - 사용자 테스트: `eval/user_test/`
-- ML baseline (`eval/ml/`): 5개 기업 약 300문장의 PROMISE / EVIDENCE / OTHER 분류 실험
+- 문장 분류 ML 실험 (`eval/ml/`): 이번 제출(10/18)에서는 하지 않고 다음 단계로 둡니다 (기획 보고서 8.3). 코드와 데이터 형식만 있습니다.

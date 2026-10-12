@@ -49,6 +49,8 @@ def run_export(cfg, company_keys, copy_to=None):
             "promises": [_screen_promise(j) for j in judged],
             "interview_card": card,
         })
+        if c.get("check_note"):  # 선택: 기업별 검증 안내 (예: 시연용 기업)
+            companies[-1]["check_note"] = c["check_note"]
         logs[key] = [{"id": j["id"], "title": j["title"], "verdict": j["verdict"], "search_log": j.get("search_log", []),
                       "flags": j.get("flags", [])} for j in judged]
 

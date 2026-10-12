@@ -211,11 +211,12 @@ def collect_report(cfg, company, report, role):
     return result
 
 
-def run_collect(cfg, company):
+def run_collect(cfg, company, roles=("promise", "evidence")):
+    """roles=("promise",)이면 약속을 찾는 보고서만 읽습니다 (scan: 후보 기업 미리 보기, PDF 1개면 됨)."""
     from .config import work_dir
     out_dir = work_dir(cfg, company["key"])
-    reports = [(r, "promise") for r in company["promise_reports"]] + \
-              [(r, "evidence") for r in company["evidence_reports"]]
+    reports = [(r, "promise") for r in company["promise_reports"] if "promise" in roles] + \
+              [(r, "evidence") for r in company["evidence_reports"] if "evidence" in roles]
     summary = []
     for report, role in reports:
         res = collect_report(cfg, company, report, role)

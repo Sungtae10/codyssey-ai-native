@@ -30,6 +30,8 @@ def check(data, expect_real=True):
         for k in ("id", "name", "reports", "promises", "interview_card"):
             if k not in c:
                 errs.append(f"{cname}: {k}가 없습니다")
+        if "check_note" in c and (not isinstance(c["check_note"], str) or find_forbidden(c["check_note"])):
+            errs.append(f"{cname}: check_note는 단정 표현 없는 글자여야 합니다")
         specs = {}
         for p in c.get("promises", []):
             pid = p.get("id")

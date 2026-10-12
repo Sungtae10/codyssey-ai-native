@@ -60,11 +60,19 @@ retrieval: {use_vector: false, top_windows: 8, max_candidates: 24, max_attempts:
 companies:
   demo:
     name: 테스트전자 (가상 회사)
+    check_note: "시험용 검증 안내 문구"
     promise_reports:
       - {key: y2024, title: "2024 사업보고서", pdf: demo_2024.txt, url: "https://example.com/demo/2024"}
     evidence_reports:
       - {key: y2025, title: "2025 사업보고서", pdf: demo_2025.txt, url: "https://example.com/demo/2025"}
       - {key: h2026, title: "2026 반기보고서", pdf: demo_2026h1.txt, url: "https://example.com/demo/2026h1"}
+candidates:
+  demo_scan:
+    name: 후보전자 (가상 회사)
+    promise_reports:
+      - {key: y2024, title: "2024 사업보고서", pdf: demo_2024.txt, url: ""}
+    evidence_reports:
+      - {key: y2025, title: "2025 사업보고서", pdf: no_such_2025.txt, url: ""}
 section_pages: {}
 """
 
@@ -96,16 +104,19 @@ def main():
     print(d.stdout)
     assert "[시작 전 점검]" in d.stdout and d.stdout.count("쪽 OK") == 3, "doctor 점검 실패"
     run("all", "--company", "demo", "--mock")
-    run("export", "--companies", "demo")
+    exp = run("export")  # --companies 없이: companies만 내보내고 후보 기업(candidates)은 넣지 않아야 함
+    assert "demo_scan" not in exp and "후보전자" not in exp, "후보 기업이 기본 내보내기에 들어감"
     out = run("check", "--file", os.path.join(TMP, "results", "ai_promise_data.json"))
     assert "문제 없음" in out or "(주의)" in out
 
     data = json.load(open(os.path.join(TMP, "results", "ai_promise_data.json"), encoding="utf-8"))
+    assert [c["id"] for c in data["companies"]] == ["demo"], data["companies"]
+    assert data["companies"][0].get("check_note") == "시험용 검증 안내 문구", "check_note가 결과 파일에 없음"
     sample = json.load(open(os.path.join(ROOT, "tests", "sample_data.json"), encoding="utf-8")) \
         if os.path.exists(os.path.join(ROOT, "tests", "sample_data.json")) else None
     if sample:
         assert set(data) == set(sample), "최상위 항목 이름이 예시 데이터와 다릅니다"
-        assert set(data["companies"][0]) == set(sample["companies"][0]), "기업 항목 이름이 다릅니다"
+        assert set(data["companies"][0]) - {"check_note"} == set(sample["companies"][0]), "기업 항목 이름이 다릅니다"
         sp = sample["companies"][0]["promises"][0]
         dp = data["companies"][0]["promises"][0]
         assert set(sp) <= set(dp), f"약속 항목이 모자랍니다: {set(sp) - set(dp)}"
@@ -150,6 +161,12 @@ def main():
     ex = res["extraction"]
     assert ex and ex["human"] == 3 and ex["found"] == 2, f"사람 약속 목록 읽기 실패 ('예' 줄과 안내 줄은 빼고 3건이어야 함): {ex}"
     assert ex["excluded_no_ai_word"] == 1, f"AI 관련 말이 없는 문장을 빼지 못함 (판정기준 v2): {ex}"
+    # 약속 찾기 비교: 키워드 규칙은 "AI 시장은 ... 성장할 것으로 예상됩니다"(전망)까지 골라 8개, 엔진은 7개.
+    # 사람 목록 3건 중 보고서에 있는 2건을 둘 다 찾음.
+    cmp_ = res["extraction_compare"]
+    assert cmp_ and cmp_["keyword_rule"]["n_pred"] == 8 and cmp_["engine"]["n_pred"] == 7, cmp_
+    assert abs(cmp_["keyword_rule"]["precision"] - 2 / 8) < 1e-9 and abs(cmp_["engine"]["precision"] - 2 / 7) < 1e-9, cmp_
+    assert abs(cmp_["keyword_rule"]["recall"] - 2 / 3) < 1e-9 and abs(cmp_["engine"]["recall"] - 2 / 3) < 1e-9, cmp_
     md = open(os.path.join(TMP, "eval", "results", "results.md"), encoding="utf-8").read()
     assert "AI 관련 말이 없는 1개" in md, "결과표에 뺀 개수가 없음"
     assert res["human_agreement"]["n"] >= 5, "cp949로 저장한 판정 파일 읽기 실패"
@@ -161,6 +178,13 @@ def main():
     assert "시험 실행" in out and len(one) == 1 and one[0]["type"] == "specific", "--limit 1 시험 실패"
     run("card", "--company", "demo", "--mock")
     check_extract_filter()
+
+    # 후보 기업 미리 보기: 약속 보고서 PDF 1개만 있어도 돌아가고(근거 PDF 없음), 기준 통과 여부를 알려 줘야 함
+    out = run("scan", "--company", "demo_scan", "--mock")
+    assert "구체적 약속 6개" in out and "→ 통과" in out, "scan 결과가 다름"
+    r = subprocess.run([sys.executable, os.path.join(ENGINE, "run.py"), "scan", "--company", "demo_scan", "--mock",
+                        "--min", "7", "--config", os.path.join(TMP, "config.yaml")], capture_output=True, text=True, cwd=ENGINE)
+    assert r.returncode == 2 and "→ 미달" in r.stdout, "scan 기준 미달 처리가 다름"
     print("시험 통과")
 
 

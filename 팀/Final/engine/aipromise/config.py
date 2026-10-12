@@ -21,9 +21,12 @@ def load_config(path: str = None) -> dict:
 
 
 def company_cfg(cfg: dict, key: str) -> dict:
-    if key not in cfg["companies"]:
-        raise SystemExit(f"config.yaml에 '{key}' 기업이 없습니다. 있는 기업: {list(cfg['companies'])}")
-    c = dict(cfg["companies"][key])
+    """companies(화면에 넣는 기업)에서 찾고, 없으면 candidates(후보 기업, scan용)에서 찾습니다."""
+    pool = {**(cfg.get("candidates") or {}), **cfg["companies"]}
+    if key not in pool:
+        raise SystemExit(f"config.yaml에 '{key}' 기업이 없습니다. 있는 기업: {list(cfg['companies'])}, "
+                         f"후보 기업: {list(cfg.get('candidates') or {})}")
+    c = dict(pool[key])
     c["key"] = key
     return c
 

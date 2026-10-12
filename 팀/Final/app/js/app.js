@@ -161,6 +161,7 @@
         '<div class="company-logo" aria-hidden="true">' + esc(c.name.charAt(0)) + '</div>' +
         '<div class="company-info"><div class="company-name">' + esc(c.name) + '</div>' +
         '<div class="company-reports">' + esc('약속: ' + reportTitles(reports.promise) + ' · 근거: ' + reportTitles(reports.evidence)) + '</div>' +
+        (c.check_note ? '<div class="company-reports check-note">' + esc(c.check_note) + '</div>' : '') +
         '<div class="company-meta">' + esc(meta) + '</div></div>' + ICON.chevron;
       return ready
         ? '<a class="company" href="#/c/' + encodeURIComponent(c.id) + '">' + inner + '</a>'
@@ -234,6 +235,7 @@
         '<section style="display:flex;flex-direction:column;gap:6px">' +
           '<p class="eyebrow">' + esc(company.name) + '</p>' +
           '<p class="note">약속: ' + esc(reportTitles(reports.promise)) + ' · 근거: ' + esc(reportTitles(reports.evidence)) + '</p>' +
+          (company.check_note ? '<p class="note check-note">' + esc(company.check_note) + '</p>' : '') +
           '<h1 class="headline">구체적 약속 ' + spec.length + '개 중</h1>' +
           '<p class="count-line">' + esc(countLine(spec)) + '</p>' +
         '</section>' +

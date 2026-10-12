@@ -23,6 +23,13 @@ AI 판정은 data/work/<기업>/judged.json에서 읽습니다.
   - 사람 약속 목록 중 문장 안에 AI 관련 말(엔진과 같은 검색어)이 없는 문장은 약속이 아니므로 비율 계산에서 빼고,
     뺀 개수를 결과표에 따로 적습니다. (예: 연습 5번 문장)
 
+약속 찾기 비교: 키워드 규칙 vs AI 엔진 (새 정답 없이, 같은 사람 약속 목록으로)
+  - 키워드 규칙: 약속을 찾는 보고서의 읽은 장에서 AI 관련 말과 앞으로 할 일을 나타내는 말
+    ('계획', '예정', '~겠습니다', '~할 것', '목표') 중 하나씩이 든 문장을 모두 약속으로 봅니다.
+  - AI 엔진: judged.json의 약속(구체적 + 방향성)
+  - 정밀도 = 고른 문장 중 사람 목록에 있는 비율, 재현율 = 사람 목록 중 고른 비율, F1.
+    정밀도는 사람 목록이 읽은 장의 약속을 빠짐없이 담았다고 보고 계산합니다. (data/work/<기업>/collected_*.json 필요)
+
 CSV 읽기 (read_table)
   - 엑셀의 'CSV UTF-8', 구글 시트에서 받은 CSV, 엑셀의 그냥 'CSV'(cp949)를 모두 읽습니다.
   - 맨 위에 안내 줄이 있어도 됩니다. 칸 이름 줄은 '번호', 'promise_id', '약속 문장', '판정' 중 하나가 든 첫 줄입니다.
@@ -182,14 +189,52 @@ def kappa(a, b):
     return agree, n, k
 
 
+KW = keyword_regex(DEFAULT_KEYWORDS)
+PLAN = re.compile(r"계획|예정|겠습니다|할 것|목표")
+
+
+def human_promises(human_path):
+    """사람 약속 목록 → (약속 문장 목록, AI 관련 말이 없어 뺀 문장 목록). 판정기준 v2: AI 관련 말이 없으면 약속이 아님."""
+    rows = [r["약속 문장"] for r in read_table(human_path) if r.get("약속 문장")]
+    human = [h for h in rows if KW.search(unicodedata.normalize("NFKC", h))]
+    return human, [h for h in rows if h not in human]
+
+
+def _prf(preds, human):
+    """고른 문장(preds)과 사람 약속(human)으로 정밀도, 재현율, F1."""
+    h_norm = [(h, norm(h)) for h in human]
+    p_norm = [(p, norm(p)) for p in preds]
+    hit_p = sum(1 for p in preds if match_promise(p, h_norm) is not None)
+    hit_h = sum(1 for h in human if match_promise(h, p_norm) is not None)
+    prec = hit_p / len(preds) if preds else None
+    rec = hit_h / len(human) if human else None
+    f1 = 2 * prec * rec / (prec + rec) if prec and rec else 0.0
+    return {"n_pred": len(preds), "precision": prec, "recall": rec, "f1": f1}
+
+
+def extraction_compare(human_path, ai_promises, work_dir):
+    """약속 찾기: 키워드 규칙과 AI 엔진을 같은 사람 약속 목록으로 비교합니다. 수집 파일이 없으면 None."""
+    if not os.path.exists(human_path) or not os.path.isdir(work_dir):
+        return None
+    sents = []
+    for name in sorted(os.listdir(work_dir)):
+        if name.startswith("collected_") and name.endswith(".json"):
+            with open(os.path.join(work_dir, name), encoding="utf-8") as f:
+                rep = json.load(f)
+            if rep.get("role") == "promise":
+                sents += [s["text"] for sec in rep["sections"].values() for s in sec["sentences"]]
+    if not sents:
+        return None
+    human, _ = human_promises(human_path)
+    rule = [s for s in sents if KW.search(unicodedata.normalize("NFKC", s)) and PLAN.search(s)]
+    return {"keyword_rule": _prf(rule, human), "engine": _prf([p["sentence"] for p in ai_promises], human),
+            "human": len(human)}
+
+
 def extraction_recall(human_path, ai_promises):
     if not os.path.exists(human_path):
         return None
-    rows = [r["약속 문장"] for r in read_table(human_path) if r.get("약속 문장")]
-    # 판정기준 v2: 문장 안에 AI 관련 말이 없으면 약속이 아니므로 비율에서 뺍니다.
-    kw = keyword_regex(DEFAULT_KEYWORDS)
-    human = [h for h in rows if kw.search(unicodedata.normalize("NFKC", h))]
-    excluded = [h for h in rows if h not in human]
+    human, excluded = human_promises(human_path)
     ai_norm = [(p, norm(p["sentence"])) for p in ai_promises]
     found, missed = 0, []
     for h in human:
@@ -259,6 +304,7 @@ def evaluate(company, dev_companies, gold_dir, work_root, out_dir):
     rec = extraction_recall(rec_path, judged)
     if rec:
         rec["source"] = os.path.basename(rec_path)
+    compare = extraction_compare(rec_path, judged, os.path.join(work_root, company))
 
     res = {
         "company": company, "dev_set": company in dev_companies, "n": n, "correct": correct,
@@ -271,6 +317,7 @@ def evaluate(company, dev_companies, gold_dir, work_root, out_dir):
         "unsupported_execution_claims": unsupported,
         "extraction": rec, "downgraded": sum(1 for j in specs if any("낮춤" in f for f in j.get("flags", []))),
         "gold_by_sentence": by_sentence if by_sentence["rows"] else None,
+        "extraction_compare": compare,
     }
     os.makedirs(out_dir, exist_ok=True)
     with open(os.path.join(out_dir, f"confusion_{company}.csv"), "w", encoding="utf-8-sig", newline="") as f:
@@ -316,6 +363,19 @@ def to_md(results):
                          f"AI 약속과 맞지 않은 {bs['unmatched']}건도 판정 비교에서 뺐습니다.")
     if notes:
         lines.extend(notes + [""])
+    cmp_rows = [r for r in results if r.get("extraction_compare")]
+    if cmp_rows:
+        lines.append("## 약속 찾기: 키워드 규칙 vs AI 엔진")
+        lines.append("| 기업 | 방법 | 고른 문장 수 | 정밀도 | 재현율 | F1 |")
+        lines.append("| --- | --- | --- | --- | --- | --- |")
+        for r in cmp_rows:
+            for key, label in (("keyword_rule", "키워드 규칙"), ("engine", "AI 엔진")):
+                m = r["extraction_compare"][key]
+                lines.append(f"| {r['company']} | {label} | {m['n_pred']} | {pct(m['precision'])} | {pct(m['recall'])} | {m['f1']:.2f} |")
+        lines.append("")
+        lines.append("- 키워드 규칙: AI 관련 말과 '계획, 예정, ~겠습니다, ~할 것, 목표' 중 하나가 든 문장을 모두 약속으로 봄. "
+                     "정밀도는 사람 약속 목록이 읽은 장의 약속을 빠짐없이 담았다고 보고 계산했습니다.")
+        lines.append("")
     for r in results:
         lines.append(f"## {r['company']} 혼동표 (행: 정답, 열: AI)")
         lines.append("| 정답 \\ AI | " + " | ".join(KO[a] for a in LABELS) + " |")

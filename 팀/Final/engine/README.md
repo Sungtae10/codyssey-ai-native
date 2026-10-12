@@ -13,7 +13,8 @@
 | 4~6 검색·판정·인용 검사 | `judge` | 근거 찾기(최대 3번), 4가지 판정, 원문 대조 | `judged.json` |
 | 7 면접 카드 | `card` | 핵심 이슈 3, 답변 소재 3, 역질문 2 | `card.json` |
 | 내보내기 | `export` | 화면용 결과 파일 만들기, 화면 규칙 점검 | `data/results/ai_promise_data.json` |
-| 평가 | `eval/evaluate.py` | 사람이 만든 정답과 비교 | `eval/results/results.md` |
+| 평가 | `eval/evaluate.py` | 사람이 만든 정답과 비교, 약속 찾기는 키워드 규칙과도 비교 | `eval/results/results.md` |
+| 후보 미리 보기 | `scan` | 후보 기업의 2024 사업보고서 PDF 1개로 수집과 약속 추출만 하고, 구체적 약속이 기준(기본 3개) 이상인지 알려 줌 | `promises.json` |
 
 읽는 장 3곳: I. 회사의 개요 > 5. 정관에 관한 사항 / II. 사업의 내용 / IV. 이사의 경영진단 및 분석의견
 
@@ -100,7 +101,22 @@
 - 결과 파일은 `meta.is_sample`이 false라서 "예시 데이터입니다" 띠가 사라집니다.
 - 수민님 압축본을 새로 받아 app 폴더를 바꿀 때마다 이 복사를 다시 합니다.
 
-## 6. 문제가 생기면
+## 6. 기업 추가 (후보 미리 보기 → 화면에 넣기)
+
+엔진 코드에는 회사마다 다른 부분이 없습니다. `config.yaml`에 회사 1개를 적고 PDF를 넣으면 같은 순서로 돕니다.
+
+| 순서 | 할 일 | 확인할 것 |
+| --- | --- | --- |
+| 1 | `config.yaml`의 `candidates`에 후보를 적고(현대자동차, NAVER, LG전자는 미리 적어 둠), 2024 사업보고서 PDF 1개만 `data/pdf`에 넣기 | 파일 이름이 설정과 같은지 |
+| 2 | `python run.py scan --company hyundai` | "통과"(구체적 약속 3개 이상)인지. 통과해도 약속 목록을 판정기준 v2로 읽어 봄 |
+| 3 | 통과한 후보를 `companies`로 옮기고, 근거 보고서 PDF 2개와 DART 주소 3개를 넣고 `python run.py all --company hyundai` | 판정과 근거 문장 |
+| 4 | 화면에 내보낼 약속(3~5건)을 김성태가 원문과 전부 대조하고, `check_note`(시연용 안내)를 확인 | 사람 정답과 비교하지 않은 기업이라는 표시 |
+| 5 | `python run.py export --companies samsung skhynix hyundai --copy-to ../app/data/results.json` | "화면 점검 통과" |
+
+- 사용자 테스트 기간(10/14~16)에는 배포 중인 화면(main)을 바꾸지 않습니다. 기업 추가는 별도 브랜치에서 Vercel 미리보기 주소로 확인하고, 마지막 테스트가 끝난 뒤 main에 합칩니다.
+- 시연용 기업은 평가 숫자(정확도, 일치도)에 넣지 않습니다.
+
+## 7. 문제가 생기면
 
 | 증상 | 할 일 |
 | --- | --- |
@@ -111,7 +127,7 @@
 | 근거를 너무 못 찾음 | `config.yaml`의 `max_candidates`를 24 → 36, `top_windows`를 8 → 12로 늘립니다 |
 | 정확도가 80%에 못 미침 | `eval/results/errors_<기업>.csv`의 "원인" 칸을 채웁니다 (근거를 못 찾음 / 판정이 다름 / 분류가 다름). 가장 많은 원인부터 고칩니다. 판정이 문제면 `judge_model`만 더 좋은 모델로 바꿔 `judge`, `card`, `evaluate`를 다시 돌립니다. 보고서에는 "같은 정답으로 고친 뒤 다시 잰 값"이라고 적습니다 |
 
-## 7. 코드에 들어 있는 규칙
+## 8. 코드에 들어 있는 규칙
 
 - AI는 문장을 고쳐 쓰지 않고 문장 번호만 고릅니다. 화면에 나가는 약속 문장과 근거 문장은 원문 그대로입니다.
 - 인용 검사: 근거 문장이 읽은 장의 원문에 그대로 있는지(띄어쓰기 무시) 코드로 확인하고, 통과한 근거만 화면에 내보냅니다.
@@ -122,7 +138,7 @@
 - 모든 AI 호출의 입력과 출력을 `data/work/<기업>/llm_log.jsonl`에 남깁니다. "AI Agent 실행 기록" 증빙으로 씁니다.
 - 검색 기록은 `data/results/search_log.json`에 따로 남깁니다. 보고서와 발표의 예시 1건으로 씁니다.
 
-## 8. 출처와 AI 사용
+## 9. 출처와 AI 사용
 
 - 검색 구성(LangChain, ChromaDB, OpenAI 임베딩)은 DART-Foresight AI(https://github.com/Sungtae10/dart-foresight-ai)를 바탕으로 했습니다. 그 평가에서 검색이 약점(Hit@4 14/20)이어서, 이번에는 의미 검색에 키워드 검색을 더했습니다.
 - 이 엔진 코드의 첫 버전은 AI 도구(Claude)로 작성했습니다. 실행과 점검, 수정은 김성태가 합니다.

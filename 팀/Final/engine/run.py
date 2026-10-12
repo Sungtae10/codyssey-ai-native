@@ -8,6 +8,8 @@
   python run.py all     --company samsung    1~7단계를 한 번에
   python run.py export  --companies samsung skhynix [--copy-to 화면의_데이터_파일_경로]
   python run.py check   --file ../data/results/ai_promise_data.json   화면 규칙 점검
+  python run.py scan    --company hyundai    후보 기업 미리 보기: 2024 사업보고서 PDF 1개로 수집 + 약속 추출만 하고
+                                             구체적 약속이 기준(--min, 기본 3개) 이상인지 알려 줌
 
 공통 옵션: --mock (가짜 모델로 코드 점검), --config 다른 설정 파일
 """
@@ -24,7 +26,8 @@ from aipromise.llm import LLM  # noqa: E402
 
 def main():
     ap = argparse.ArgumentParser(description="AI Promise 엔진")
-    ap.add_argument("step", choices=["doctor", "collect", "extract", "judge", "card", "all", "export", "check"])
+    ap.add_argument("step", choices=["doctor", "collect", "extract", "judge", "card", "all", "export", "check", "scan"])
+    ap.add_argument("--min", type=int, default=3, help="scan: 통과 기준이 되는 구체적 약속 개수 (기본 3)")
     ap.add_argument("--company")
     ap.add_argument("--companies", nargs="+")
     ap.add_argument("--mock", action="store_true")
@@ -63,8 +66,21 @@ def main():
     company = company_cfg(cfg, a.company)
     work = work_dir(cfg, a.company)
     llm = None
-    if a.step in ("extract", "judge", "card", "all"):
+    if a.step in ("extract", "judge", "card", "all", "scan"):
         llm = LLM(cfg, os.path.join(work, "llm_log.jsonl"), mock=a.mock)
+
+    if a.step == "scan":
+        from aipromise.collect import run_collect
+        from aipromise.extract import run_extract
+        run_collect(cfg, company, roles=("promise",))
+        promises = run_extract(cfg, company, llm, work)
+        n_spec = sum(1 for p in promises if p["type"] == "specific")
+        n_dir = len(promises) - n_spec
+        ok = n_spec >= a.min
+        print(f"\n[미리 보기 결과] {company['name']}: 구체적 약속 {n_spec}개, 방향성 약속 {n_dir}개")
+        print(f"→ {'통과' if ok else '미달'} (기준: 구체적 약속 {a.min}개 이상). "
+              "통과해도 약속 목록을 판정기준 v2로 한 번 읽어 보고, 근거를 찾는 보고서 PDF를 받은 뒤 all을 돌립니다.")
+        sys.exit(0 if ok else 2)
 
     steps = ["collect", "extract", "judge", "card"] if a.step == "all" else [a.step]
     for s in steps:

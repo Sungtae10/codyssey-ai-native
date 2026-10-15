@@ -4,7 +4,7 @@
 
 - [ ] **AI 핵심 기능**: 엔진 코드, 실제 실행 로그, end-to-end 데모
 - [ ] **기술 요소 2개 이상**: retrieval/RAG, Agent-style retry, 생성형 AI, citation verification 등 실제 구현 증빙
-- [ ] **외부 배포**: 공개 URL과 최종 화면 캡처
+- [ ] **외부 배포**: 공개 URL(https://ai-promise-six.vercel.app, 10/15 배포)과 최종 화면 캡처 (실제 결과 반영 뒤)
 - [ ] **사용자 평가 반영**: 테스트 원자료(익명), 개선 전후 기록, 관련 커밋
 - [ ] **GitHub 기록**: 팀원별 의미 있는 커밋/PR, 역할 문서
 - [ ] **AI 윤리**: AI 생성 표시, 비단정 표현, 개인정보 비저장, citation verification

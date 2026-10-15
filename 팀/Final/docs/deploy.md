@@ -3,6 +3,8 @@
 현재 웹은 빌드가 필요 없는 HTML/CSS/JS 구조입니다.
 
 ## Vercel
+**현재 연결 (10/15 19:29):** 프로젝트 `ai-promise`, Root Directory `app`, 주소 https://ai-promise-six.vercel.app. main에 올리면 이 주소로 다시 배포되고, 다른 브랜치는 Vercel 로그인이 필요한 미리보기 주소로 배포됩니다.
+
 가장 단순한 방법은 Vercel 프로젝트의 **Root Directory를 `app`**으로 지정하는 것입니다.
 
 1. GitHub 저장소 `Sungtae10/ai-promise` 연결

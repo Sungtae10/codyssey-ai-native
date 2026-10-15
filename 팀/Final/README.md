@@ -15,23 +15,23 @@
 | 기술 요소 | AI Promise에서 하는 일 | 코드 |
 | --- | --- | --- |
 | RAG | 후속 보고서에서 키워드 검색(BM25)과 의미 검색(OpenAI 임베딩 + ChromaDB)으로 근거 후보를 찾고, 그 후보 문장만 근거로 LLM이 판정합니다 | `engine/aipromise/retrieve.py`, `engine/aipromise/judge.py` |
-| AI Agent (정보 검색 Agent) | 근거를 못 찾으면 AI가 새 검색어를 정해 검색을 다시 부릅니다. 처음 검색을 포함해 최대 3번이고, 검색 기록을 남깁니다 | `engine/aipromise/judge.py` |
-| 자동화 워크플로우 | `run.py all` 한 번으로 7단계(수집, 약속 추출, 분류, 근거 검색, 판정, 인용 검사, 면접 카드)가 차례로 돌고, 결과 파일이 main에 올라가면 GitHub Actions 검사와 Vercel 배포가 자동으로 이어집니다 | `engine/run.py`, `.github/workflows/ci.yml` |
+| AI Agent (정보 검색 Agent) | 근거를 못 찾으면 AI가 새 검색어를 정하고, 코드가 그 검색어로 다시 검색합니다. 근거를 찾거나, 처음 검색을 포함해 3번이 되거나, 더 쓸 검색어가 없으면 멈추고, 검색 기록을 남깁니다 | `engine/aipromise/judge.py` |
+| 자동화 워크플로우 | `run.py all` 한 번으로 7단계(수집, 약속 추출, 분류, 근거 검색, 판정, 인용 검사, 면접 카드)가 차례로 돌고, 결과 파일을 내보내 main에 올리면 GitHub Actions 검사와 Vercel 배포가 자동으로 이어집니다 | `engine/run.py`, `.github/workflows/ci.yml` |
 
-AI가 고른 근거는 원문에 그대로 있는지 코드로 다시 검사하고(인용 검사), 통과하지 못하면 판정을 "공시에서 확인 불가"로 낮춥니다.
+AI가 고른 근거는 원문에 그대로 있는지 코드로 다시 검사합니다(인용 검사). 통과하지 못한 근거는 빼고, 근거가 필요한 판정인데 통과한 근거가 하나도 없으면 "공시에서 확인 불가"로 낮춥니다.
 
 ## 2. 기술 스택과 선정 이유
 
 | 영역 | 쓰는 것 | 고른 이유 |
 | --- | --- | --- |
 | 엔진 언어 | Python (CI는 3.11) | 팀에서 RAG를 만들어 본 사람이 김성태뿐이고, 그 경험(DART-Foresight AI)이 Python이라 그대로 이어 씁니다 |
-| LLM | OpenAI gpt-4o-mini, temperature 0 | DART-Foresight AI와 같은 구성입니다. 같은 입력에 같은 답이 나오도록 temperature를 0으로 둡니다. 판정 정확도가 낮으면 `engine/config.yaml`의 `judge_model` 한 줄만 바꿔 다시 잴 수 있게 나눠 두었습니다 |
+| LLM | OpenAI gpt-4o-mini, temperature 0 | DART-Foresight AI와 같은 구성입니다. 같은 입력에 최대한 같은 답이 나오도록 temperature를 0으로 둡니다. 판정 정확도가 낮으면 `engine/config.yaml`의 `judge_model` 한 줄만 바꿔 다시 잴 수 있게 나눠 두었습니다 |
 | AI 연결 | LangChain (langchain-openai, langchain-chroma) | DART-Foresight AI의 검색 구성을 출처를 밝히고 다시 씁니다 |
-| 근거 검색 | BM25(직접 구현) + text-embedding-3-small + ChromaDB, RRF로 순위 합치기 | DART-Foresight AI 평가에서 의미 검색만으로는 Hit@4가 14/20으로 약했습니다. 제품명, 공장명처럼 글자가 같은 문장을 잘 찾는 키워드 검색을 더했습니다 |
+| 근거 검색 | BM25(직접 구현) + text-embedding-3-small + ChromaDB, RRF로 순위 합치기 | DART-Foresight AI 평가에서 의미 검색만으로는 Hit@4가 14/20으로 약했습니다(`engine/README.md` 9장). 제품명, 공장명처럼 글자가 같은 문장을 잘 찾는 키워드 검색을 더했습니다 |
 | PDF 읽기 | pypdf | DART에서 받은 정기보고서 PDF를 장별 문장으로 나눕니다 |
 | 화면 | HTML, CSS, JavaScript (빌드 없음) | 화면 담당이 React·Streamlit 경험이 없고 AI 도구로 Vercel에 배포해 본 경험이 있어 가장 단순한 정적 웹을 골랐습니다. 화면은 결과 파일 하나만 읽어 엔진과 따로 만들 수 있습니다 |
 | 배포 | Vercel (Root Directory: `app`) | 빌드 없이 `app/` 폴더를 바로 배포하고, main에 올리면 자동으로 다시 배포됩니다. 저장소와 배포를 김성태 계정 하나로 모았습니다 (10/8 결정) |
-| 자동 검사 | GitHub Actions, Playwright | main에 올리기 전에 엔진 시험과 화면 검사(글자 대비, 가로 넘침)를 자동으로 돌려 실수를 막습니다 |
+| 자동 검사 | GitHub Actions, Playwright | Pull Request를 올리거나 main에 올릴 때마다 엔진 시험과 화면 검사(글자 대비, 가로 넘침)를 자동으로 돌립니다 |
 | 사용자 테스트 설문 | Google Forms, Google Sheets (Apps Script로 생성) | 이름·연락처·이메일을 받지 않게 설정할 수 있고, 응답이 시트에 자동으로 쌓입니다 |
 | 협업 | GitHub Issues·Pull Request, Google Drive | 팀원은 드라이브에 파일을 올리고 김성태가 저장소에 반영합니다. 기록은 커밋, PR, 이슈에 남깁니다 |
 
@@ -55,7 +55,7 @@ python -m http.server 8000
 cd engine
 pip install -r requirements.txt
 cp .env.example .env        # .env에 OPENAI_API_KEY를 적습니다. 이 파일은 저장소에 올리지 않습니다
-python run.py doctor --company samsung     # 설치, 키, PDF 점검 (API 1번 호출)
+python run.py doctor --company samsung     # 설치, 키, PDF 점검 (판정 모델·임베딩 모델을 1번씩 실제 호출)
 python run.py all --company samsung        # 1~7단계 실행
 python run.py export --companies samsung skhynix --copy-to ../app/data/results.json
 python run.py check --file ../app/data/results.json
@@ -71,7 +71,7 @@ python tests/test_ui_static.py   # 화면: app.js가 쓰는 class가 CSS에 모�
 python tests/ui_check.py         # 화면: 모든 화면(예시 데이터 18개) x 다크/라이트의 글자 대비, 가로 넘침, 필수 부품 (Playwright 필요)
 ```
 
-세 검사는 GitHub에 올릴 때마다 CI에서도 자동으로 돌아갑니다.
+세 검사는 Pull Request를 올리거나 main에 올릴 때 CI에서도 자동으로 돌아갑니다.
 
 ## 4. 폴더
 
@@ -117,13 +117,13 @@ python tests/ui_check.py         # 화면: 모든 화면(예시 데이터 18개)
 
 | 결과 | 원자료 | 계산 |
 | --- | --- | --- |
-| AI 판정 평가 (사람 합의 정답 대비 정확도, macro-F1, 혼동표, 사람 간 kappa) | `eval/gold/` | `python eval/evaluate.py` |
+| AI 판정 평가 (사람 합의 정답 대비 정확도, macro-F1, 혼동표, 사람 간 kappa) | `eval/gold/`(사람 정답), `data/work/<기업>/judged.json`(엔진 판정) | `python eval/evaluate.py` |
 | 사용자 테스트 (4분 안에 정답을 찾은 비율, 설문 점수) | `eval/user_test/results.csv` (이름 없이 번호만) | `python eval/user_test/analyze.py eval/user_test/results.csv` |
 | 피드백 반영 (의견, 원인, 조치, 커밋, 재확인) | 반영 기록 표 | 10/17 작성 |
 
 ## 10. AI 사용
 
-엔진 코드의 첫 버전, 화면의 엔진 결과 연결 수정, 디자인 시안 반영과 접근성 보정, 화면 자동 검사, 기능 요구 명세서와 진행 기록의 초안은 AI 도구(Claude)로 작성했습니다. 문서와 CI 일부(PR #1, #2)와 판정기준 v2 동결(PR #13)은 ChatGPT가 Pull Request로 올렸습니다. 실행, 점검, 수정은 김성태가 합니다. 엔진의 모든 AI 호출 기록은 실행할 때 `data/work/<기업>/llm_log.jsonl`에 남습니다.
+엔진 코드의 첫 버전, 화면의 엔진 결과 연결 수정, 디자인 시안 반영과 접근성 보정, 화면 자동 검사, 기능 요구 명세서와 진행 기록의 초안은 AI 도구(Claude)로 작성했습니다. 문서, CI, 평가 코드 일부(PR #1, #2)와 판정기준 v2 동결 및 엔진 검색어·지시문 동기화(PR #13)는 ChatGPT가 Pull Request로 올렸습니다. 실행, 점검, 수정은 김성태가 합니다. 엔진의 모든 LLM 호출 기록은 실행할 때 `data/work/<기업>/llm_log.jsonl`에 남습니다.
 
 ## 11. 프로젝트 문서
 
@@ -137,6 +137,7 @@ python tests/ui_check.py         # 화면: 모든 화면(예시 데이터 18개)
 - [Vercel 배포](docs/deploy.md)
 - [Google Drive ↔ GitHub 동기화](docs/drive-sync.md)
 - [제출 증빙 체크리스트 (공식 미션 기준)](docs/submission-evidence-checklist.md)
+- [후속 연구 계획](docs/follow-up-study-plan.md)
 - [팀 협업 규칙](CONTRIBUTING.md)
 
 ## 12. 추가 평가

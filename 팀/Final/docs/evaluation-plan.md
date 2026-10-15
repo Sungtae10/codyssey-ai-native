@@ -1,5 +1,7 @@
 # 평가 계획
 
+> 판정기준은 `eval/판정기준_v2.md`의 **2026-10-15 확정·동결본**을 사용합니다. SK하이닉스 blind evaluation 종료 전에는 결과를 보고 기준을 수정하지 않습니다.
+
 ## 평가 설계
 - **삼성전자**: calibration / development 기업
 - **SK하이닉스**: blind evaluation 기업

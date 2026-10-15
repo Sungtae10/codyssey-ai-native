@@ -59,7 +59,7 @@ AI Promise의 기능 요구사항, 비기능 요구사항, AI 활용 방식, 시
 | FR-18 | 방향성 약속의 관련 활동 | 방향성 약속은 판정하지 않고, 같은 분야의 실제 활동 문장을 0~2개 보여줍니다 | Should | `engine/aipromise/judge.py` | 구현됨 |
 | FR-19 | 면접 카드 생성 | 핵심 이슈 3개, 답변 소재 3개, 역질문 2개를 만듭니다. 답변 소재는 "근거 확인"과 "일부 확인" 약속만 쓰고, 근거 링크는 데이터에서 붙입니다. 단정 표현이 있거나 개수가 모자라면 규칙 방식으로 채웁니다 | Must | `engine/aipromise/card.py` | 구현됨 |
 | FR-20 | 내보내기와 점검 | 화면이 읽는 형식으로 결과 파일을 만들고, 화면 규칙(판정 이름, 단정 표현, 필수 칸)을 점검한 뒤 `app/data/results.json`으로 복사합니다 (`run.py export`, `run.py check`) | Must | `engine/aipromise/export.py`, `engine/aipromise/checker.py` | 구현됨 |
-| FR-21 | 실행 기록 | 모든 LLM 호출의 입력과 출력(`data/work/<기업>/llm_log.jsonl`, 임베딩 호출은 제외)과 검색 기록(`data/results/search_log.json`)을 남깁니다 | Should | `engine/aipromise/llm.py`, `engine/aipromise/export.py` | 구현됨 |
+| FR-21 | 실행 기록 | 모든 LLM 호출의 입력과 출력(`data/work/<기업>/llm_log.jsonl`, 시작 전 점검은 `data/work/_doctor/`, 임베딩 호출은 제외)과 검색 기록(`data/results/search_log.json`)을 남깁니다 | Should | `engine/aipromise/llm.py`, `engine/aipromise/export.py` | 구현됨 |
 | FR-22 | 후보 기업 미리 보기 | 후보 기업의 2024 사업보고서 1개로 수집과 약속 추출만 해서, 구체적 약속이 기준(기본 3개) 이상인지 알려 줍니다 (`run.py scan`) | Could | `engine/run.py` | 구현됨 (관문 2 통과 시 사용) |
 
 ### 2.3 평가 (`eval/`)
@@ -103,7 +103,7 @@ AI Promise의 기능 요구사항, 비기능 요구사항, AI 활용 방식, 시
 | 다시 검색 | 정보 검색 Agent | 목표는 "약속의 실행 근거 찾기"입니다. 근거를 찾지 못하면 AI가 새 검색어를 정하고, 코드가 그 검색어로 검색 도구를 다시 부릅니다. 근거를 찾거나, 3번이 되거나, 더 쓸 검색어가 없으면 멈춥니다 | AI Agent |
 | 인용 검사 | 코드 (AI 아님) | AI가 고른 근거가 원문에 있는지 대조해 통과하지 못한 근거는 빼고, 근거가 필요한 판정인데 남은 근거가 없으면 판정을 낮춥니다 | 안전장치 |
 | 면접 카드 | 생성형 AI (LLM) + 규칙 점검 | 근거 확인·일부 확인 약속만 사실로 쓰고, 단정 표현과 개수를 코드로 다시 점검합니다 | 서비스 핵심 기능 |
-| 결과에서 배포까지 | 자동화 파이프라인 | `run.py all`이 1~7단계를 차례로 실행합니다. 결과 파일을 내보내 main에 올리면(명령 한 줄씩) GitHub Actions 검사 2개와 Vercel 배포가 자동으로 이어집니다. 사용자 테스트 설문 응답은 구글 시트에 자동으로 쌓입니다 | 자동화 워크플로우 |
+| 결과에서 배포까지 | 자동화 파이프라인 | `run.py all`이 1~7단계를 차례로 실행합니다. 결과 파일을 내보내 main에 올리면(내보내기와 올리기는 사람이 실행) GitHub Actions 검사 2개와 Vercel 배포가 자동으로 이어집니다. 사용자 테스트 설문 응답은 구글 시트에 자동으로 쌓입니다 | 자동화 워크플로우 |
 
 넣지 않은 기술 요소와 이유는 다음과 같습니다.
 

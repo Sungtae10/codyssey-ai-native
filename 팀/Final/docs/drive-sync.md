@@ -6,7 +6,7 @@
 | --- | --- |
 | 공통 `sample_data.json` | `tests/sample_data.json`, `app/data/sample-data.js` |
 | 공통 `screen_spec_ko.md` | `app/README.md`, `app/js/app.js` |
-| 공통 `1012_김성태_판정기준_v2(초안)` | `eval/판정기준_v2.md` |
+| 공통 `1015_김성태_판정기준_v2(확정·동결)` | `eval/판정기준_v2.md` |
 | 김성태 `1012_김성태_화면_데이터연결.zip` | `app/` |
 | 김서원 `1011_서원_삼성전자_연습판정.xlsx` | 원본은 Drive 보존. 평가용 CSV만 blind protocol에 맞춰 `eval/gold/`에 저장 |
 | 김성태 엔진/평가 코드 | `engine/`, `eval/`, `tests/` |
@@ -22,4 +22,4 @@
 - (관문 2를 통과했을 때만) 시연용 추가 기업의 실제 결과
 - 서준용 디자인 시안 원본 zip (화면 반영은 PR #9로 완료, `app/css/style.css`)
 
-판정기준 v2가 팀 합의로 확정되면 Drive와 GitHub 제목·내용을 같은 버전으로 맞춥니다.
+판정기준 v2는 2026-10-15 확정·동결했습니다. Drive와 GitHub는 같은 v2를 사용하며, SK하이닉스 blind evaluation 종료 전에는 기준을 바꾸지 않습니다.

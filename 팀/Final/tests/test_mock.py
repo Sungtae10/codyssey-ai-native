@@ -55,7 +55,7 @@ paths:
   labels_file: labels.json
   eval_dir: ../tests/tmp/eval
 sections: [I5, II, IV]
-keywords: [AI, 인공지능, 머신러닝, 딥러닝, 생성형, 자동화, 지능형]
+keywords: [AI, 인공지능, 머신러닝, 딥러닝, "생성형 AI", 생성형AI]
 retrieval: {use_vector: false, top_windows: 8, max_candidates: 24, max_attempts: 3}
 companies:
   demo:
@@ -193,6 +193,7 @@ def main():
     assert "시험 실행" in out and len(one) == 1 and one[0]["type"] == "specific", "--limit 1 시험 실패"
     run("card", "--company", "demo", "--mock")
     check_extract_filter()
+    check_keyword_scope_v2()
     check_user_test_analysis()
 
     # 후보 기업 미리 보기: 약속 보고서 PDF 1개만 있어도 돌아가고(근거 PDF 없음), 기준 통과 여부를 알려 줘야 함
@@ -283,6 +284,19 @@ def check_user_test_analysis():
     assert "AI Promise: 50.0% (1/2)" in out and "직접 검색: 50.0% (1/2)" in out, out
     assert "직접검색 시간 초과: 1/2" in out, out
     assert "본 테스트 4.0/5, 의견 참여(참고) 1.0/5" in out, "설문 평균에 의견 참여가 섞임"
+
+
+def check_keyword_scope_v2():
+    """v2 동결: 자동화·지능형 단독어는 AI 직접표현이 아니고, AI가 명시되면 잡혀야 합니다."""
+    sys.path.insert(0, ENGINE)
+    from aipromise.textutil import DEFAULT_KEYWORDS, keyword_regex
+
+    rx = keyword_regex(DEFAULT_KEYWORDS)
+    assert rx.search("생성형 AI 상담 서비스를 출시할 예정입니다."), DEFAULT_KEYWORDS
+    assert rx.search("생성형AI 상담 서비스를 출시할 예정입니다."), DEFAULT_KEYWORDS
+    assert rx.search("AI 기반 자동화 시스템을 도입할 계획입니다."), DEFAULT_KEYWORDS
+    assert not rx.search("생산 공정 자동화를 확대할 계획입니다."), DEFAULT_KEYWORDS
+    assert not rx.search("지능형 물류 시스템을 구축할 계획입니다."), DEFAULT_KEYWORDS
 
 
 def check_extract_filter():

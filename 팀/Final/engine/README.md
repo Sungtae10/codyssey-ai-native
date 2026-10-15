@@ -63,10 +63,10 @@
 | 10/12 밤 | `python run.py doctor --company samsung` | "준비 완료", 장 찾기 3곳 OK |
 | 10/12 밤 | **1건 완주:** `python run.py collect --company samsung`, `extract`, `judge --limit 1`, `card` | 구체적 약속 1건이 근거 검색, 판정, 인용 검사, 면접 카드까지 실제 API로 끝남 |
 | 10/12 밤 | `python run.py judge --company samsung` (전체), `card`, `export --companies samsung --copy-to ../app/data/results.json` | "화면 점검 통과". 결과를 올리면(아래) 서비스 주소에 삼성전자가 뜸 |
-| 10/12 밤~10/13 | `python run.py doctor --company skhynix`, `collect`, `extract` | SK하이닉스 AI 약속 목록은 서원님에게 보내지 않습니다 |
-| 10/13 | 서원님이 올린 SK하이닉스 약속 목록(약속 문장·위치·분류)을 복사해 내 판정을 v2로 매기고 `eval/gold/skhynix_김성태.csv`로 먼저 올리기 | AI 판정을 돌리기 전에 판정했다는 기록. 서원님 판정 칸은 보지 않고 매김 |
-| 10/13 | `python run.py judge --company skhynix`, `card`, `export --companies samsung skhynix --copy-to ../app/data/results.json` | "화면 점검 통과", 관문 2 |
-| 10/13 밤 | 서원님 SK하이닉스 정답 표를 `eval/gold/skhynix_서원.csv`로 저장, 판정이 다른 건은 원문을 보며 합의해 `skhynix_합의.csv` | 서원님은 이때까지 AI 결과와 화면을 보지 않음 |
+| Human Gold 작성 전 | `python run.py doctor --company skhynix`, `collect`, `extract` | SK하이닉스 AI 판정 결과와 결과 화면은 Human Validator에게 공유하지 않습니다 |
+| Human Gold 작성 | 서원님이 올린 SK하이닉스 약속 목록(약속 문장·위치·분류)을 복사해 내 판정을 v2로 매기고 `eval/gold/skhynix_김성태.csv`로 먼저 올리기 | AI 판정을 돌리기 전에 판정했다는 기록. 서원님 판정 칸은 보지 않고 매김 |
+| Human Gold 고정 후 | `python run.py judge --company skhynix`, `card`, `export --companies samsung skhynix --copy-to ../app/data/results.json` | "화면 점검 통과", 관문 2 |
+| 합의 단계 | 서원님 SK하이닉스 정답 표를 `eval/gold/skhynix_서원.csv`로 저장, 판정이 다른 건은 원문을 보며 합의해 `skhynix_합의.csv` | Human Gold 고정 전까지 AI 결과와 화면을 보지 않음 |
 | 10/14 | `python ../eval/evaluate.py` | `eval/results/results.md` |
 | 10/14 정오 이후 | 관문 2를 통과했을 때만 후보 기업 `scan` (6장) | 통과한 후보만 브랜치에서 추가 |
 
@@ -80,7 +80,7 @@
 
 ## 4. 정답 파일 만드는 법 (eval/gold)
 
-판정은 `eval/판정기준_v2.md`(10/12 초안, 김서원과 확인 후 확정)를 따릅니다. 엔진의 추출 지시문(`aipromise/prompts.py`의 `EXTRACT_SYSTEM`)과 판정 지시문(`JUDGE_SYSTEM`)도 같은 규칙을 써서, 사람과 AI가 같은 기준으로 약속을 고르고 판정합니다. v1(`eval/판정기준_v1.md`)은 바뀐 과정을 남기려고 그대로 둡니다.
+판정은 `eval/판정기준_v2.md`(2026-10-15 확정·동결)를 따릅니다. 엔진의 추출 지시문(`aipromise/prompts.py`의 `EXTRACT_SYSTEM`)과 판정 지시문(`JUDGE_SYSTEM`)도 같은 규칙을 써서, 사람과 AI가 같은 기준으로 약속을 고르고 판정합니다. v1(`eval/판정기준_v1.md`)은 바뀐 과정을 남기려고 그대로 둡니다.
 
 - v2에서 바뀐 3가지: 문장 안에 AI 관련 말이 있어야 약속, 특정 대상이 있어야 구체적 약속, 한 문장의 여러 대상 중 일부만 확인되면 일부 확인
 - `extract.py`는 AI가 고른 문장 중 검색어(AI, 인공지능 등)가 없는 문장을 약속에서 빼고, `promises.json`의 `dropped`에 이유를 남깁니다.

@@ -284,11 +284,15 @@
     var link = e.source && e.source.url
       ? '<a class="ev-link" href="' + esc(e.source.url) + '" target="_blank" rel="noopener">원문 보기' + ICON.external + '</a>'
       : '';
-    return '<div class="divider">' + ICON.down + '다음 보고서</div>' +
-      '<div class="quote-block">' +
-        '<div class="quote-meta is-evidence"><span>' + esc(kindLabel) + '</span><span>' + esc(sourceLabel(e.source || {})) + '</span></div>' +
-        '<p class="quote-text">"' + esc(e.sentence) + '"</p>' +
-        '<div class="ev-foot">' + verified + link + '</div>' +
+    return '<div class="timeline-connector"><span></span><em>후속 공시에서 근거 검색</em><span></span></div>' +
+      '<div class="timeline-node evidence-node">' +
+        '<div class="timeline-rail"><span class="timeline-index">02</span><span class="timeline-dot"></span></div>' +
+        '<div class="timeline-body quote-block">' +
+          '<div class="timeline-kicker">EVIDENCE · 후속 공시</div>' +
+          '<div class="quote-meta is-evidence"><span>' + esc(kindLabel) + '</span><span>' + esc(sourceLabel(e.source || {})) + '</span></div>' +
+          '<p class="quote-text">"' + esc(e.sentence) + '"</p>' +
+          '<div class="ev-foot">' + verified + link + '</div>' +
+        '</div>' +
       '</div>';
   }
 
@@ -301,20 +305,26 @@
 
     var evidenceHtml = evidence.length
       ? evidence.map(function (e) { return evidenceBlock(e, kindLabel); }).join('')
-      : '<div class="divider">' + ICON.down + '다음 보고서</div>' +
-        '<div class="quote-block"><p class="quote-empty">' + esc(emptyMsg) + '</p></div>';
+      : '<div class="timeline-connector"><span></span><em>후속 공시에서 근거 검색</em><span></span></div>' +
+        '<div class="timeline-node evidence-node">' +
+          '<div class="timeline-rail"><span class="timeline-index">02</span><span class="timeline-dot muted"></span></div>' +
+          '<div class="timeline-body quote-block"><div class="timeline-kicker">EVIDENCE · 후속 공시</div><p class="quote-empty">' + esc(emptyMsg) + '</p></div>' +
+        '</div>';
 
-    // AI가 확인한 과정: 엔진이 실제로 남긴 값만 보여줘요 (검색 횟수, 원문 확인 개수)
+    // 화면에는 현재 데이터로 확인 가능한 상태만 표시합니다. 가짜 실행시간/신뢰도 점수는 만들지 않습니다.
     var verifiedCount = evidence.filter(function (e) { return e.citation_verified === true; }).length;
-    var steps = [];
-    if (p.search_attempts) steps.push([true, '근거를 찾으려고 검색 ' + p.search_attempts + '번']);
-    if (evidence.length) {
-      steps.push([verifiedCount === evidence.length, '찾은 문장 ' + evidence.length + '개 중 ' + verifiedCount + '개 ' + L.citation_verified_label]);
-    } else {
-      steps.push([false, '읽은 공시에서 ' + (specific ? '근거 문장' : '관련 활동') + '을 찾지 못함']);
-    }
-    var checkRows = steps.map(function (r) {
-      return '<li><span class="check-icon ' + (r[0] ? 'ok' : 'no') + '">' + (r[0] ? ICON.check : ICON.dash) + '</span>' + esc(r[1]) + '</li>';
+    var pipeline = [
+      { n: '01', title: 'Promise Extracted', desc: '2024 사업보고서의 AI 미래 계획 문장을 분석 대상으로 구성', ok: true },
+      { n: '02', title: 'Evidence Retrieved', desc: evidence.length ? '후속 공시에서 관련 근거 ' + evidence.length + '개 연결' : '읽은 후속 공시 범위에서 직접 근거를 찾지 못함', ok: evidence.length > 0 },
+      { n: '03', title: 'Judgement', desc: specific ? ('v2 기준 판정 · ' + verdictLabel(p.verdict)) : '방향성 문장 · 정량 판정 대상 제외', ok: specific ? !!p.verdict : true },
+      { n: '04', title: 'Citation Verified', desc: evidence.length ? ('근거 ' + evidence.length + '개 중 ' + verifiedCount + '개 원문 대조') : '검증할 근거 인용 없음', ok: evidence.length ? verifiedCount === evidence.length : false }
+    ];
+    var pipelineRows = pipeline.map(function (s) {
+      return '<li class="pipeline-step ' + (s.ok ? 'is-done' : 'is-muted') + '">' +
+        '<span class="pipeline-num">' + s.n + '</span>' +
+        '<span class="pipeline-state">' + (s.ok ? ICON.check : ICON.dash) + '</span>' +
+        '<span class="pipeline-copy"><strong>' + esc(s.title) + '</strong><small>' + esc(s.desc) + '</small></span>' +
+      '</li>';
     }).join('');
 
     var pill = specific
@@ -337,17 +347,31 @@
           pill +
           '<h1 class="detail-title">' + esc(p.title) + '</h1>' +
         '</section>' +
-        '<section class="card compare" aria-label="약속과 근거 비교">' +
-          '<div class="quote-block">' +
-            '<div class="quote-meta"><span>약속</span><span>' + esc(sourceLabel(p.source || {})) + '</span></div>' +
-            '<p class="quote-text">"' + esc(p.sentence) + '"</p>' +
-          '</div>' + evidenceHtml +
+        '<section class="analysis-timeline" aria-label="약속과 후속 근거 타임라인">' +
+          '<div class="timeline-node promise-node">' +
+            '<div class="timeline-rail"><span class="timeline-index">01</span><span class="timeline-dot"></span></div>' +
+            '<div class="timeline-body quote-block">' +
+              '<div class="timeline-kicker">PROMISE · 2024 기준 공시</div>' +
+              '<div class="quote-meta"><span>회사가 밝힌 AI 계획</span><span>' + esc(sourceLabel(p.source || {})) + '</span></div>' +
+              '<p class="quote-text">"' + esc(p.sentence) + '"</p>' +
+            '</div>' +
+          '</div>' +
+          evidenceHtml +
+          '<div class="timeline-connector verdict-connector"><span></span><em>약속과 근거를 v2 기준으로 대조</em><span></span></div>' +
+          '<div class="timeline-node verdict-node">' +
+            '<div class="timeline-rail"><span class="timeline-index">03</span><span class="timeline-dot"></span></div>' +
+            '<div class="timeline-body verdict-panel">' +
+              '<div class="timeline-kicker">VERDICT · 분석 결과</div>' +
+              pill +
+              (specific && p.reason ? '<p class="reason">' + esc(p.reason) + '</p>' : '<p class="note">' + esc(L.promise_types.directional.note) + '</p>') +
+            '</div>' +
+          '</div>' +
         '</section>' +
-        '<section class="card">' +
-          '<h2 class="card-title" style="font-size:13px">AI가 확인한 과정</h2>' +
-          '<ul class="checks">' + checkRows + '</ul>' +
-        '</section>' +
-        reasonHtml +
+        '<details class="card pipeline-card" open>' +
+          '<summary><span>How AI Promise analyzes this</span><small>DART → RAG → 판정 → Citation 검증</small></summary>' +
+          '<ul class="pipeline-list">' + pipelineRows + '</ul>' +
+          '<p class="pipeline-note">현재 시연 데이터는 사람이 공시 원문을 대조한 검증용 데이터이며, 자동 엔진 정확도 결과와는 구분합니다.</p>' +
+        '</details>' +
       '</main>' +
       '<footer class="bottombar two">' + docLink(p.source, ((p.source || {}).report || '약속') + ' 원문') + secondLink + '</footer>';
   }
@@ -373,13 +397,14 @@
       var link = a.evidence_url
         ? '<a class="ev-link" href="' + esc(a.evidence_url) + '" target="_blank" rel="noopener">근거 원문' + ICON.external + '</a>'
         : '';
-      return '<div class="answer">' +
+      return '<div class="answer insight-block">' +
+        '<div class="insight-eyebrow">TALKING POINT</div>' +
         '<a class="answer-tag" href="' + promiseHref(company, a.promise_id) + '">' + esc(titleOf(a.promise_id)) + '</a>' +
         '<div class="answer-text">' + esc(a.text) + '</div>' + link + '</div>';
     }).join('');
     var questions = qData.map(function (q) {
       var text = typeof q === 'string' ? q : q.text;
-      var inner = ICON.chat + '<div>' + esc(text) + '</div>';
+      var inner = '<span class="question-icon">' + ICON.chat + '</span><div><span class="insight-eyebrow">QUESTION</span><span>' + esc(text) + '</span></div>';
       return q && q.promise_id
         ? '<a class="question" href="' + promiseHref(company, q.promise_id) + '">' + inner + '</a>'
         : '<div class="question">' + inner + '</div>';
@@ -392,9 +417,9 @@
           '<h1 class="headline">면접 5분 전,<br>이것만 보고 들어가세요</h1>' +
           '<p class="note">' + esc(L.interview_card_notice) + '</p>' +
         '</section>' +
-        '<section class="card"><h2 class="card-title">핵심 이슈 ' + issuesData.length + '</h2>' + issues + '</section>' +
-        '<section class="card"><h2 class="card-title">답변 소재 ' + tpData.length + '</h2>' + answers + '</section>' +
-        '<section class="card"><h2 class="card-title">면접관에게 할 역질문 ' + qData.length + '</h2>' + questions + '</section>' +
+        '<section class="card interview-section"><div class="section-title-row"><span class="insight-eyebrow">FACT</span><h2 class="card-title">공시에서 확인할 핵심 이슈 ' + issuesData.length + '</h2></div>' + issues + '</section>' +
+        '<section class="card interview-section"><div class="section-title-row"><span class="insight-eyebrow">TALKING POINT</span><h2 class="card-title">면접에서 활용할 소재 ' + tpData.length + '</h2></div>' + answers + '</section>' +
+        '<section class="card interview-section"><div class="section-title-row"><span class="insight-eyebrow">QUESTION</span><h2 class="card-title">회사에 물어볼 역질문 ' + qData.length + '</h2></div>' + questions + '</section>' +
       '</main>' +
       '<footer class="bottombar two">' +
         '<button type="button" class="btn btn-secondary" id="copy-btn">카드 복사하기</button>' +

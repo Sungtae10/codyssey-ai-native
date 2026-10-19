@@ -60,7 +60,9 @@ const raw = {
 const v = T.validate(raw, COMPANY, RESUME);
 check(v.connections.length === 2, '연결 2개만 남아야 함: ' + v.connections.length);
 check(v.connections[0].promise_title === 'HBM4 양산' && v.connections[0].verdict === 'partial', '연결에 결과 파일의 약속 제목과 판정이 붙어야 함');
-check(v.connections.every(function (c) { return RESUME.replace(/\s+/g, ' ').indexOf(c.resume_quote) >= 0; }), '남은 인용은 이력서에 그대로 있어야 함');
+check(v.connections.every(function (c) { return RESUME.replace(/\s+/g, '').indexOf(c.resume_quote.replace(/\s+/g, '')) >= 0; }), '남은 인용은 이력서에 그대로 있어야 함 (띄어쓰기 무시)');
+const v2 = T.validate({ connections: [{ category: 'strong', promise_id: 'samsung-p2', resume_quote: '정리했습니다. Python으로', why: 'PDF 띄어쓰기' }], gaps: [], talking_points: [], questions: [] }, COMPANY, '자료를 정리했습니다 . Python 으로 만들었습니다');
+check(v2.connections.length === 1, 'PDF에서 띄어쓰기가 달라진 인용도 같은 글자면 통과해야 함');
 check(v.talking_points.length === 3, '포인트는 3개로 제한: ' + v.talking_points.length);
 check(v.talking_points.every(function (t) { return t.text.indexOf('거짓') < 0 && t.text.indexOf('합격') < 0; }), '단정 표현·합격 표현 포인트는 빠져야 함');
 check(v.questions.length === 2, '질문은 2개로 제한');

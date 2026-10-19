@@ -33,7 +33,7 @@ ROOT = Path(__file__).resolve().parent.parent
 APP = ROOT / "app"
 WIDTHS = (390, 320, 1280)   # 글자 대비는 첫 폭에서만, 가로 넘침은 모든 폭에서 봅니다 (1280은 노트북·프로젝터)
 THEMES = ("dark", "light")
-ALLOWED_FAILED = ("data/results.json", "cdn.jsdelivr.net", "favicon.ico")
+ALLOWED_FAILED = ("data/results.json", "cdn.jsdelivr.net", "favicon.ico", "api/resume-fit")   # 서버 함수는 이 검사용 정적 서버에 없음
 SAMPLE_ROUTES = 18          # 예시 데이터 화면 수 (첫 화면 1 + 기업 2곳 x (목록, 카드, 약속 6~7개))
 SAMPLE_MARK = "예시 데이터입니다"
 BROKEN_TEXTS = ("찾는 화면이 없어요", "화면을 그리지 못했어요")
@@ -137,6 +137,7 @@ def passes():
         return [("예시 데이터", sample_routes, True, False)]
     data = json.loads(results.read_text(encoding="utf-8"))
     real_routes = _routes_for([(c["id"], [p["id"] for p in c.get("promises", [])]) for c in data.get("companies", [])])
+    real_routes += [f"#/c/{c['id']}/fit" for c in data.get("companies", []) if c.get("promises")]   # 내 경험 연결 (서버 없이 '준비 중' 상태)
     return [("results.json", real_routes, False, False), ("예시 데이터", sample_routes, True, True)]
 
 

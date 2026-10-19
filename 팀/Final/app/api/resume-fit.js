@@ -130,6 +130,8 @@ function companyContext(c) {
 
 /* ---------- 근거 검사 ---------- */
 function squash(s) { return String(s || '').replace(/\s+/g, ' ').trim(); }
+// 인용 비교는 띄어쓰기를 모두 빼고 합니다 (PDF에서 뽑은 글은 "했습니다 ." 처럼 띄어쓰기가 달라질 수 있어서)
+function nospace(s) { return String(s || '').replace(/\s+/g, ''); }
 function clean(s, max) { return squash(s).slice(0, max); }
 function bad(text) {
   const t = String(text || '');
@@ -139,7 +141,7 @@ function bad(text) {
 function validate(raw, company, resume) {
   const byId = {};
   (company.promises || []).forEach(function (p) { byId[p.id] = p; });
-  const resumeFlat = squash(resume);
+  const resumeFlat = nospace(resume);
   let dropped = 0;
   function promiseInfo(pid) {
     const p = byId[pid];
@@ -155,7 +157,7 @@ function validate(raw, company, resume) {
     return out;
   }
   const connections = keep(raw.connections, 3, function (it) {
-    const q = squash(it.resume_quote);
+    const q = nospace(it.resume_quote);
     return (it.category === 'strong' || it.category === 'related') && q.length >= 6 && resumeFlat.indexOf(q) >= 0 && !bad(it.why);
   }, function (it) {
     return Object.assign({ category: it.category, resume_quote: clean(it.resume_quote, 160), why: clean(it.why, 300) }, promiseInfo(it.promise_id));

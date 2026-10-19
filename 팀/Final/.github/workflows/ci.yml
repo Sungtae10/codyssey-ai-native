@@ -31,6 +31,11 @@ jobs:
       - name: Validate sample JSON
         run: python -m json.tool tests/sample_data.json > /dev/null
 
+      - name: Validate screen data JSON (results, listed companies)
+        run: |
+          python -m json.tool app/data/results.json > /dev/null
+          python -m json.tool app/data/listed-companies.json > /dev/null
+
       - name: Check evaluation CLI
         run: python eval/evaluate.py --help > /dev/null
 

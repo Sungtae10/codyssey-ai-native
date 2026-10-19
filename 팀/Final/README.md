@@ -3,7 +3,7 @@
 회사가 사업보고서에 "AI로 이것을 하겠다"고 쓴 약속을 찾고, 다음 보고서에 실행 근거가 있는지 찾아 4가지(근거 확인, 일부 확인, 공시에서 확인 불가, 회사가 미추진으로 공시)로 판정해 보여주는 웹 서비스입니다. Codyssey Final Project입니다.
 
 - 핵심 기업: 삼성전자(개발·시연용), SK하이닉스(평가용)
-- 기업 추가: 관문 2를 통과하면 업종이 다른 시연용 기업을 최대 3곳 (후보: 현대자동차, NAVER, LG전자). 시연용 기업은 사람 정답과 비교하지 않고 화면에 시연용으로 표시합니다.
+- 확장 데모 기업: 카카오, 신한은행, NAVER. 시간 부족 시 Core 2(삼성전자·SK하이닉스)를 먼저 완성하고, 확장 3곳은 시연용으로 표시해 Human blind evaluation 수치에는 포함하지 않습니다.
 - 약속을 찾는 보고서: 2024 사업보고서 / 근거를 찾는 보고서: 2025 사업보고서, 2026 반기보고서
 
 ## 1. 폴더
@@ -81,3 +81,16 @@ python tests/ui_check.py         # 화면: 모든 화면(예시 데이터 18개)
 
 - 사용자 테스트: `eval/user_test/`
 - 문장 분류 ML 실험 (`eval/ml/`): 이번 제출(10/18)에서는 하지 않고 다음 단계로 둡니다 (기획 보고서 8.3). 코드와 데이터 형식만 있습니다.
+
+
+## 10. 공식 Final Project 요구사항 대응
+
+- 생성형 AI / AI Agent 핵심 기능: 약속 추출, 근거 검색·재검색, 판정, citation verification, 면접 카드
+- 필수 기술요소: **RAG + Agent-style workflow** (자동화 Python pipeline 보조)
+- 외부 배포: 공개 URL 필수
+- 실제 사용자: **최소 5명 이상**
+- 사용자 피드백: 수집 후 최소 1건 이상 실제 서비스에 반영하고 commit/PR로 증빙
+- AI 윤리: AI 생성 분석 고지, 단정 표현 금지, 개인정보 비저장
+- 기능·비기능 요구사항: [docs/requirements.md](docs/requirements.md)
+- 마감 최소 완성안: [docs/final-sprint.md](docs/final-sprint.md)
+- 빠른 사용자 테스트: [docs/user-test-quick.md](docs/user-test-quick.md)

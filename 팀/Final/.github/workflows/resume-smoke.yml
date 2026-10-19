@@ -13,6 +13,10 @@ on:
         description: '분석 완료 기업 id (예: samsung, skhynix)'
         required: true
         default: 'samsung'
+      role:
+        description: '지원 직무 (10/20 v2, 비우면 직무 없이 보냄. 예: 기술사업화)'
+        required: false
+        default: ''
 
 permissions:
   contents: write
@@ -24,6 +28,7 @@ jobs:
     env:
       SITE: https://ai-promise-six.vercel.app
       COMPANY: ${{ github.event.inputs.company || 'samsung' }}
+      ROLE: ${{ github.event.inputs.role || '' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -32,7 +37,7 @@ jobs:
           mkdir -p data/runs
           python3 - <<'PY'
           import json, os, time, urllib.request, urllib.error
-          site, company = os.environ["SITE"], os.environ["COMPANY"]
+          site, company, role = os.environ["SITE"], os.environ["COMPANY"], os.environ.get("ROLE", "").strip()
           # 지어낸 가상 이력서 (실제 사람 정보 없음)
           resume = "\n".join([
               "가상 지원자 A의 이력서입니다. 기술경영 석사과정에서 기업 공시 문서를 LLM으로 분석하는 연구를 하고 있습니다.",
@@ -40,7 +45,7 @@ jobs:
               "Python으로 공시 데이터 수집 파이프라인을 만들고 대시보드로 팀에 공유했습니다.",
               "온디바이스 AI 제품 사례를 조사해 신사업 아이디어 보고서를 썼습니다.",
           ])
-          out = {"site": site, "company": company}
+          out = {"site": site, "company": company, "role": role}
           def call(method, path, body=None, timeout=120):
               req = urllib.request.Request(site + path, method=method,
                                            data=json.dumps(body).encode("utf-8") if body else None,
@@ -53,9 +58,18 @@ jobs:
                   return e.code, json.loads(e.read().decode("utf-8") or "{}"), round(time.time() - t0, 1)
           s, j, t = call("GET", "/api/resume-fit?check=1&t=%d" % time.time())
           out["health"] = {"status": s, "seconds": t, "body": j}
-          s, j, t = call("POST", "/api/resume-fit", {"company": company, "resume": resume}, timeout=300)
-          out["post"] = {"status": s, "seconds": t, "model": j.get("model"), "ok": j.get("ok"),
+          body = {"company": company, "resume": resume}
+          if role:
+              body["role"] = role
+          s, j, t = call("POST", "/api/resume-fit", body, timeout=300)
+          conns = j.get("connections") or []
+          out["post"] = {"status": s, "seconds": t, "model": j.get("model"), "ok": j.get("ok"), "role_echo": j.get("role"),
                          "counts": {k: len(j.get(k) or []) for k in ("connections", "gaps", "talking_points", "questions")},
+                         "levels": {lv: sum(1 for c in conns if c.get("level") == lv) for lv in ("direct", "indirect")},
+                         "indirect_with_limit": sum(1 for c in conns if c.get("level") == "indirect" and (c.get("limit") or "").strip()),
+                         "gaps_with_prepare": sum(1 for g in (j.get("gaps") or []) if g.get("prepare")),
+                         "has_summary": bool((j.get("summary") or "").strip()),
+                         "quotes_in_resume": sum(1 for c in conns if (c.get("resume_quote") or "").replace(" ", "") in resume.replace(" ", "")),
                          "dropped": j.get("dropped"), "error": j.get("error")}
           out["post_body"] = j
           with open("data/runs/resume-smoke.json", "w", encoding="utf-8") as f:

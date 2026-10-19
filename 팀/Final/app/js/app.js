@@ -7,11 +7,12 @@
    5. 내 경험 연결     #/c/<기업id>/fit  (이력서 × 이 회사 AI 약속, 서버 함수 api/resume-fit)
 
    데이터: data/results.json 이 있으면 그걸 쓰고,
-           없으면 data/sample-data.js 의 예시 데이터를 써요.
+           못 읽으면 이 컴퓨터에서 여는 경우(파일 더블클릭, localhost, 127.0.0.1)나 ?sample=1일 때만 data/sample-data.js 의 예시 데이터를 써요.
+           운영 사이트에서는 예시로 바꾸지 않고 다시 시도하라고 안내해요 (10/20).
    두 파일 모두 안내서 4장의 sample_data.json 형식이에요. (엔진 결과 파일과 같은 형식)
 
    1012 수정 (데이터 연결, 김성태): 안내서 형식을 그대로 읽게 바꾸고, 안내서 2장 규칙 9개에 맞췄어요.
-   - 안내 문구 2개를 모든 화면에, 예시 데이터 안내를 맨 위에 (meta.is_sample)
+   - 안내 문구 2개를 모든 화면에, 맨 위 안내 띠는 meta.is_sample(예시 데이터) 또는 meta.show_validation_notice(실제 데이터의 검증 수준 안내)일 때
    - 화면 문구는 데이터의 labels에서 읽기
    - 개수 요약은 구체적 약속만, 규칙 3의 형태로. 비율 막대는 뺌
    - 방향성 약속 묶음, "원문 확인됨" 표시, 면접 카드 안내 문구와 링크
@@ -21,7 +22,7 @@
      분석 완료(결과 열기) / 분석 준비 중(데이터에 있지만 약속이 아직 없음) / 상장 기업이지만 아직 분석 전.
      상장 기업 여부는 data/listed-companies.json(한국거래소 상장 종목, 기준일 표시)에서만 확인해요.
      실제로 없는 기능(즉석 분석 버튼 등)은 만들지 않아요.
-   - 누가 했는지는 meta로 정해요: data_mode가 human_reviewed_demo면 '사람이 원문 대조',
+   - 누가 했는지는 meta로 정해요: data_mode가 human_reviewed_demo면 '사람 원문 검토 완료',
      data_mode 없이 is_sample이면 '예시 데이터', 그 밖(엔진 결과)은 'AI 엔진'.
    - 화면 문구는 한국어로, 링크는 http(s) 주소만 만들어요.
    ========================================================= */
@@ -54,7 +55,7 @@
     },
     not_verifiable_message: '읽은 공시 범위에서 관련 내용을 찾지 못했습니다.',
     no_related_activity_message: '읽은 공시 범위에서 관련 활동을 찾지 못했습니다.',
-    citation_verified_label: '원문 확인됨',
+    citation_verified_label: '원문 존재 확인',
     interview_card_notice: '완성된 답변이 아니라 근거가 붙은 소재입니다. 자신의 말로 바꿔 쓰세요.'
   };
 
@@ -159,12 +160,12 @@
 
   /* ---------- 공통 틀 ---------- */
   // 규칙 9: 예시 데이터일 때 화면 맨 위 안내. 기업 화면에서는 그 기업의 안내(company.notice)가 있으면 그걸 보여줘요
-  var ENGINE_NOTICE = '이 기업은 AI 엔진 결과예요. 근거 문장은 코드가 원문과 대조했고, 판정은 사람이 아직 검토하지 않았어요.';
+  var ENGINE_NOTICE = '이 기업은 AI 엔진 결과예요. 근거 문장이 원문에 있는지는 코드가 확인했고(원문 존재 확인), 판정은 사람이 아직 검토하지 않았어요.';
   function sampleBanner(company) {
     var meta = DATA.meta || {};
     var own = company && (company.notice || (company.data_mode === 'engine' ? ENGINE_NOTICE : ''));
     if (own) return '<div class="sample-banner" role="note">' + esc(own) + '</div>';
-    if (!meta.is_sample) return '';
+    if (!meta.is_sample && !meta.show_validation_notice) return '';
     return '<div class="sample-banner" role="note">' + esc(meta.notice || '예시 데이터입니다. 실제 기업이나 실제 공시 내용이 아닙니다.') + '</div>';
   }
   // 규칙 1: 안내 문구 2개를 모든 화면에. AI 엔진 결과인 기업 화면에서는 안내서의 기본 문구 2개를 써요
@@ -187,7 +188,8 @@
     }
     return '<span class="btn btn-secondary btn-sm" aria-disabled="true" title="원문 링크가 아직 없어요">' + esc(label) + ICON.external + '</span>';
   }
-  // 데이터 방식 3가지: 사람이 원문 대조한 검증용 데이터(human), 가상 예시(sample), 엔진 결과(engine)
+  // 데이터 방식 3가지: 사람이 원문을 읽고 판정한 검증용 데이터(human), 가상 예시(sample), 엔진 결과(engine)
+  // 10/20: '원문 존재 확인'(코드가 근거 문장이 원문에 있는지 검사)과 '사람 원문 검토'(사람이 판정을 확인)는 다른 일이라 이름을 나눠 써요
   // 기업에 data_mode("human_reviewed_demo" 또는 "engine")가 있으면 그 기업은 그 값을 따라요 (한 파일에 섞여 있을 때)
   function dataMode(company) {
     var own = company && company.data_mode;
@@ -242,7 +244,7 @@
   }
   function resultItem(c) {
     if (isReady(c)) {
-      var meta = '구체적 약속 ' + specifics(c).length + '개 · ' + byMode('사람이 원문 대조', '가상 예시', 'AI 엔진 결과(사람 검토 전)', c);
+      var meta = '구체적 약속 ' + specifics(c).length + '개 · ' + byMode('사람 원문 검토 완료', '가상 예시', 'AI 엔진 결과(사람 검토 전)', c);
       return '<li><a class="search-item" href="#/c/' + encodeURIComponent(c.id) + '">' +
         '<span class="search-main"><span class="search-name">' + esc(c.name) + '</span><span class="search-meta">' + esc(meta) + '</span></span>' +
         '<span class="status-badge is-ready">분석 완료</span>' + ICON.chevron + '</a></li>';
@@ -304,7 +306,7 @@
       var spec = specifics(c);
       var reports = c.reports || {};
       var mode = dataMode(c);
-      var badge = mode === 'human' ? '<span class="mode-badge is-human">사람이 원문 대조</span>'
+      var badge = mode === 'human' ? '<span class="mode-badge is-human">사람 원문 검토 완료</span>'
         : mode === 'engine' ? '<span class="mode-badge is-engine">AI 엔진 · 사람 검토 전</span>' : '';
       return '<a class="company" href="#/c/' + encodeURIComponent(c.id) + '">' +
         '<div class="company-logo" aria-hidden="true">' + esc(c.name.charAt(0)) + '</div>' +
@@ -314,7 +316,7 @@
         '<div class="company-meta">' + esc('구체적 약속 ' + spec.length + '개 중 ' + countLine(spec)) + '</div></div>' + ICON.chevron +
       '</a>';
     }
-    // 10/19: 사람이 원문을 대조한 기업(검증 시연)과 AI 엔진이 자동 분석한 기업(확장 분석)을 나눠 보여줘요
+    // 10/19: 사람이 원문을 읽고 판정한 기업(검증 시연)과 AI 엔진이 자동 분석한 기업(확장 분석)을 나눠 보여줘요
     var humanList = readyList.filter(function (c) { return dataMode(c) === 'human'; });
     var engineList = readyList.filter(function (c) { return dataMode(c) === 'engine'; });
     var otherList = readyList.filter(function (c) { var m = dataMode(c); return m !== 'human' && m !== 'engine'; });
@@ -324,7 +326,7 @@
         (desc ? '<p class="group-desc">' + esc(desc) + '</p>' : '') +
         '<div class="company-list">' + list.map(companyCard).join('') + '</div></div>';
     }
-    var companies = group('검증 시연 기업', '사람이 공시 원문을 직접 읽고 판정을 대조했어요', humanList) +
+    var companies = group('검증 시연 기업', '사람이 공시 원문을 직접 읽고 판정했어요 (사람 원문 검토 완료)', humanList) +
       group('확장 분석 기업', 'AI 엔진이 OpenDART 공시를 자동으로 받아 분석했어요. 사람 검토 전이라 원문 링크로 확인해 주세요', engineList) +
       group('분석 완료', '', otherList);
     var pending = pendingList.map(function (c) {
@@ -351,16 +353,17 @@
     var humanNames = readyList.filter(function (c) { return dataMode(c) === 'human'; }).map(function (c) { return c.name; });
     var engineNames = readyList.filter(function (c) { return dataMode(c) === 'engine'; }).map(function (c) { return c.name; });
     var readyStatLabel = humanNames.length && engineNames.length
-      ? '분석 기업 (사람 ' + humanNames.length + ', AI ' + engineNames.length + ')'
-      : '분석 기업';
+      ? '분석 완료 기업 (사람 ' + humanNames.length + ', AI ' + engineNames.length + ')'
+      : '분석 완료 기업';
+    var totalPromises = readyCompanies.reduce(function (sum, c) { return sum + (c.promises || []).length; }, 0);
     var modeNote;
     if (dataMode() === 'sample' && !humanNames.length && !engineNames.length) {
       modeNote = '지금 보이는 기업과 판정은 화면 형식을 보여 주는 가상 예시예요.';
     } else if (humanNames.length && engineNames.length) {
-      modeNote = humanNames.join(', ') + '의 판정은 사람이 공시 원문을 직접 읽고 대조한 검증용 데이터이고, ' +
+      modeNote = humanNames.join(', ') + '의 판정은 사람이 공시 원문을 직접 읽고 판정한 검증용 데이터이고, ' +
         engineNames.join(', ') + '는 AI 엔진 결과(사람 검토 전)예요. 둘 다 같은 4단계 형식이에요.';
     } else if (humanNames.length) {
-      modeNote = '지금 보이는 판정은 사람이 공시 원문을 직접 읽고 대조한 검증용 데이터예요. 엔진은 같은 4단계로 같은 형식의 결과를 만들어요.';
+      modeNote = '지금 보이는 판정은 사람이 공시 원문을 직접 읽고 판정한 검증용 데이터예요. 엔진은 같은 4단계로 같은 형식의 결과를 만들어요.';
     } else {
       modeNote = '지금 보이는 판정은 AI 엔진 결과예요. 원문 링크로 직접 확인해 주세요.';
     }
@@ -369,8 +372,8 @@
       '<main class="content">' + disclaimers() +
         '<section class="hero search-hero">' +
           '<p class="eyebrow">' + esc(L.service_subtitle) + ' · ' + esc(L.tagline) + '</p>' +
-          '<h1 class="headline">기업의 AI 약속,<br><span class="hl">실행됐는지 공시로 검증합니다</span></h1>' +
-          '<p class="lead">사업보고서에서 AI 약속을 찾고, 다음 해 공시에서 실행 근거를 검색해 판정한 뒤, 인용 문장을 DART 원문과 다시 대조해요. 면접 준비에 바로 쓰게 정리해 드려요.</p>' +
+          '<h1 class="headline">기업이 말한 AI 전략,<br><span class="hl">실제 공시 근거와 함께 확인하세요</span></h1>' +
+          '<p class="lead">여러 해의 사업보고서를 직접 비교하지 않아도, 기업의 AI 약속과 후속 공시의 실행 근거를 이어서 보여 드려요. 지원 직무와 이력서를 넣으면 면접에서 쓸 강점과 아직 없는 부분까지 정리해요.</p>' +
           '<label class="company-search">' +
             '<span class="sr-only">회사명 검색</span>' +
             '<span class="search-icon">' + ICON.search + '</span>' +
@@ -379,14 +382,14 @@
           '<p class="search-help" id="search-help">' + esc(searchHelpText()) + '</p>' +
           '<div class="search-results" id="search-results" aria-live="polite"></div>' +
           '<div class="tech-strip" aria-label="결과를 믿을 수 있게 하는 장치">' +
-            '<span>OpenDART 정기공시 기반</span><span>원문 인용 검사</span><span>AI 판정 + 재검토</span><span>면접 활용 인사이트</span>' +
+            '<span>OpenDART 정기공시 기반</span><span>원문 존재 확인</span><span>AI 판정 + 상위 모델 재검토</span><span>면접 활용 인사이트</span>' +
           '</div>' +
-          // 10/19: 검색 범위(상장 기업 전체)를 먼저, 깊이 분석한 기업 수는 그다음 (숫자는 모두 데이터에서 셈)
-          '<div class="hero-stats" aria-label="현재 분석 범위">' +
-            '<div><strong id="stat-listed">' + esc(listedCountText()) + '</strong><span>검색 가능한 상장사</span></div>' +
+          // 10/20: 분석을 마친 범위를 숫자로 먼저 보여 줘요. 검색할 수 있는 상장사 수는 검색창 아래 문장에만 적어 두 숫자가 헷갈리지 않게 해요 (숫자는 모두 데이터에서 셈)
+          '<div class="hero-stats" aria-label="분석을 마친 범위">' +
             '<div><strong>' + readyCompanies.length + '</strong><span>' + esc(readyStatLabel) + '</span></div>' +
-            '<div><strong>' + totalSpecific + '</strong><span>구체적 AI 약속</span></div>' +
-            '<div><strong>' + verifiedCitations + '</strong><span>원문 대조를 통과한 근거</span></div>' +
+            '<div><strong>' + totalPromises + '</strong><span>분석한 AI 약속</span></div>' +
+            '<div><strong>' + totalSpecific + '</strong><span>판정한 구체적 약속</span></div>' +
+            '<div><strong>' + verifiedCitations + '</strong><span>원문 존재 확인 근거</span></div>' +
           '</div>' +
         '</section>' +
         // 10/20 사용자 의견("사용법이 조금 헷갈림") 반영: 처음 온 사람이 무엇부터 누를지 순서로 알려 줘요
@@ -395,7 +398,7 @@
           '<ol class="steps">' +
             '<li><span class="step-num">1</span><span><strong>회사 고르기</strong> 위 검색창에 회사 이름을 넣거나, 아래 목록에서 회사를 눌러요</span></li>' +
             '<li><span class="step-num">2</span><span><strong>약속 하나 열기</strong> 회사가 쓴 원래 문장, 후속 공시의 근거, 판정 이유가 차례로 나와요. 형광 표시는 약속과 근거에 함께 나오는 말이고, 원문 보기로 DART에서 직접 확인해요</span></li>' +
-            '<li><span class="step-num">3</span><span><strong>면접 준비</strong> 면접 카드를 보거나, 내 이력서를 넣어 이 회사 AI 약속과 이어지는 경험을 찾아요</span></li>' +
+            '<li><span class="step-num">3</span><span><strong>면접 준비</strong> 면접 카드를 보거나, 지원 직무와 이력서를 넣어 이어지는 경험과 아직 없는 부분을 찾아요</span></li>' +
           '</ol>' +
         '</section>' +
         '<section class="company-picker">' +
@@ -408,7 +411,7 @@
             '<li><span class="step-num">1</span><span><strong>AI 약속 추출</strong> 2024 사업보고서에서 앞으로의 AI 계획 문장을 원문 그대로 골라요</span></li>' +
             '<li><span class="step-num">2</span><span><strong>후속 근거 검색</strong> 2025 사업보고서와 2026 반기보고서를 키워드 검색과 의미 검색(RAG)으로 찾아요</span></li>' +
             '<li><span class="step-num">3</span><span><strong>AI 판정과 재검토</strong> 판정기준 v2로 4가지 중 하나로 정하고, 경계가 애매한 일부 확인은 상위 모델이 한 번 더 판정해요</span></li>' +
-            '<li><span class="step-num">4</span><span><strong>원문 대조</strong> 인용한 근거 문장이 DART 원문에 그대로 있는지 코드로 다시 확인해요</span></li>' +
+            '<li><span class="step-num">4</span><span><strong>원문 존재 확인</strong> 인용한 근거 문장이 DART 원문에 글자 그대로 있는지 코드로 확인해요. 판정이 맞는지는 사람이 원문을 읽고 따로 봐요(사람 원문 검토, 검증 시연 기업 2곳)</span></li>' +
           '</ol>' +
           (DATA.meta && DATA.meta.pilot_note ? '<p class="note pilot-note">' + esc(DATA.meta.pilot_note) + '</p>' : '') +
           '<p class="note">' + esc(modeNote) + ' 새 기업은 엔진이 OpenDART에서 보고서 3개(약속 1, 근거 2)를 자동으로 받아 같은 순서로 분석해요.</p>' +
@@ -469,12 +472,45 @@
         (isReady(company) && spec.length
           ? '<a class="fit-entry" href="#/c/' + encodeURIComponent(company.id) + '/fit">' +
               '<span class="fit-entry-main"><span class="fit-entry-title">내 이력서로 맞춤 포인트 만들기</span>' +
-              '<span class="fit-entry-desc">이력서 경험과 ' + esc(company.name) + ' AI 약속이 만나는 지점을 AI가 찾아요. 이력서는 저장하지 않아요.</span></span>' + ICON.chevron +
+              '<span class="fit-entry-desc">지원 직무 기준으로 ' + esc(company.name) + ' AI 약속과 이어지는 경험과 아직 없는 부분을 AI가 찾아요. 이력서는 저장하지 않아요.</span></span>' + ICON.chevron +
             '</a>'
           : '') +
         '<p class="note">' + esc(nv.label || '') + ': ' + esc(nv.meaning || '') + '</p>' +
+        provenanceCard(company) +
       '</main>' +
       '<footer class="bottombar"><a class="btn btn-primary" href="#/c/' + encodeURIComponent(company.id) + '/card">면접 카드 보기</a></footer>';
+  }
+
+  // 10/20 분석 정보 칸: 출처, 기준 보고서, 근거 범위, 기준일, 분석 방식, 원문 존재 확인, 사람 원문 검토를 데이터에서만 만들어요
+  function provenanceCard(company) {
+    var r = company.reports || {};
+    var ev = 0, ok = 0;
+    (company.promises || []).forEach(function (p) {
+      (p.evidence || []).forEach(function (e) { ev += 1; if (e.citation_verified === true) ok += 1; });
+    });
+    function links(list) {
+      var html = (list || []).map(function (x) {
+        var u = safeUrl(x.url);
+        return u ? '<a href="' + esc(u) + '" target="_blank" rel="noopener">' + esc(x.title) + '</a>' : esc(x.title);
+      }).join(', ');
+      return html || '적혀 있지 않음';
+    }
+    var rows = [
+      ['데이터 출처', esc('OpenDART 정기공시 (DART 원문 링크)')],
+      ['약속 기준 보고서', links(r.promise)],
+      ['근거 검색 범위', links(r.evidence)],
+      ['분석 기준일', esc((DATA.meta || {}).updated || '적혀 있지 않음')],
+      ['분석 방식', esc(byMode('사람이 공시 원문을 읽고 판정 (판정기준 v2)', '가상 예시', 'AI 엔진: 약속 추출, 근거 검색(RAG), 판정기준 v2 판정, 원문 존재 확인(코드)', company))],
+      [L.citation_verified_label, esc(ev ? '근거 문장 ' + ev + '개 중 ' + ok + '개' : '확인할 근거 문장 없음')],
+      ['사람 원문 검토', esc(byMode('완료', '해당 없음 (예시)', '아직 안 함', company))]
+    ];
+    // 10/20 고친 뒤 후기 2건("글자가 너무 많음", "핵심이 한눈에 들어오지 않음") 반영: 처음에는 접어 두고, 요약 줄에 두 가지 확인 상태만 보여 줘요
+    var brief = byMode('사람 원문 검토 완료', '예시 데이터', '사람 원문 검토 전', company) + ' · ' + L.citation_verified_label + ' ' +
+      (ev ? '근거 ' + ev + '개 중 ' + ok + '개' : '근거 없음');
+    return '<details class="card provenance" aria-label="분석 정보">' +
+      '<summary><span>분석 정보</span><small>' + esc(brief) + ' (눌러서 출처 보기)</small></summary>' +
+      '<dl class="prov-list">' + rows.map(function (x) { return '<div><dt>' + esc(x[0]) + '</dt><dd>' + x[1] + '</dd></div>'; }).join('') + '</dl>' +
+    '</details>';
   }
 
   /* ---------- 화면 3: 약속 자세히 보기 ---------- */
@@ -619,14 +655,15 @@
     var all = texts.join(' ');
     return GLOSSARY.filter(function (g) { return g.re.test(all); });
   }
+  // 10/20 고친 화면을 본 응답('글자가 너무 많음') 반영: 용어 풀이는 접어 두고, 어떤 용어가 나왔는지만 먼저 보여 줘요
   function glossaryCard(items) {
     if (!items.length) return '';
-    return '<section class="card" aria-label="용어 풀이">' +
-      '<h2 class="card-title" style="font-size:13px">이 약속에 나온 용어</h2>' +
+    return '<details class="card glossary-card" aria-label="용어 풀이">' +
+      '<summary><span>이 약속에 나온 용어 ' + items.length + '개</span><small>' + esc(items.map(function (g) { return g.term; }).join(', ')) + ' (눌러서 풀이 보기)</small></summary>' +
       '<dl class="glossary">' + items.map(function (g) {
         return '<div><dt>' + esc(g.term) + '</dt><dd>' + esc(g.text) + '</dd></div>';
       }).join('') + '</dl>' +
-    '</section>';
+    '</details>';
   }
 
   function evidenceBlock(e, kindLabel, kicker, terms) {
@@ -680,9 +717,9 @@
           '<div class="timeline-body quote-block"><div class="timeline-kicker">' + esc(evKicker) + '</div><p class="quote-empty">' + esc(emptyMsg) + '</p></div>' +
         '</div>';
 
-    // 화면에는 데이터로 확인되는 상태만 보여줘요. 단계마다 누가 했는지 함께 적어요 (사람 대조 데이터를 AI가 한 것처럼 보이지 않게)
+    // 화면에는 데이터로 확인되는 상태만 보여줘요. 단계마다 누가 했는지 함께 적어요 (사람이 검토한 데이터를 AI가 한 것처럼 보이지 않게)
     var verifiedCount = evidence.filter(function (e) { return e.citation_verified === true; }).length;
-    var who2 = byMode('사람이 원문 대조', '예시 데이터', specific && p.search_attempts ? 'AI 검색 ' + p.search_attempts + '번' : 'AI 검색', company);
+    var who2 = byMode('사람이 원문에서 찾음', '예시 데이터', specific && p.search_attempts ? 'AI 검색 ' + p.search_attempts + '번' : 'AI 검색', company);
     var pipeline = [
       { n: '01', title: '약속 찾기', who: byMode('사람이 원문에서 고름', '예시 데이터', 'AI가 원문 문장을 고름', company),
         desc: promiseReport + '의 AI 계획 문장', ok: true },
@@ -690,7 +727,7 @@
         desc: evidence.length ? '후속 공시에서 ' + (specific ? '근거' : '관련 활동') + ' ' + evidence.length + '개' : '읽은 후속 공시 범위에서 찾지 못함', ok: evidence.length > 0 },
       { n: '03', title: '판정', who: specific ? byMode('판정기준 v2, 사람', '판정기준 v2, 예시', '판정기준 v2, AI', company) : '',
         desc: specific ? verdictLabel(p.verdict) : '방향성 약속이라 판정하지 않음', ok: specific ? !!p.verdict : true },
-      { n: '04', title: '원문 인용 검사', who: byMode('사람이 원문과 대조', '예시 데이터', '코드가 원문과 대조', company),
+      { n: '04', title: L.citation_verified_label, who: byMode('사람이 확인', '예시 데이터', '코드가 확인', company),
         desc: evidence.length ? (specific ? '근거 문장 ' : '찾은 문장 ') + evidence.length + '개 중 ' + verifiedCount + '개 ' + L.citation_verified_label : '확인할 문장이 없음', ok: evidence.length ? verifiedCount === evidence.length : false }
     ];
     var pipelineRows = pipeline.map(function (s) {
@@ -739,11 +776,18 @@
           '</div>' +
         '</section>' +
         glossaryCard(glossaryFor([p.sentence].concat(evidence.map(function (e) { return e.sentence; })))) +
-        '<details class="card pipeline-card" open>' +
-          '<summary><span>확인 4단계</span><small>약속 찾기 → 근거 찾기(RAG) → 판정 → 원문 인용 검사</small></summary>' +
+        // 10/20: 처음에는 접어 두고(고친 뒤 후기 2건 반영), 요약 줄에 원문 존재 확인과 사람 원문 검토를 따로 적어요
+        '<details class="card pipeline-card">' +
+          '<summary><span>확인 4단계</span><small>' + esc('약속 찾기 → 근거 찾기(RAG) → 판정 → ' + L.citation_verified_label) + '</small>' +
+            '<small>' + esc((evidence.length ? L.citation_verified_label + ' ' + verifiedCount + '/' + evidence.length : '확인할 근거 없음') + ' · ' +
+            byMode('사람 원문 검토 완료', '예시 데이터', '사람 원문 검토 전', company) + ' (눌러서 단계 보기)') + '</small></summary>' +
           '<ul class="pipeline-list">' + pipelineRows + '</ul>' +
+          // 10/20: 원문 존재 확인(코드)과 사람 원문 검토를 따로 보여 줘요
+          '<p class="review-line"><span class="review-k">사람 원문 검토</span><span class="review-v ' + byMode('is-done', 'is-todo', 'is-todo', company) + '">' +
+            esc(byMode('완료: 사람이 공시 원문을 읽고 판정함', '해당 없음 (예시 데이터)', '아직 안 함: AI 엔진 결과', company)) + '</span></p>' +
+          '<p class="pipeline-note">' + esc('"' + L.citation_verified_label + '"은 고른 인용 문장이 공시 원문에 그대로 있는지 확인한 것이에요. 그 문장이 약속 전체를 뒷받침하는지는 판정에서 따로 봐요.') + '</p>' +
           '<p class="pipeline-note">' + esc(byMode(
-            '지금 화면의 판정은 사람이 공시 원문을 직접 읽고 대조한 검증용 데이터예요. 엔진은 같은 4단계로 같은 형식의 결과를 만들고, 엔진 정확도는 따로 평가해요.',
+            '지금 화면의 판정은 사람이 공시 원문을 직접 읽고 판정한 검증용 데이터예요. 엔진은 같은 4단계로 같은 형식의 결과를 만들고, 엔진 정확도는 따로 평가해요.',
             '가상 예시 데이터라 실제 기업이나 실제 공시가 아니에요.',
             'AI 엔진 결과예요. 판정이 맞는지 원문 링크로 직접 확인해 주세요.', company)) + '</p>' +
         '</details>' +
@@ -799,7 +843,7 @@
         (isReady(company)
           ? '<a class="fit-entry" href="' + listHref + '/fit">' +
               '<span class="fit-entry-main"><span class="fit-entry-title">내 이력서로 맞춤 포인트 만들기</span>' +
-              '<span class="fit-entry-desc">이력서 경험과 이 회사 AI 약속이 만나는 지점을 AI가 찾아요. 이력서는 저장하지 않아요.</span></span>' + ICON.chevron +
+              '<span class="fit-entry-desc">지원 직무 기준으로 이 회사 AI 약속과 이어지는 경험과 아직 없는 부분을 AI가 찾아요. 이력서는 저장하지 않아요.</span></span>' + ICON.chevron +
             '</a>'
           : '') +
       '</main>' +
@@ -815,6 +859,8 @@
   var FIT_MAX = 6000;
   var FIT_MIN = 80;
   var PDFJS_SRC = 'vendor/pdfjs/pdf.min.js';
+  // 10/20 v2: 지원 직무를 먼저 받아 경험 → 직무 역량 → 회사 AI 약속 순서로 잇게 해요 (고친 화면을 본 사용자 후기 FB-08)
+  var FIT_ROLES = ['전략기획', '사업개발·신사업', '재무·투자', '기술사업화', '상품·서비스 전략', 'PM·PMO', 'AI·데이터', '소프트웨어·엔지니어링', '마케팅'];
   var PDFJS_WORKER = 'vendor/pdfjs/pdf.worker.min.js';
 
   function viewFit(company) {
@@ -828,7 +874,7 @@
         '<section style="display:flex;flex-direction:column;gap:6px">' +
           '<p class="eyebrow">' + esc(company.name) + ' · 내 경험 연결</p>' +
           '<h1 class="headline">내 경험과 이 회사 AI 약속은<br><span class="hl">어디서 만날까요?</span></h1>' +
-          '<p class="lead">이력서 내용을 넣으면 이 회사의 AI 약속과 근거에 이어지는 경험, 보완할 점, 면접에서 말할 포인트를 찾아요.</p>' +
+          '<p class="lead">지원 직무와 이력서를 넣으면, 경험이 그 직무에서 어떻게 쓰이고 이 회사 AI 약속과 어디까지 이어지는지, 이력서에 없는 부분과 면접에서 말할 포인트를 찾아요.</p>' +
         '</section>' +
         '<section class="card fit-privacy" role="note" aria-label="개인정보 안내">' +
           '<h2 class="card-title" style="font-size:13px">넣기 전에 확인해 주세요</h2>' +
@@ -839,6 +885,14 @@
           '</ul>' +
         '</section>' +
         '<section class="card fit-form">' +
+          '<label class="fit-label" for="fit-role">지원 직무 (고르면 더 정확해요)</label>' +
+          '<select id="fit-role" class="fit-select">' +
+            '<option value="">고르지 않음</option>' +
+            FIT_ROLES.map(function (r) { return '<option value="' + esc(r) + '">' + esc(r) + '</option>'; }).join('') +
+            '<option value="__custom">직접 입력</option>' +
+          '</select>' +
+          '<input id="fit-role-custom" class="fit-input" type="text" maxlength="30" placeholder="지원 직무를 적어 주세요 (예: ESG 전략)" aria-label="지원 직무 직접 입력" hidden>' +
+          '<p class="fit-note">직무를 고르면 경험을 그 직무에서 쓰는 역량으로 먼저 보고, 회사 AI 약속과는 맞닿는 만큼만 이어요.</p>' +
           '<label class="fit-label" for="resume-text">이력서 내용</label>' +
           '<textarea id="resume-text" class="fit-text" rows="9" maxlength="' + FIT_MAX + '" placeholder="경험, 프로젝트, 쓸 줄 아는 기술을 붙여 넣어 주세요"></textarea>' +
           '<div class="fit-row"><span class="fit-count" id="resume-count">0 / 6,000자</span>' +
@@ -868,20 +922,50 @@
     if (!items.length) return '';
     return '<section class="card fit-section"><h2 class="card-title">' + esc(title) + ' ' + items.length + '</h2>' + items.map(render).join('') + '</section>';
   }
+  // v2 결과: 요약 → 나에게 있는 것 / 아직 없는 것 → 직접 연결 → 간접 연결(한계 문장) → 이력서에 없는 부분 → 포인트 → 질문
+  function fitLevel(c) { return c.level || ({ strong: 'direct' })[c.category] || 'indirect'; }   // 예전 응답(category)도 읽어요
   function renderFit(company, r) {
     var conns = r.connections || [];
-    var strong = conns.filter(function (c) { return c.category === 'strong'; });
-    var related = conns.filter(function (c) { return c.category !== 'strong'; });
+    var gaps = r.gaps || [];
+    var direct = conns.filter(function (c) { return fitLevel(c) === 'direct'; });
+    var indirect = conns.filter(function (c) { return fitLevel(c) !== 'direct'; });
+    var basis = r.role ? r.role + ' 직무 기준' : '이력서 전체 기준 (직무를 고르지 않음)';
+    var html = '';
+    if (r.summary) {
+      html += '<section class="card fit-summary"><h2 class="card-title">' + esc(basis) + ' 요약</h2><p class="fit-why">' + esc(r.summary) + '</p></section>';
+    }
+    var have = [], missing = [];
+    direct.concat(indirect).forEach(function (c) { if (c.competency && have.indexOf(c.competency) < 0) have.push(c.competency); });
+    gaps.forEach(function (g) { if (g.title && missing.indexOf(g.title) < 0) missing.push(g.title); });
+    function chips(list, cls, empty) {
+      return list.length
+        ? '<ul class="fit-chips">' + list.map(function (k) { return '<li class="fit-chip ' + cls + '">' + esc(k) + '</li>'; }).join('') + '</ul>'
+        : '<p class="note">' + esc(empty) + '</p>';
+    }
+    html += '<section class="card fit-havegap" aria-label="나에게 있는 것과 아직 없는 것">' +
+      '<div class="fit-col"><h2 class="card-title">나에게 있는 것</h2>' + chips(have, 'is-have', '이력서에서 바로 이어지는 경험을 찾지 못했어요.') + '</div>' +
+      '<div class="fit-col"><h2 class="card-title">아직 없는 것</h2>' + chips(missing, 'is-missing', '따로 짚을 공백을 찾지 못했어요.') + '</div>' +
+    '</section>';
     function conn(c) {
-      return '<div class="fit-item"><p class="fit-quote">내 이력서: "' + esc(c.resume_quote) + '"</p>' +
-        '<p class="fit-why">' + esc(c.why) + '</p>' + fitPromiseLink(company, c) + '</div>';
+      return '<div class="fit-item">' +
+        (c.competency ? '<p class="fit-competency">' + esc(c.competency) + '</p>' : '') +
+        '<p class="fit-quote">내 이력서: "' + esc(c.resume_quote) + '"</p>' +
+        (c.role_link ? '<p class="fit-why"><span class="fit-k">직무에서</span>' + esc(c.role_link) + '</p>' : '') +
+        '<p class="fit-why"><span class="fit-k">회사 AI 약속과</span>' + esc(c.why) + '</p>' +
+        (c.limit ? '<p class="fit-limit"><strong>한계</strong>' + esc(c.limit) + '</p>' : '') +
+        fitPromiseLink(company, c) + '</div>';
     }
-    var html = fitSection('강하게 연결', strong, conn) + fitSection('관련 있음', related, conn);
+    html += fitSection('직접 연결', direct, conn) + fitSection('간접 연결', indirect, conn);
     if (!conns.length) {
-      html += '<p class="note">이력서에서 이 회사 AI 약속과 바로 이어지는 경험을 찾지 못했어요. 아래 보완할 점을 참고해 주세요.</p>';
+      html += '<p class="note">현재 이력서에서 이 회사 AI 약속과 이어지는 경험을 찾지 못했어요. 억지로 잇지 않았어요. 아래 "내 이력서에 없는 부분"을 먼저 보세요.</p>';
     }
-    html += fitSection('보완할 점', r.gaps || [], function (g) {
-      return '<div class="fit-item"><p class="fit-why">' + esc(g.why) + '</p><p class="fit-prepare">준비: ' + esc(g.prepare) + '</p>' + fitPromiseLink(company, g) + '</div>';
+    html += fitSection('내 이력서에 없는 부분', gaps, function (g) {
+      var prep = Array.isArray(g.prepare) ? g.prepare : (g.prepare ? [g.prepare] : []);
+      return '<div class="fit-item">' +
+        (g.title ? '<p class="fit-competency">' + esc(g.title) + '</p>' : '') +
+        '<p class="fit-why">' + esc(g.why) + '</p>' +
+        (prep.length ? '<p class="fit-prep-title">면접 전에 준비할 것</p><ul class="fit-prep">' + prep.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ul>' : '') +
+        fitPromiseLink(company, g) + '</div>';
     });
     html += fitSection('면접에서 말할 포인트', r.talking_points || [], function (t) {
       return '<div class="fit-item"><p class="fit-why">' + esc(t.text) + '</p>' + fitPromiseLink(company, t) + '</div>';
@@ -889,8 +973,8 @@
     html += fitSection('회사에 물어볼 질문', r.questions || [], function (q) {
       return '<div class="fit-item"><p class="fit-why">' + esc(q.text) + '</p>' + fitPromiseLink(company, q) + '</div>';
     });
-    html += '<p class="note fit-foot">AI 생성(' + esc(r.model || '') + '). 이력서 인용은 넣은 글에 그대로 있는 구절만 보여 줘요. ' +
-      '검사에서 빠진 항목 ' + Number(r.dropped || 0) + '개. 회사 쪽 근거는 약속 화면의 원문 링크로 확인해 주세요.</p>';
+    html += '<p class="note fit-foot">AI 생성(' + esc(r.model || '') + '). 연결은 지원 직무 기준으로 보수적으로 만들어요. 억지로 잇지 않고, 이력서에 없는 것은 없다고 보여 줘요. ' +
+      '이력서 인용은 넣은 글에 그대로 있는 구절만 보여 줘요. 검사에서 빠진 항목 ' + Number(r.dropped || 0) + '개. 회사 쪽 근거는 약속 화면의 원문 링크로 확인해 주세요.</p>';
     return html;
   }
 
@@ -938,6 +1022,17 @@
     var fileInput = document.getElementById('resume-file');
     var fileNote = document.getElementById('resume-file-note');
     var ready = false, busy = false;
+    var roleSel = document.getElementById('fit-role');
+    var roleCustom = document.getElementById('fit-role-custom');
+    function roleValue() {
+      if (!roleSel) return '';
+      if (roleSel.value === '__custom') return String(roleCustom.value || '').trim().slice(0, 30);
+      return roleSel.value;
+    }
+    if (roleSel) roleSel.addEventListener('change', function () {
+      roleCustom.hidden = roleSel.value !== '__custom';
+      if (!roleCustom.hidden) roleCustom.focus();
+    });
     function update() {
       count.textContent = ta.value.length.toLocaleString('ko-KR') + ' / 6,000자';
       btn.disabled = !ready || busy || ta.value.trim().length < FIT_MIN;
@@ -983,7 +1078,7 @@
         progressTime.textContent = Math.floor((Date.now() - started) / 1000) + '초째';
       }, 1000);
       out.innerHTML = '';
-      fetch('api/resume-fit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ company: company.id, resume: ta.value }) })
+      fetch('api/resume-fit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ company: company.id, resume: ta.value, role: roleValue() }) })
         .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { status: r.status, json: j }; }); })
         .then(function (x) {
           if (x.status === 200 && x.json && x.json.ok) {
@@ -1124,8 +1219,18 @@
     render();
   }
 
-  // results.json을 못 읽을 때만 예시 데이터로 바꿔요. 그리는 중 오류는 예시 데이터로 덮지 않고 그대로 드러나게 해요
+  // results.json을 못 읽으면: 이 컴퓨터에서 여는 경우(파일 더블클릭, localhost, 127.0.0.1)나 주소에 ?sample=1이 있을 때만 예시 데이터로 바꿔요.
+  // 운영 사이트에서는 가짜 예시를 보여 주지 않고 다시 시도하라고 안내해요 (10/20). 그리는 중 오류는 예시 데이터로 덮지 않고 그대로 드러나게 해요
+  function sampleAllowed() {
+    return location.protocol === 'file:' || /^(localhost|127\.0\.0\.1)$/.test(location.hostname) || /[?&]sample=1(&|$)/.test(location.search);
+  }
+  function loadFailed() {
+    var app = document.getElementById('app');
+    if (app) app.innerHTML = '<main class="content"><p class="empty" role="alert">분석 데이터를 불러오지 못했어요. 새로고침한 뒤 다시 시도해 주세요.</p></main>';
+  }
   fetch('data/results.json', { cache: 'no-store' })
     .then(function (res) { if (!res.ok) throw new Error('no results'); return res.json(); })
-    .then(function (data) { start(data); }, function () { start(window.AI_PROMISE_SAMPLE); });
+    .then(function (data) { start(data); }, function () {
+      if (sampleAllowed() && window.AI_PROMISE_SAMPLE) start(window.AI_PROMISE_SAMPLE); else loadFailed();
+    });
 })();

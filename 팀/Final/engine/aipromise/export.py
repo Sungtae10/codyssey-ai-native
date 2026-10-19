@@ -51,6 +51,8 @@ def run_export(cfg, company_keys, copy_to=None):
         })
         if c.get("check_note"):  # 선택: 기업별 검증 안내 (예: 시연용 기업)
             companies[-1]["check_note"] = c["check_note"]
+        # 10/19: 사람 대조 데이터와 한 파일에 섞을 때 화면이 기업별로 "AI 엔진 결과"라고 표시하도록
+        companies[-1]["data_mode"] = "engine"
         logs[key] = [{"id": j["id"], "title": j["title"], "verdict": j["verdict"], "search_log": j.get("search_log", []),
                       "flags": j.get("flags", [])} for j in judged]
 

@@ -32,6 +32,8 @@ def check(data, expect_real=True):
                 errs.append(f"{cname}: {k}가 없습니다")
         # 화면 시간축은 reports.evidence의 제목과 근거 문장의 source.report가 같아야 점이 맞게 찍힙니다
         ev_titles = {r.get("title") for r in ((c.get("reports") or {}).get("evidence") or [])}
+        if "data_mode" in c and c["data_mode"] not in ("engine", "human_reviewed_demo"):
+            errs.append(f"{cname}: data_mode는 engine 또는 human_reviewed_demo여야 합니다")
         if "check_note" in c and (not isinstance(c["check_note"], str) or find_forbidden(c["check_note"])):
             errs.append(f"{cname}: check_note는 단정 표현 없는 글자여야 합니다")
         specs = {}

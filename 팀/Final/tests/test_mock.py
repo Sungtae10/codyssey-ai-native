@@ -147,7 +147,8 @@ def main():
         if os.path.exists(os.path.join(ROOT, "tests", "sample_data.json")) else None
     if sample:
         assert set(data) == set(sample), "최상위 항목 이름이 예시 데이터와 다릅니다"
-        assert set(data["companies"][0]) - {"check_note"} == set(sample["companies"][0]), "기업 항목 이름이 다릅니다"
+        assert set(data["companies"][0]) - {"check_note", "data_mode"} == set(sample["companies"][0]), "기업 항목 이름이 다릅니다"
+        assert data["companies"][0].get("data_mode") == "engine", "엔진 결과에 data_mode가 없음"
         sp = sample["companies"][0]["promises"][0]
         dp = data["companies"][0]["promises"][0]
         assert set(sp) <= set(dp), f"약속 항목이 모자랍니다: {set(sp) - set(dp)}"

@@ -299,17 +299,33 @@
   function viewHome() {
     var readyList = (DATA.companies || []).filter(isReady);
     var pendingList = (DATA.companies || []).filter(function (c) { return !isReady(c); });
-    var companies = readyList.map(function (c) {
+    function companyCard(c) {
       var spec = specifics(c);
       var reports = c.reports || {};
+      var mode = dataMode(c);
+      var badge = mode === 'human' ? '<span class="mode-badge is-human">사람이 원문 대조</span>'
+        : mode === 'engine' ? '<span class="mode-badge is-engine">AI 엔진 · 사람 검토 전</span>' : '';
       return '<a class="company" href="#/c/' + encodeURIComponent(c.id) + '">' +
         '<div class="company-logo" aria-hidden="true">' + esc(c.name.charAt(0)) + '</div>' +
-        '<div class="company-info"><div class="company-name">' + esc(c.name) + '</div>' +
+        '<div class="company-info">' + badge + '<div class="company-name">' + esc(c.name) + '</div>' +
         '<div class="company-reports">' + esc('약속: ' + reportTitles(reports.promise) + ' · 근거: ' + reportTitles(reports.evidence)) + '</div>' +
         (c.check_note ? '<div class="company-reports check-note">' + esc(c.check_note) + '</div>' : '') +
         '<div class="company-meta">' + esc('구체적 약속 ' + spec.length + '개 중 ' + countLine(spec)) + '</div></div>' + ICON.chevron +
       '</a>';
-    }).join('');
+    }
+    // 10/19: 사람이 원문을 대조한 기업(검증 시연)과 AI 엔진이 자동 분석한 기업(확장 분석)을 나눠 보여줘요
+    var humanList = readyList.filter(function (c) { return dataMode(c) === 'human'; });
+    var engineList = readyList.filter(function (c) { return dataMode(c) === 'engine'; });
+    var otherList = readyList.filter(function (c) { var m = dataMode(c); return m !== 'human' && m !== 'engine'; });
+    function group(title, desc, list) {
+      if (!list.length) return '';
+      return '<div class="company-group"><h2 class="section-label">' + esc(title) + '</h2>' +
+        (desc ? '<p class="group-desc">' + esc(desc) + '</p>' : '') +
+        '<div class="company-list">' + list.map(companyCard).join('') + '</div></div>';
+    }
+    var companies = group('검증 시연 기업', '사람이 공시 원문을 직접 읽고 판정을 대조했어요', humanList) +
+      group('확장 분석 기업', 'AI 엔진이 OpenDART 공시를 자동으로 받아 분석했어요. 사람 검토 전이라 원문 링크로 확인해 주세요', engineList) +
+      group('분석 완료', '', otherList);
     var pending = pendingList.map(function (c) {
       return '<li class="pending-chip"><span class="pending-name">' + esc(c.name) + '</span>' +
         '<span class="pending-note">' + esc(c.check_note || '공시 수집과 분석을 준비하고 있어요') + '</span></li>';
@@ -333,8 +349,8 @@
     var humanNames = readyList.filter(function (c) { return dataMode(c) === 'human'; }).map(function (c) { return c.name; });
     var engineNames = readyList.filter(function (c) { return dataMode(c) === 'engine'; }).map(function (c) { return c.name; });
     var readyStatLabel = humanNames.length && engineNames.length
-      ? '분석 완료 기업 (사람 대조 ' + humanNames.length + ', AI 엔진 ' + engineNames.length + ')'
-      : '분석 완료 기업';
+      ? '분석 기업 (사람 ' + humanNames.length + ', AI ' + engineNames.length + ')'
+      : '분석 기업';
     var modeNote;
     if (dataMode() === 'sample' && !humanNames.length && !engineNames.length) {
       modeNote = '지금 보이는 기업과 판정은 화면 형식을 보여 주는 가상 예시예요.';
@@ -351,8 +367,8 @@
       '<main class="content">' + disclaimers() +
         '<section class="hero search-hero">' +
           '<p class="eyebrow">' + esc(L.service_subtitle) + ' · ' + esc(L.tagline) + '</p>' +
-          '<h1 class="headline">어떤 기업의 AI 약속이<br><span class="hl">궁금한가요?</span></h1>' +
-          '<p class="lead">사업보고서의 "하겠다"를 찾고, 다음 해 공시에서 "했다"는 근거를 찾아 원문과 함께 보여드려요.</p>' +
+          '<h1 class="headline">기업의 AI 약속,<br><span class="hl">실행됐는지 공시로 검증합니다</span></h1>' +
+          '<p class="lead">사업보고서에서 AI 약속을 찾고, 다음 해 공시에서 실행 근거를 검색해 판정한 뒤, 인용 문장을 DART 원문과 다시 대조해요. 면접 준비에 바로 쓰게 정리해 드려요.</p>' +
           '<label class="company-search">' +
             '<span class="sr-only">회사명 검색</span>' +
             '<span class="search-icon">' + ICON.search + '</span>' +
@@ -360,31 +376,32 @@
           '</label>' +
           '<p class="search-help" id="search-help">' + esc(searchHelpText()) + '</p>' +
           '<div class="search-results" id="search-results" aria-live="polite"></div>' +
-          '<div class="tech-strip" aria-label="서비스 핵심 기술">' +
-            '<span>DART 공시</span><span>하이브리드 RAG (키워드 + 의미 검색)</span><span>LLM 판정</span><span>원문 인용 검사</span>' +
+          '<div class="tech-strip" aria-label="결과를 믿을 수 있게 하는 장치">' +
+            '<span>OpenDART 정기공시 기반</span><span>원문 인용 검사</span><span>AI 판정 + 재검토</span><span>면접 활용 인사이트</span>' +
           '</div>' +
           // 10/19: 검색 범위(상장 기업 전체)를 먼저, 깊이 분석한 기업 수는 그다음 (숫자는 모두 데이터에서 셈)
           '<div class="hero-stats" aria-label="현재 분석 범위">' +
-            '<div><strong id="stat-listed">' + esc(listedCountText()) + '</strong><span>상장 기업 검색</span></div>' +
+            '<div><strong id="stat-listed">' + esc(listedCountText()) + '</strong><span>검색 가능한 상장사</span></div>' +
             '<div><strong>' + readyCompanies.length + '</strong><span>' + esc(readyStatLabel) + '</span></div>' +
             '<div><strong>' + totalSpecific + '</strong><span>구체적 AI 약속</span></div>' +
-            '<div><strong>' + verifiedCitations + '</strong><span>원문 대조 근거</span></div>' +
+            '<div><strong>' + verifiedCitations + '</strong><span>원문 대조를 통과한 근거</span></div>' +
           '</div>' +
         '</section>' +
         '<section class="company-picker">' +
-          '<h2 class="section-label">분석 완료</h2>' +
-          '<div class="company-list">' + companies + '</div>' +
+          companies +
           (pending ? '<h2 class="section-label">분석 준비 중</h2><ul class="pending-list">' + pending + '</ul>' : '') +
         '</section>' +
         '<section class="card">' +
-          '<h2 class="card-title" style="font-size:13px">이렇게 확인해요</h2>' +
+          '<h2 class="card-title" style="font-size:13px">검증 방식</h2>' +
           '<ol class="steps">' +
-            '<li><span class="step-num">1</span>약속 찾기: 사업보고서에서 AI 약속 문장을 원문 그대로 골라요</li>' +
-            '<li><span class="step-num">2</span>근거 찾기: 다음 보고서에서 키워드 검색과 의미 검색(RAG)으로 실행 근거를 찾아요</li>' +
-            '<li><span class="step-num">3</span>판정: 판정기준 v2로 4가지 중 하나로 정해요</li>' +
-            '<li><span class="step-num">4</span>원문 인용 검사: 근거 문장이 원문에 그대로 있는지 다시 확인해요</li>' +
+            '<li><span class="step-num">1</span><span><strong>AI 약속 추출</strong> 2024 사업보고서에서 앞으로의 AI 계획 문장을 원문 그대로 골라요</span></li>' +
+            '<li><span class="step-num">2</span><span><strong>후속 근거 검색</strong> 2025 사업보고서와 2026 반기보고서를 키워드 검색과 의미 검색(RAG)으로 찾아요</span></li>' +
+            '<li><span class="step-num">3</span><span><strong>AI 판정과 재검토</strong> 판정기준 v2로 4가지 중 하나로 정하고, 경계가 애매한 일부 확인은 상위 모델이 한 번 더 판정해요</span></li>' +
+            '<li><span class="step-num">4</span><span><strong>원문 대조</strong> 인용한 근거 문장이 DART 원문에 그대로 있는지 코드로 다시 확인해요</span></li>' +
           '</ol>' +
+          (DATA.meta && DATA.meta.pilot_note ? '<p class="note pilot-note">' + esc(DATA.meta.pilot_note) + '</p>' : '') +
           '<p class="note">' + esc(modeNote) + ' 새 기업은 엔진이 OpenDART에서 보고서 3개(약속 1, 근거 2)를 자동으로 받아 같은 순서로 분석해요.</p>' +
+          '<p class="note">AI Promise는 공시 범위 안에서 확인한 근거로 결과를 보여주며, 투자나 채용 판단을 대신하지 않아요.</p>' +
         '</section>' +
       '</main>' +
       '<footer class="bottombar"><p class="note">자료: 금융감독원 전자공시(DART)' + (allReports.length ? ' · ' + esc(allReports.join(', ')) : '') + ' · 상장 기업 목록: 한국거래소(KRX)</p></footer>';

@@ -23,12 +23,12 @@
 - [ ] docs/requirements.md 존재
 - [ ] docs/official-requirements-matrix.md 최신화
 - [ ] docs/feedback-log.md 실제 값 기입
-- [ ] 발표자료/영상 링크 또는 파일 경로 README에 추가
+- [x] 발표자료/영상 링크 또는 파일 경로 README에 추가 (드라이브 폴더 `1020_발표자료_영상`, 10/19)
 
 ## P2: 시간이 남으면
-- [ ] 카카오 시연 데이터
-- [ ] 신한은행 시연 데이터
-- [ ] NAVER 시연 데이터
+- [x] 카카오 시연 데이터 (AI 엔진 결과, PR #39)
+- [x] 현대자동차 시연 데이터 (NAVER 대신, AI 엔진 결과, PR #39)
+- [x] 신한지주 시연 데이터 (신한은행 대신, AI 엔진 결과, PR #39)
 - [ ] Human evaluation 보강
 - [ ] 추가 사용자 테스트
 

@@ -5,7 +5,7 @@
 ## 평가 설계
 - **삼성전자**: calibration / development 기업
 - **SK하이닉스**: blind evaluation 기업
-- 시연용 기업 3곳 (카카오, 신한은행, NAVER, 10/19 확정): 제품 확장성 데모용입니다. 사람 정답과 비교하지 않고, Human blind evaluation의 핵심 수치에는 섞지 않습니다.
+- 확장 분석 기업 3곳 (카카오, 현대자동차, 신한지주. 10/19 OpenDART 자동 수집으로 후보 11곳을 돌려 미리 정한 기준 '구체적 AI 약속 3개 이상'을 넘은 기업, `docs/company-expansion-plan.md`): 제품 확장성 데모용입니다. 사람 정답과 비교하지 않고, 평가 수치에는 섞지 않습니다.
 
 ## Human Ground Truth
 
@@ -19,6 +19,9 @@
 5. 그 뒤 AI 결과와 비교
 
 ## 핵심 지표
+
+> **10/19 결과 (SK하이닉스 시범 평가, n=3):** 최종 엔진을 3번 돌려 정답 3건과 비교해 9번 중 7번 같았습니다. 세 번 모두 인용 원문 일치 100%, 근거 없는 실행 판정 0건입니다 (`eval/results/skhynix_runs.md`). 건수가 적어 아래 지표 중 정확도, Macro-F1, 신뢰구간은 주장하지 않습니다.
+
 - Human inter-rater agreement
 - Cohen's kappa
 - 판정 정확도

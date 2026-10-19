@@ -57,11 +57,12 @@ pip install -r requirements.txt
 cp .env.example .env        # .env에 OPENAI_API_KEY를 적습니다. 이 파일은 저장소에 올리지 않습니다
 python run.py doctor --company samsung     # 설치, 키, PDF 점검 (판정 모델·임베딩 모델을 1번씩 실제 호출)
 python run.py all --company samsung        # 1~7단계 실행 (시연용 기업은 kakao, shinhanbank, naver)
-python run.py export --companies samsung --copy-to ../app/data/results.json
-python run.py check --file ../app/data/results.json
+python run.py export --companies samsung   # 결과는 data/results/ai_promise_data.json 에만 저장
+python run.py check --file ../data/results/ai_promise_data.json
+# 사용자 테스트가 끝난 뒤 화면에 올릴 때만: python run.py export --companies samsung --copy-to ../app/data/results.json
 ```
 
-사용자 테스트 중에는 `--copy-to`를 빼고 돌립니다. 붙이면 지금 화면의 검증용 시연 데이터(`app/data/results.json`)를 덮어씁니다. 빼면 엔진 결과는 `data/results/ai_promise_data.json`에만 남습니다. SK하이닉스(`skhynix`)는 평가용이라 사람 정답 합의가 끝난 뒤에 `export` 목록에 넣고, 시연용 3곳(`kakao shinhanbank naver`)은 핵심 2곳과 사용자 테스트가 끝난 뒤 시간이 남으면 넣습니다. PDF는 `data/pdf/`에 둡니다 (핵심 2곳 6개, 시연용 3곳 9개. 저장소에 올리지 않습니다).
+사용자 테스트 중에는 `--copy-to`를 붙이지 않습니다. 붙이면 지금 화면의 검증용 시연 데이터(`app/data/results.json`)를 덮어씁니다. SK하이닉스(`skhynix`)는 평가용이라 사람 정답 합의가 끝난 뒤에 `export` 목록에 넣고, 시연용 3곳(`kakao shinhanbank naver`)은 핵심 2곳과 사용자 테스트가 끝난 뒤 시간이 남으면 넣습니다. PDF는 `data/pdf/`에 둡니다 (핵심 2곳 6개, 시연용 3곳 9개. 저장소에 올리지 않습니다).
 
 **코드 점검** (키 없이 가상 회사로 시험)
 

@@ -31,6 +31,10 @@
   --glass: rgba(255,255,255, 0.04);
   --glass-line: rgba(255,255,255, 0.06);
 
+  /* 형광 표시: 약속과 근거에 함께 나오는 말 (10/20 사용자 의견 반영) */
+  --hl-bg: #3D3418;
+  --hl-line: #9C7F22;
+
   /* 판정 4색 */
   --confirmed: #4ECBA0;   --confirmed-bg: #14271E;   --confirmed-line: #26573F;
   --partial: #F2A65A;     --partial-bg: #2B1F0C;     --partial-line: #5C3D16;
@@ -54,6 +58,9 @@
 
   --glass: rgba(255,255,255, 0.75);
   --glass-line: rgba(0,0,0, 0.07);
+
+  --hl-bg: #FFEB80;
+  --hl-line: #D4AF00;
 
   --confirmed: #0A7751;   --confirmed-bg: #D4F3E6;   --confirmed-line: #7AD4AC;
   --partial: #A55A00;     --partial-bg: #FFF0DB;     --partial-line: #E8BC70;
@@ -902,3 +909,17 @@ a.search-item:active { transform: scale(0.985); }
 .mode-badge.is-engine { box-shadow: inset 0 0 0 1px var(--line); color: var(--body); }
 .steps li strong { display: block; color: var(--text); font-weight: 800; }
 .pilot-note { padding: 10px 12px; border-radius: var(--radius-sm); background: var(--chip); color: var(--body); }
+
+/* ---------- 18. 사용자 의견 반영 (10/20): 약속과 근거에 함께 나오는 말 ---------- */
+/* 코드가 약속 문장과 근거 문장을 글자 그대로 비교해 겹치는 말만 표시해요 (뜻 판단 아님) */
+.term-hit {
+  color: inherit; background: var(--hl-bg); border-radius: 3px; padding: 0 2px;
+  box-shadow: inset 0 -2px 0 var(--hl-line);
+}
+.term-legend { margin: 2px 0 0; font-size: 12px; line-height: 1.55; color: var(--body); }
+.term-line { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 2px 0 0; font-size: 12px; color: var(--body); }
+.term-chip {
+  font-size: 12px; font-weight: 700; line-height: 1.4; padding: 2px 8px; border-radius: 999px;
+  color: var(--text); background: var(--hl-bg); box-shadow: inset 0 0 0 1px var(--hl-line);
+  overflow-wrap: anywhere;
+}

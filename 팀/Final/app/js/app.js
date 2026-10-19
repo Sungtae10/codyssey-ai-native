@@ -388,6 +388,15 @@
             '<div><strong>' + verifiedCitations + '</strong><span>원문 대조를 통과한 근거</span></div>' +
           '</div>' +
         '</section>' +
+        // 10/20 사용자 의견("사용법이 조금 헷갈림") 반영: 처음 온 사람이 무엇부터 누를지 순서로 알려 줘요
+        '<section class="card" aria-label="사용 순서">' +
+          '<h2 class="card-title" style="font-size:13px">처음이라면 이 순서로 보세요</h2>' +
+          '<ol class="steps">' +
+            '<li><span class="step-num">1</span><span><strong>회사 고르기</strong> 위 검색창에 회사 이름을 넣거나, 아래 목록에서 회사를 눌러요</span></li>' +
+            '<li><span class="step-num">2</span><span><strong>약속 하나 열기</strong> 회사가 쓴 원래 문장, 후속 공시의 근거, 판정 이유가 차례로 나와요. 형광 표시는 약속과 근거에 함께 나오는 말이고, 원문 보기로 DART에서 직접 확인해요</span></li>' +
+            '<li><span class="step-num">3</span><span><strong>면접 준비</strong> 면접 카드를 보거나, 내 이력서를 넣어 이 회사 AI 약속과 이어지는 경험을 찾아요</span></li>' +
+          '</ol>' +
+        '</section>' +
         '<section class="company-picker">' +
           companies +
           (pending ? '<h2 class="section-label">분석 준비 중</h2><ul class="pending-list">' + pending + '</ul>' : '') +
@@ -466,7 +475,72 @@
   }
 
   /* ---------- 화면 3: 약속 자세히 보기 ---------- */
-  function evidenceBlock(e, kindLabel, kicker) {
+  // 10/20 사용자 의견("근거가 약속의 어느 부분을 뒷받침하는지 더 분명하게") 반영:
+  // 약속 문장과 근거 문장에 글자 그대로 함께 나오는 말을 형광으로 표시해요. 코드가 글자만 비교하고, 뜻은 판단하지 않아요.
+  var TERM_STOP = ['AI', '인공지능', '기술', '당사', '사업', '통해', '위해', '위한', '통한', '기반', '바탕', '관련', '대한', '다양',
+    '계획', '예정', '추진', '지속', '지속적', '지속적인', '향후', '이를', '이러한', '또한', '특히', '더불어', '보다', '경우', '현재',
+    '따라', '같은', '모든', '각종', '동시', '있는', '있고', '있으며', '있어', '있습니다', '합니다', '것입니다', '있도록', '가능',
+    '올해', '내년', '그리고', '이후', '최근', '새로운', '새롭게'];
+  var TERM_SUFFIX = ['하겠습니다', '하였습니다', '했습니다', '합니다', '하면서', '하여', '하고', '하며', '하는', '하기', '하게',
+    '되는', '되어', '됩니다', '이며', '으로', '에서', '에게', '부터', '까지', '처럼', '와의', '과의', '에는', '에도',
+    '할', '한', '해', '된', '로', '에', '의', '을', '를', '은', '는', '이', '가', '과', '와', '도', '만'];
+  // 받침에 따라 붙는 조사: 앞 글자에 받침이 없는데 '이'로 끝나면 '디스플레이'처럼 말의 일부라서 떼지 않아요
+  var AFTER_FINAL = { '이': true, '은': true, '을': true, '과': true };
+  var AFTER_VOWEL = { '가': true, '는': true, '를': true, '와': true };
+  function hasFinal(ch) {
+    var code = ch.charCodeAt(0) - 0xAC00;
+    if (code < 0 || code > 11171) return null;   // 한글 글자가 아니면(예: 'HBM4를'의 '4') 따지지 않아요
+    return code % 28 !== 0;
+  }
+  // 약속 문장의 말에서 조사·어미를 떼어 2글자 이상 남는 말만 써요 (예: 'HBM4를' → 'HBM4', '양산하여' → '양산')
+  function termStems(text, companyName) {
+    var out = [];
+    String(text || '').split(/[\s,.;:()\[\]{}<>"'“”‘’·\-\u2013\u2014/~!?…|*]+/).forEach(function (tok) {
+      var t = tok;
+      var changed = true;
+      while (changed) {
+        changed = false;
+        for (var i = 0; i < TERM_SUFFIX.length; i++) {
+          var s = TERM_SUFFIX[i];
+          if (t.length < s.length + 2 || t.slice(-s.length) !== s) continue;
+          var fin = hasFinal(t.charAt(t.length - s.length - 1));
+          if ((AFTER_FINAL[s] && fin === false) || (AFTER_VOWEL[s] && fin === true)) continue;
+          t = t.slice(0, -s.length); changed = true; break;
+        }
+      }
+      if (t.length < 2 || TERM_STOP.indexOf(t) >= 0 || /^[0-9.,%]+$/.test(t)) return;
+      if (companyName && companyName.indexOf(t) >= 0) return;   // 회사 이름은 어디에나 나와서 빼요
+      if (out.indexOf(t) < 0) out.push(t);
+    });
+    return out;
+  }
+  function sharedTerms(promiseText, evidenceText, companyName) {
+    var ev = String(evidenceText || '');
+    return termStems(promiseText, companyName).filter(function (t) { return ev.indexOf(t) >= 0; });
+  }
+  function markTerms(text, terms) {
+    var s = String(text || '');
+    if (!terms || !terms.length) return esc(s);
+    var ranges = [];
+    terms.slice().sort(function (a, b) { return b.length - a.length; }).forEach(function (t) {
+      var from = 0, idx;
+      while ((idx = s.indexOf(t, from)) >= 0) {
+        var end = idx + t.length;
+        if (!ranges.some(function (r) { return idx < r[1] && end > r[0]; })) ranges.push([idx, end]);
+        from = end;
+      }
+    });
+    ranges.sort(function (a, b) { return a[0] - b[0]; });
+    var html = '', pos = 0;
+    ranges.forEach(function (r) {   // 원문을 조각마다 따로 escape 해서 <mark>만 더해요
+      html += esc(s.slice(pos, r[0])) + '<mark class="term-hit">' + esc(s.slice(r[0], r[1])) + '</mark>';
+      pos = r[1];
+    });
+    return html + esc(s.slice(pos));
+  }
+
+  function evidenceBlock(e, kindLabel, kicker, terms) {
+    terms = terms || [];
     var verified = e.citation_verified === true
       ? '<span class="verified">' + ICON.check + esc(L.citation_verified_label) + '</span>'
       : '';
@@ -474,13 +548,18 @@
     var link = url
       ? '<a class="ev-link" href="' + esc(url) + '" target="_blank" rel="noopener">원문 보기' + ICON.external + '</a>'
       : '';
+    var termLine = terms.length
+      ? '<p class="term-line"><span>약속과 같은 말</span>' +
+          terms.slice(0, 6).map(function (t) { return '<span class="term-chip">' + esc(t) + '</span>'; }).join('') + '</p>'
+      : '';
     return '<div class="timeline-connector"><span></span><em>후속 공시에서 근거 검색</em><span></span></div>' +
       '<div class="timeline-node evidence-node">' +
         '<div class="timeline-rail"><span class="timeline-index">02</span><span class="timeline-dot"></span></div>' +
         '<div class="timeline-body quote-block">' +
           '<div class="timeline-kicker">' + esc(kicker) + '</div>' +
           '<div class="quote-meta is-evidence"><span>' + esc(kindLabel) + '</span><span>' + esc(sourceLabel(e.source || {})) + '</span></div>' +
-          '<p class="quote-text">"' + esc(e.sentence) + '"</p>' +
+          '<p class="quote-text">"' + markTerms(e.sentence, terms) + '"</p>' +
+          termLine +
           '<div class="ev-foot">' + verified + link + '</div>' +
         '</div>' +
       '</div>';
@@ -494,9 +573,17 @@
     var emptyMsg = specific ? L.not_verifiable_message : L.no_related_activity_message;
     var evKicker = (specific ? '근거' : '관련 활동') + ' · 후속 공시';
     var promiseReport = (p.source || {}).report || '약속 보고서';
+    var evTerms = evidence.map(function (e) { return sharedTerms(p.sentence, e.sentence, company.name); });
+    var allTerms = [];
+    evTerms.forEach(function (ts) { ts.forEach(function (t) { if (allTerms.indexOf(t) < 0) allTerms.push(t); }); });
+    var termLegend = allTerms.length
+      ? '<p class="term-legend">' + esc(specific
+          ? '형광 표시는 아래 근거 문장에도 글자 그대로 나오는 말이에요(코드가 글자만 비교). 약속 중 어디까지 확인됐는지는 판정 이유에 있어요.'
+          : '형광 표시는 아래 관련 활동 문장에도 글자 그대로 나오는 말이에요(코드가 글자만 비교).') + '</p>'
+      : '';
 
     var evidenceHtml = evidence.length
-      ? evidence.map(function (e) { return evidenceBlock(e, kindLabel, evKicker); }).join('')
+      ? evidence.map(function (e, i) { return evidenceBlock(e, kindLabel, evKicker, evTerms[i]); }).join('')
       : '<div class="timeline-connector"><span></span><em>후속 공시에서 근거 검색</em><span></span></div>' +
         '<div class="timeline-node evidence-node">' +
           '<div class="timeline-rail"><span class="timeline-index">02</span><span class="timeline-dot muted"></span></div>' +
@@ -544,7 +631,8 @@
             '<div class="timeline-body quote-block">' +
               '<div class="timeline-kicker">' + esc('약속 · ' + promiseReport) + '</div>' +
               '<div class="quote-meta"><span>회사가 밝힌 AI 계획</span><span>' + esc(sourceLabel(p.source || {})) + '</span></div>' +
-              '<p class="quote-text">"' + esc(p.sentence) + '"</p>' +
+              '<p class="quote-text">"' + markTerms(p.sentence, allTerms) + '"</p>' +
+              termLegend +
             '</div>' +
           '</div>' +
           evidenceHtml +

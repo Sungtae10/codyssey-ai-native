@@ -996,3 +996,26 @@ a.search-item:active { transform: scale(0.985); }
 .glossary-card > summary span { font-size: 13px; font-weight: 800; color: var(--text); }
 .glossary-card > summary small { font-size: 12px; line-height: 1.5; color: var(--sub); }
 .glossary-card[open] > summary { margin-bottom: 10px; }
+
+/* ---------- 20. PC 폭 (10/20): 1024px 이상에서만 넓게 써요. 휴대폰 화면(1023px 이하)은 그대로예요 ---------- */
+@media (min-width: 1024px) {
+  :root { --page-max: 920px; }
+  .sample-banner { padding: 10px 40px; }
+  .topbar { padding-left: 40px; padding-right: 40px; }
+  .content { padding: 20px 40px 48px; gap: 20px; }
+  .bottombar { padding-left: 40px; padding-right: 40px; }
+  .bottombar:not(.two) .btn { max-width: 420px; margin: 0 auto; }
+  .bottombar.two { grid-template-columns: repeat(2, minmax(0, 300px)); justify-content: center; }
+  .hero { padding-top: 28px; gap: 14px; }
+  .headline { font-size: 38px; }
+  .lead { font-size: 16px; max-width: 640px; }
+  .hero-stats { gap: 12px; }
+  .hero-stats > div { padding: 16px 18px; gap: 6px; }
+  .hero-stats strong { font-size: 28px; }
+  .hero-stats span { font-size: 12px; }
+  .company-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .detail-title { font-size: 28px; }
+  .card:not(.pipeline-card) { padding: 20px 24px; }
+  .pipeline-card > summary { padding: 20px 24px; }
+  .pipeline-list { padding: 0 24px 10px; }
+}

@@ -340,6 +340,40 @@ button { font-family: inherit; }
   color: #FFFFFF;
   box-shadow: 0 4px 16px rgba(13,155,106,0.3);
 }
+[data-theme="light"] .ev-link,
+[data-theme="light"] .answer .ev-link {
+  background: var(--cta);
+  color: #FFFFFF;
+}
+[data-theme="light"] .verified {
+  background: rgba(10,119,81,.10);
+  border-color: rgba(10,119,81,.20);
+}
+[data-theme="light"] .bottombar .btn-secondary {
+  border-color: var(--confirmed);
+  color: var(--confirmed);
+}
+[data-theme="light"] .section-talking .answer {
+  border-left-color: #2B63C4;
+}
+[data-theme="light"] .section-talking .answer-tag {
+  color: #2B63C4;
+}
+[data-theme="light"] .section-talking .insight-eyebrow {
+  color: #2B63C4;
+}
+[data-theme="light"] .section-talking .card-count {
+  background: #2B63C4;
+}
+[data-theme="light"] .section-talking .card-title svg {
+  color: #2B63C4;
+}
+[data-theme="light"] .section-question .insight-eyebrow {
+  color: var(--not_pursued);
+}
+[data-theme="light"] .section-question .card-count {
+  background: var(--not_pursued);
+}
 
 /* ---------- 12. 엔진 결과 연결에서 더한 부품 (10/12 김성태, 새 디자인 값에 맞춤) ---------- */
 /* 예시 데이터 안내 (화면 맨 위) */
@@ -371,10 +405,10 @@ button { font-family: inherit; }
   box-shadow: 0 2px 8px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04);
 }
 /* 근거 문장 아래: 원문 확인됨, 원문 보기 */
-.ev-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.ev-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-top: 4px; }
 .verified {
-  display: inline-flex; align-items: center; gap: 4px;
-  font-size: 12px; font-weight: 700; color: var(--confirmed);
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 12px; font-weight: 800; color: var(--confirmed);
 }
 .ev-link {
   display: inline-flex; align-items: center; gap: 4px; min-height: 32px;
@@ -636,7 +670,11 @@ a.question { color: inherit; }
 
 .interview-section {
   gap: 14px;
+  border-left: 3px solid var(--section-accent, var(--confirmed));
 }
+.interview-section.section-fact { --section-accent: var(--confirmed); }
+.interview-section.section-talking { --section-accent: #5B9CF6; }
+.interview-section.section-question { --section-accent: var(--not_pursued); }
 .section-title-row {
   display: flex;
   flex-direction: column;
@@ -647,10 +685,20 @@ a.question { color: inherit; }
   font-size: 9px;
   font-weight: 900;
   letter-spacing: .10em;
-  color: var(--confirmed);
+  color: var(--section-accent, var(--confirmed));
 }
 .insight-block {
   padding-top: 12px;
+}
+/* section-specific icon backgrounds */
+.interview-section .section-icon {
+  width: 32px; height: 32px; flex: none; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--chip);
+  color: var(--section-accent, var(--confirmed));
+}
+.section-title-row .card-title {
+  display: flex; align-items: center; gap: 8px;
 }
 .question {
   padding: 12px 0;
@@ -672,23 +720,69 @@ a.question { color: inherit; }
   flex-direction: column;
   gap: 5px;
 }
-.verified {
-  padding: 5px 8px;
-  border-radius: 999px;
-  background: rgba(32,201,151,.10);
-  text-decoration: none;
+/* 면접카드 타이틀 아이콘 + 카운트 */
+.card-title svg {
+  color: var(--section-accent, var(--confirmed));
+  flex: none;
+  vertical-align: middle;
 }
-.ev-link {
-  padding: 5px 8px;
+.card-count {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 22px; height: 22px; padding: 0 6px;
   border-radius: 999px;
-  background: var(--chip);
-  color: var(--body);
+  background: var(--section-accent, var(--confirmed));
+  color: var(--cta-text);
+  font-size: 11px; font-weight: 900;
+  margin-left: 4px;
+}
+/* TALKING POINT accent */
+.section-talking .answer {
+  border-left-color: #5B9CF6;
+}
+.section-talking .answer-tag {
+  color: #5B9CF6;
+}
+/* QUESTION accent */
+.section-question .question-icon {
+  background: rgba(157,170,255,.12);
+  color: var(--not_pursued);
+}
+.section-question .question svg {
+  color: var(--not_pursued);
+}
+/* 원문 확인됨 배지: 눈에 띄게 (서준용 1019) */
+.verified {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(32,201,151,.14);
+  border: 1px solid rgba(32,201,151,.25);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 800;
+}
+/* DART 원문 버튼: 버튼처럼 강조 (서준용 1019). 링크임을 알 수 있게 밑줄은 유지 (ui_check 규칙) */
+.ev-link,
+.answer .ev-link {
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: var(--confirmed);
+  color: var(--cta-text);
   text-decoration: underline;
   text-underline-offset: 2px;
+  font-size: 12px;
+  font-weight: 800;
+  transition: opacity 0.15s;
 }
 .ev-link:hover,
 .ev-link:focus-visible {
-  text-decoration: underline;
+  opacity: 0.85;
+}
+.answer .ev-link { align-self: flex-start; } /* 답변 카드에서 버튼이 가로로 꽉 차지 않게 */
+/* 하단 버튼의 DART 원문도 강조 */
+.bottombar .btn-secondary {
+  border-color: var(--confirmed);
+  color: var(--confirmed);
+  font-weight: 700;
 }
 
 @media (max-width: 480px) {
@@ -706,8 +800,7 @@ a.question { color: inherit; }
 .pipeline-step.is-muted { opacity: 1; }
 .pipeline-step.is-muted .pipeline-state { color: var(--body); }
 [data-theme="dark"] .timeline-index,
-[data-theme="dark"] .pipeline-num,
-[data-theme="dark"] .ev-link { color: var(--body); }
+[data-theme="dark"] .pipeline-num { color: var(--body); }
 [data-theme="light"] .pipeline-num { color: var(--body); }
 
 /* ---------- 15. 첫 화면 검색 (10/19): 분석 완료 / 분석 준비 중 / 상장 기업(아직 분석 전) ---------- */

@@ -67,7 +67,7 @@
 | 3 | 생성형 AI 또는 AI Agent가 서비스의 핵심 기능 | ✅ | 엔진 코드(`engine/aipromise/extract.py`, `judge.py`, `card.py`)와 가짜 모델 시험(`tests/test_mock.py`, 1~7단계가 끝까지 돎). 10/19 실제 공시로 실행: OpenDART 자동 수집 → 엔진 1~7단계를 GitHub Actions `Engine run`으로 돌려 확장 분석 3곳(카카오, 현대자동차, 신한지주)을 화면에 올림(PR #39), 실행 기록 `data/work/<기업>/llm_log.jsonl`. SK하이닉스 시범 평가(`eval/results/skhynix_runs.md`). 배포 주소의 내 경험 연결(`/api/resume-fit`)은 요청마다 AI가 생성(실배포 점검은 README 9장) | 확장 분석 3곳은 사람 검토 전이라 화면에 그렇게 표시함 (남은 일 없음) |
 | 4 | 필수 기술 요소 2개 이상 | ✅ | 주 근거: RAG(`retrieve.py`, `judge.py`), 자동화 워크플로우(`run.py all`, OpenDART 자동 수집과 GitHub Actions `Engine run`(PR #35), `.github/workflows/ci.yml`, Vercel 자동 배포). 보조: AI Agent(`judge.py`의 제한적 재검색). `docs/requirements.md` 4장 | 실제 실행의 검색 기록 예시 1건(`data/results/search_log.json`)을 발표에 넣기 (김성태·서준용) |
 | 5 | 실제 사용자 최소 5명에게 서비스를 제공하고 피드백 수집 | ✅ | 설문 응답 12명(10/19 23:15~23:58, 닉네임으로만 응답, 이름·연락처 없음), 개선 의견 6건, 설문 밖 후기 2건. 숫자는 응답 탭 원자료에서 직접 계산 (README 9장, `docs/user-test-quick.md`) | 남은 일 없음 |
-| 6 | 피드백 반영 | ✅ | 5건 반영(FB-01~FB-05: 사용 순서 안내, 약속·근거 형광 표시, 실행 시기 전 표시, 이력서 분석 진행 표시, 용어 풀이), PR #41, `docs/feedback-log.md`(의견, 원인, 조치, PR, 재확인) | 남은 일 없음. 후속 과제 2건(FB-06, FB-07)은 로그에 기록 |
+| 6 | 피드백 반영 | ✅ | 5건 반영(FB-01~FB-05: 사용 순서 안내, 약속·근거 형광 표시, 실행 시기 전 표시, 이력서 분석 진행 표시, 용어 풀이), PR #41, `docs/feedback-log.md`(의견, 원인, 조치, PR, 재확인), `docs/user-test-report.md`(응답 종합 분석과 개선 과제별 반영 현황) | 남은 일 없음. 후속 과제 2건(FB-06, FB-07)은 로그에 기록 |
 | 7 | 외부에서 접근 가능한 배포 | ✅ | https://ai-promise-six.vercel.app (10/15 배포, 10/19 접속 확인) | 제출 전 시크릿 창·모바일로 다시 열어 확인 (김성태) |
 | 8 | GitHub에 모든 소스 코드와 문서 업로드 | 🟡 | 코드와 문서 대부분은 저장소에 있음. 기획서는 `docs/project-plan.md` | 발표자료와 영상은 10/20에 드라이브 `1020_발표자료_영상`에 올리고 README 14장에서 링크 (저장소는 10/20 07:00에 고정) (서준용) |
 | 9 | Git으로 체계적인 버전 관리 | ✅ | 커밋, PR(#1, #2, #9, #12~#40), 이슈(#3~#8, #10, #11), CI, GitHub Actions 실행 기록 | 계속 기록 |
@@ -92,7 +92,7 @@
 | 생성형 AI API와 Agent를 서비스에 통합한 방법 | `docs/requirements.md` 4·5장, `engine/aipromise/llm.py`, `judge.py` | 김성태 |
 | 프롬프트, RAG, 메모리 기법을 고른 근거 | `docs/requirements.md` 4장 (Memory를 넣지 않은 이유 포함), README 2장 | 김성태 |
 | 노코드 자동화 도구와 Python을 조합한 경험 | Google Forms·Sheets 응답 자동 수집, GitHub Actions `Engine run`(OpenDART 자동 수집 → Python 엔진, 기업별 병렬 실행), Vercel 자동 배포와 CI 검사. 여유가 있으면 노코드 도구(예: Make)로 "설문 응답 알림"을 추가 | 김성태 |
-| 사용자 피드백을 모으고 서비스를 개선한 과정 | 설문 응답, 기록지(화면공유 때), `docs/feedback-log.md` | 김서원·박수민 |
+| 사용자 피드백을 모으고 서비스를 개선한 과정 | 설문 응답, 기록지(화면공유 때), `docs/feedback-log.md`, `docs/user-test-report.md` | 김서원·박수민 |
 | 본인의 역할과 기여, 협업 과정 | README 4·8장, `docs/progress-log.md`, 드라이브 원본 파일 | 전원 |
 
 ## 3. 미션 문서에 없는 것

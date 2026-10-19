@@ -569,9 +569,9 @@
           '<h1 class="headline">면접 5분 전,<br>이것만 보고 들어가세요</h1>' +
           '<p class="note">' + esc(L.interview_card_notice) + '</p>' +
         '</section>' +
-        '<section class="card interview-section"><div class="section-title-row"><span class="insight-eyebrow">공시 확인</span><h2 class="card-title">공시에서 확인할 핵심 이슈 ' + issuesData.length + '</h2></div>' + issues + '</section>' +
-        '<section class="card interview-section"><div class="section-title-row"><span class="insight-eyebrow">면접 포인트</span><h2 class="card-title">면접에서 활용할 소재 ' + tpData.length + '</h2></div>' + answers + '</section>' +
-        '<section class="card interview-section"><div class="section-title-row"><span class="insight-eyebrow">질문</span><h2 class="card-title">회사에 물어볼 역질문 ' + qData.length + '</h2></div>' + questions + '</section>' +
+        '<section class="card interview-section section-fact"><div class="section-title-row"><span class="insight-eyebrow">공시 확인</span><h2 class="card-title">' + ICON.shield + '공시에서 확인할 핵심 이슈 <span class="card-count">' + issuesData.length + '</span></h2></div>' + issues + '</section>' +
+        '<section class="card interview-section section-talking"><div class="section-title-row"><span class="insight-eyebrow">면접 포인트</span><h2 class="card-title">' + ICON.chat + '면접에서 활용할 소재 <span class="card-count">' + tpData.length + '</span></h2></div>' + answers + '</section>' +
+        '<section class="card interview-section section-question"><div class="section-title-row"><span class="insight-eyebrow">질문</span><h2 class="card-title">' + ICON.external + '회사에 물어볼 역질문 <span class="card-count">' + qData.length + '</span></h2></div>' + questions + '</section>' +
         (isReady(company)
           ? '<a class="fit-entry" href="' + listHref + '/fit">' +
               '<span class="fit-entry-main"><span class="fit-entry-title">내 이력서로 맞춤 포인트 만들기</span>' +

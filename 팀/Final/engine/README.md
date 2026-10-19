@@ -88,7 +88,7 @@
 | 6. 합의와 정답 고정 | 서원님 SK하이닉스 정답 표를 `eval/gold/skhynix_서원.csv`로 저장, 판정이 다른 건은 원문을 보며 합의해 `skhynix_합의.csv` | Human Gold 고정 전까지 AI 결과를 보지 않음 |
 | 7. SK하이닉스 AI 판정 | `python run.py judge --company skhynix`, `card`, `export --companies samsung skhynix` | "화면 점검 통과". 화면에 올리기는 사용자 테스트가 끝난 뒤 |
 | 8. 평가 | `python ../eval/evaluate.py` | `eval/results/results.md` |
-| 9. 시간이 남으면 | 시연용 기업 3곳(카카오, 신한은행, NAVER) 실행 (6장) | 기업마다 구체적 약속 3개 이상인지, 원문 대조 |
+| 9. 시간이 남으면 | 시연용 기업 실행 (6장). 10/19 결과: 후보 11곳 중 카카오, 현대자동차, 신한지주 | 기업마다 구체적 약속 3개 이상인지, 원문 대조 |
 
 **결과 올리기** (둘 중 하나)
 - git을 쓰면: `app/data/results.json`, `data/work`, `data/results`, `eval/gold`를 커밋하고 main에 올립니다. 올리면 Vercel이 서비스 주소를 다시 배포합니다.
@@ -126,7 +126,9 @@
 - 화면 점검에서 문제가 나오면(`(주의)` 항목 제외) 복사하지 않고 그 사실을 알려 줍니다.
 - 엔진 결과 파일은 `meta.is_sample`이 false라서, 화면에 올리면 맨 위 안내 띠가 사라집니다.
 
-## 6. 시연용 기업 (카카오, 신한은행, NAVER)
+## 6. 시연용 기업 (10/19 결과: 카카오, 현대자동차, 신한지주)
+
+> **10/19 바뀜:** PDF 대신 OpenDART 자동 수집(1장)으로 후보 11곳을 돌려, 아래 기준(구체적 AI 약속 3개 이상)을 넘은 카카오, 현대자동차, 신한지주를 화면에 넣었습니다. 신한은행과 NAVER는 기준 미달로 뺐습니다. 화면에는 "AI 엔진 결과(사람 검토 전)"로 표시하므로 아래 순서 4(서원님 원문 대조)는 하지 않았고, 새 설문 응답이 0개일 때 올렸습니다 (`docs/company-expansion-plan.md`, PR #39). 아래는 처음 계획(PDF로 직접 돌리는 방법)입니다.
 
 핵심 2곳과 사용자 5명 테스트를 먼저 끝내고, 시간이 남을 때만 합니다 (`docs/final-sprint.md`). 엔진 코드에는 회사마다 다른 부분이 없습니다. `config.yaml`의 `candidates`에 3곳이 적혀 있고, `--company`나 `--companies`에 이름(`kakao`, `shinhanbank`, `naver`)을 적으면 핵심 기업과 같은 순서로 돕니다. PDF는 서원님이 드라이브 공통 폴더의 `1019_추가기업_PDF`에 올립니다.
 

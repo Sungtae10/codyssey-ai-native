@@ -18,7 +18,7 @@ AI Promise는 공시에서:
 ## 3. AI Native 구조 (35초)
 강조 순서:
 - RAG: 후속 정기공시 검색
-- 자동화 워크플로우: Collect → Extract → Retrieve → Judge → Verify → Card
+- 자동화 워크플로우: OpenDART 자동 수집 → Collect → Extract → Retrieve → Judge → Verify → Card
 - Agent-style retry: AI 판정이 '공시에서 확인 불가'이면 새 검색어로 다시 찾습니다(처음 검색 포함 최대 3번, 쓸 새 검색어가 없으면 그 전에 멈춤)
 - Citation verification: AI가 고른 근거가 실제 원문에 존재하는지 코드로 확인
 
@@ -27,22 +27,23 @@ AI Promise는 공시에서:
 
 ## 4. 실제 데모 (70초)
 추천 데모:
-- Core 기업 1곳 선택
+- 검증 시연 기업 1곳 선택 (삼성전자)
 - 약속 목록
 - 약속 상세
 - 원문 근거
 - 판정 이유
 - 면접 카드
+- (시간이 되면) 확장 분석 기업 1곳(AI 엔진 결과)을 열어 같은 형식과 원문 링크를 보여 주기
 
 핵심 멘트:
 "AI가 결론만 주는 것이 아니라 원문까지 되돌아갈 수 있게 설계했습니다."
 
-화면 데이터가 검증용 시연 데이터(PR #19)이면 데모 시작에 한 문장으로 밝힙니다 (`docs/judge-qa.md` Q6).
+데모 시작에 한 문장으로 밝힙니다: 검증 시연 기업 2곳은 사람이 원문을 대조한 데이터(PR #19)이고, 확장 분석 기업 3곳은 사람 검토 전 AI 엔진 결과입니다 (`docs/judge-qa.md` Q6).
 
 ## 5. 검증 (25초)
 실제 수치만 사용:
-- Human review / blind evaluation 결과
-- citation verification
+- SK하이닉스 시범 평가 (n=3): 사람 정답과 9번 중 7번 같음. 정확도로 주장하지 않음 (`eval/results/skhynix_runs.md`)
+- citation verification: 확장 분석 3곳의 약속·근거 36문장이 모두 DART 원문에 있음 (`docs/company-expansion-plan.md`)
 - 실제 사용자 __명
 - 이해도 __/5
 - 신뢰도 __/5
@@ -62,7 +63,7 @@ AI Promise는 공시에서:
 한계:
 - 공시에 나오지 않은 실행은 판단할 수 없음
 - '공시에서 확인 불가'는 미이행을 뜻하지 않음
-- Demo 기업은 Core와 검증 수준이 다름
+- 확장 분석 기업 3곳은 사람 검토 전 AI 엔진 결과라 검증 시연 기업과 검증 수준이 다름
 
 ## 마지막 한 문장
 "AI Promise는 기업을 대신 평가하는 서비스가 아니라, 사람이 공식 공시를 더 빠르고 검증 가능하게 읽도록 돕는 AI 조사 도구입니다."

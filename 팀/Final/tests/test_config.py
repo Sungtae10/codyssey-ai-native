@@ -13,7 +13,7 @@ sys.path.insert(0, os.path.join(ROOT, "engine"))
 from aipromise.config import company_cfg, load_config  # noqa: E402
 
 CORE = ["samsung", "skhynix"]
-DEMO = ["kakao", "shinhanbank", "naver"]   # 10/19 결정. 시연용 기업을 바꾸면 여기도 같이 바꿉니다
+DEMO = ["kakao", "hyundai", "shinhanfg"]   # 10/19 저녁 화면에 넣은 확장 분석 기업 (처음 결정은 kakao, shinhanbank, naver). 화면 기업을 바꾸면 여기도 같이 바꿉니다
 REPORT_KEYS = ["y2024", "y2025", "h2026"]
 
 

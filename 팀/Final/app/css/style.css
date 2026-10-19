@@ -923,3 +923,13 @@ a.search-item:active { transform: scale(0.985); }
   color: var(--text); background: var(--hl-bg); box-shadow: inset 0 0 0 1px var(--hl-line);
   overflow-wrap: anywhere;
 }
+/* 약속한 시기가 근거를 찾은 마지막 보고서보다 뒤인 약속 (10/20 사용자 후기 반영) */
+.timing-note {
+  display: flex; flex-direction: column; gap: 2px; margin-top: 8px; padding: 10px 12px;
+  border-radius: var(--radius-sm); background: var(--chip); font-size: 13px; line-height: 1.6; color: var(--body);
+}
+.timing-note strong { font-size: 12px; font-weight: 800; color: var(--text); }
+.timing-tag {
+  align-self: flex-start; font-size: 11px; font-weight: 800; line-height: 1.3;
+  padding: 2px 8px; border-radius: 999px; color: var(--body); background: var(--chip);
+}

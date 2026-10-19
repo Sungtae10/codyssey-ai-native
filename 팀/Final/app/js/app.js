@@ -347,6 +347,7 @@
       });
     });
 
+    var homeWindow = evidenceWindow(readyList);
     var humanNames = readyList.filter(function (c) { return dataMode(c) === 'human'; }).map(function (c) { return c.name; });
     var engineNames = readyList.filter(function (c) { return dataMode(c) === 'engine'; }).map(function (c) { return c.name; });
     var readyStatLabel = humanNames.length && engineNames.length
@@ -411,6 +412,7 @@
           '</ol>' +
           (DATA.meta && DATA.meta.pilot_note ? '<p class="note pilot-note">' + esc(DATA.meta.pilot_note) + '</p>' : '') +
           '<p class="note">' + esc(modeNote) + ' 새 기업은 엔진이 OpenDART에서 보고서 3개(약속 1, 근거 2)를 자동으로 받아 같은 순서로 분석해요.</p>' +
+          (homeWindow ? '<p class="note">' + esc('근거는 ' + homeWindow.label + '까지 찾아요. 약속한 시기가 그 뒤인 약속에는 "실행 시기 전"을 표시해요. 아직 실행할 시기가 오지 않았을 수 있어서예요.') + '</p>' : '') +
           '<p class="note">AI Promise는 공시 범위 안에서 확인한 근거로 결과를 보여주며, 투자나 채용 판단을 대신하지 않아요.</p>' +
         '</section>' +
       '</main>' +
@@ -422,6 +424,7 @@
     var tag = isSpecific(p)
       ? '<span class="verdict-text">' + esc(verdictLabel(p.verdict)) + '</span>'
       : '<span class="verdict-text">' + esc(L.promise_types.directional.label) + '</span>';
+    if (promiseTiming(p.sentence, evidenceWindow([company]))) tag += '<span class="timing-tag">실행 시기 전</span>';
     return '<li><a class="promise-item ' + vClass(p.verdict) + '" href="' + promiseHref(company, p.id) + '">' +
       '<span class="verdict-dot" aria-hidden="true"></span>' +
       '<span class="promise-item-body"><span class="promise-item-title">' + esc(p.title) + '</span>' + tag + '</span>' + ICON.chevron +
@@ -539,6 +542,49 @@
     return html + esc(s.slice(pos));
   }
 
+  // 10/20 사용자 후기("약속한 실행 시기가 아직 지나지 않은 경우를 더 자세히 설명") 반영:
+  // 약속 문장에 적힌 시기(예: '26년 하반기, 2030년)가 근거를 찾은 마지막 보고서의 기준 시점보다 뒤면 따로 알려요.
+  function reportEnd(title) {   // '2026 반기보고서' → 2026년 6월 말, '2025 사업보고서' → 2025년 12월 말
+    var m = String(title || '').match(/(20\d{2})\s*(사업|반기|1분기|3분기)보고서/);
+    if (!m) return null;
+    var y = Number(m[1]);
+    var month = m[2] === '반기' ? 6 : m[2] === '1분기' ? 3 : m[2] === '3분기' ? 9 : 12;
+    return { key: y * 12 + month, label: title + '(' + y + '년 ' + month + '월 말 기준)' };
+  }
+  function evidenceWindow(companies) {
+    var best = null;
+    companies.forEach(function (c) {
+      ((c && c.reports && c.reports.evidence) || []).forEach(function (r) {
+        var e = reportEnd(r.title);
+        if (e && (!best || e.key > best.key)) best = e;
+      });
+    });
+    return best;
+  }
+  var TIMING_RE = /(20\d{2})년\s*(상반기|하반기|[1-4]분기)?|[‘’'](\d{2})년\s*(상반기|하반기|[1-4]분기)?|(?:^|[^0-9])(\d{2})년\s*(상반기|하반기|[1-4]분기)/g;
+  function promiseTiming(sentence, win) {
+    if (!win) return null;
+    var s = String(sentence || ''), m, late = null;
+    TIMING_RE.lastIndex = 0;
+    while ((m = TIMING_RE.exec(s))) {
+      var y = m[1] ? Number(m[1]) : 2000 + Number(m[3] || m[5]);
+      if (y < 2015 || y > 2045) continue;
+      var part = m[2] || m[4] || m[6] || '';
+      var endMonth = part === '상반기' ? 6 : part === '하반기' ? 12 : part ? Number(part.charAt(0)) * 3 : 12;
+      var key = y * 12 + endMonth;
+      if (key > win.key && (!late || key > late.key)) late = { key: key, label: y + '년' + (part ? ' ' + part : '') };
+    }
+    return late ? { promised: late.label, window: win.label } : null;
+  }
+  function timingNote(t) {
+    if (!t) return '';
+    return '<div class="timing-note"><strong>실행 시기 전</strong>' +
+      '<span>' + esc('약속한 시기: ' + t.promised) + '</span>' +
+      '<span>' + esc('근거를 찾은 범위: ' + t.window + '까지') + '</span>' +
+      '<span>근거를 찾은 보고서의 기준 시점에는 약속한 시기가 아직 끝나지 않았어요. 그래서 지금 근거가 없거나 일부만 있어도 미이행이라는 뜻이 아니에요.</span>' +
+    '</div>';
+  }
+
   function evidenceBlock(e, kindLabel, kicker, terms) {
     terms = terms || [];
     var verified = e.citation_verified === true
@@ -643,6 +689,7 @@
               '<div class="timeline-kicker">판정</div>' +
               pill +
               (specific ? (p.reason ? '<p class="reason">' + esc(p.reason) + '</p>' : '') : '<p class="note">' + esc(L.promise_types.directional.note) + '</p>') +
+              timingNote(promiseTiming(p.sentence, evidenceWindow([company]))) +
             '</div>' +
           '</div>' +
         '</section>' +

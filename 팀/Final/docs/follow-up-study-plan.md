@@ -59,4 +59,4 @@ GO:
 2024 사업보고서에서 specific AI 약속이 3개 이상일 때만 시연용으로 추가합니다. 추가 기업은 Human-AI 정확도 수치에 섞지 않습니다.
 
 ## 제출 이후
-이번 10/18 제출의 기본 범위에는 ML 300문장 실험을 넣지 않습니다. 후속연구로 PROMISE / EVIDENCE / OTHER 분류, TF-IDF + Logistic Regression baseline, LLM zero/few-shot, cross-company validation을 진행할 수 있습니다.
+이번 제출의 기본 범위에는 ML 300문장 실험을 넣지 않습니다. 후속연구로 PROMISE / EVIDENCE / OTHER 분류, TF-IDF + Logistic Regression baseline, LLM zero/few-shot, cross-company validation을 진행할 수 있습니다.

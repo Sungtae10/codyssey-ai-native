@@ -78,7 +78,10 @@ def run_export(cfg, company_keys, copy_to=None):
             print("  -", p)
     else:
         print("화면 점검 통과: 항목 이름, 판정 값, 인용 표시, 면접 카드 연결이 모두 맞습니다.")
-    if copy_to:
+    blocking = [p for p in problems if not p.startswith("(주의)")]
+    if copy_to and blocking:
+        print(f"화면 점검 문제 {len(blocking)}개가 있어 화면 데이터 자리에 복사하지 않았습니다: {copy_to}")
+    elif copy_to:
         os.makedirs(os.path.dirname(copy_to), exist_ok=True)
         shutil.copyfile(out, copy_to)
         print(f"화면 데이터 자리에 복사함: {copy_to}")

@@ -124,6 +124,22 @@ def main():
     out = run("check", "--file", os.path.join(TMP, "results", "ai_promise_data.json"))
     assert "문제 없음" in out or "(주의)" in out
 
+    # --copy-to: 점검 문제가 없으면 복사하고, (주의)가 아닌 문제가 있으면 복사하지 않아야 함
+    copy_ok = os.path.join(TMP, "screen", "results.json")
+    run("export", "--copy-to", copy_ok)
+    assert os.path.exists(copy_ok), "점검 문제가 없는데 화면 파일로 복사하지 않음"
+    sys.path.insert(0, ENGINE)
+    from aipromise import export as export_mod
+    from aipromise.config import load_config
+    real_check = export_mod.check
+    export_mod.check = lambda data: ["시험용 문제: 판정 값이 이상함", "(주의) 시험용 주의"]
+    try:
+        copy_bad = os.path.join(TMP, "screen", "blocked.json")
+        export_mod.run_export(load_config(os.path.join(TMP, "config.yaml")), ["demo"], copy_to=copy_bad)
+        assert not os.path.exists(copy_bad), "점검 문제가 있는데 화면 파일로 복사함"
+    finally:
+        export_mod.check = real_check
+
     data = json.load(open(os.path.join(TMP, "results", "ai_promise_data.json"), encoding="utf-8"))
     assert [c["id"] for c in data["companies"]] == ["demo"], data["companies"]
     assert data["companies"][0].get("check_note") == "시험용 검증 안내 문구", "check_note가 결과 파일에 없음"

@@ -1,7 +1,7 @@
 # AI Promise 화면 4개
 
 만든 사람: 박수민 (화면 구현) | 김성태 (엔진 결과 연결, 10/12) | 서준용 (UX·디자인, 시안 v4 10/12·10/13)
-상태: 예시 데이터로 4개 화면이 끝까지 이어지는 뼈대예요. 실제 결과 파일은 `data/results.json`으로 넣어요.
+상태: 10/19부터 `data/results.json`에 삼성전자·SK하이닉스 검증용 시연 데이터(사람이 원문 대조, PR #19)가 있어요. 이 파일이 없으면 예시 데이터로 돌아가요.
 
 ## 0. 10/12 데이터 연결 수정 (김성태)
 
@@ -77,7 +77,8 @@ data/results.json     ← 엔진 결과 파일 (김성태가 넣음, 아직 없�
 화면 안내서 4장의 `sample_data.json` 형식을 그대로 읽어요. 엔진은 같은 형식으로 결과를 만들어요.
 
 ```
-python run.py export --companies samsung skhynix --copy-to <저장소>/app/data/results.json
+python run.py export --companies samsung   # 화면 파일은 그대로, 결과는 data/results/ 에만
+# 사용자 테스트가 끝나고 SK하이닉스 합의 뒤에만: python run.py export --companies samsung skhynix --copy-to <저장소>/app/data/results.json
 ```
 
 | 판정 값 | 화면 문구 | 색 |
@@ -98,15 +99,15 @@ python run.py export --companies samsung skhynix --copy-to <저장소>/app/data/
 - 글꼴: `--font`
 - 모서리 둥글기: `--radius-lg`, `--radius-md`, `--radius-sm`
 - 10/12에 더한 부품(예시 안내 띠, 안내 문구, 방향성 묶음, 원문 확인됨)은 맨 아래 "12." 부분에 있어요. 지우면 화면 일부가 깨져요.
-- 색을 바꾸면 글자 대비가 작은 글자 4.5:1, 큰 글자 3:1 이상인지 확인해요. 저장소 맨 위 폴더에서 `python tests/ui_check.py`를 돌리면 모든 화면(예시 데이터 18개)을 다크와 라이트로 재 줘요. `python tests/test_ui_static.py`는 `app.js`가 쓰는 class가 CSS에 다 있는지 봐요.
+- 색을 바꾸면 글자 대비가 작은 글자 4.5:1, 큰 글자 3:1 이상인지 확인해요. 저장소 맨 위 폴더에서 `python tests/ui_check.py`를 돌리면 모든 화면(결과 파일이 있으면 그 화면, 없으면 예시 데이터 18개)을 다크와 라이트로 재 줘요. `python tests/test_ui_static.py`는 `app.js`가 쓰는 class가 CSS에 다 있는지 봐요.
 
 ## 6. 남은 일
 
 - [x] 10/13 새벽: 준용님 시안 v4 반영 (PR #9, css와 글꼴 링크만)
-- [ ] 실제 결과 파일 `data/results.json` 넣기 (삼성전자는 10/13 17:00 전, SK하이닉스는 블라인드 순서에 맞춰)
-- [ ] 10/13 오후 5시: 화면 고정본
+- [x] 실제 결과 파일 자리 `data/results.json` 채우기 (10/19 PR #19: 사람이 원문 대조한 검증용 시연 데이터. 엔진 결과로 바꿀지는 사용자 테스트 뒤에 정함)
+- [x] 10/13: 화면 고정 (10/19 PR #19 전까지 `app/` 변경 없음)
 - [ ] 휴대폰 실기기에서 확인 (아이폰, 안드로이드)
-- [ ] 사용자 테스트(10/14~16) 피드백 반영
+- [ ] 사용자 테스트 피드백 반영 (테스트가 끝난 뒤)
 
 ## 7. 참고
 

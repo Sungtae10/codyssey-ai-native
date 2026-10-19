@@ -5,7 +5,7 @@
 - 서비스 주소: https://ai-promise-six.vercel.app (Vercel, `app/` 폴더. main에 올리면 자동으로 다시 배포됩니다)
 - 사용자: 취업·이직 준비자 (면접 전 5분 안에 지원 회사의 AI 계획과 실행을 공시 원문으로 확인)
 - 핵심 기업: 삼성전자(개발·시연용), SK하이닉스(평가용)
-- 확장 데모 기업: 카카오, 신한은행, NAVER. 시간 부족 시 Core 2(삼성전자·SK하이닉스)를 먼저 완성하고, 확장 3곳은 시연용으로 표시해 Human blind evaluation 수치에는 포함하지 않습니다.
+- 시연용 기업: 카카오, 신한은행, NAVER. 핵심 2곳(삼성전자·SK하이닉스)과 사용자 5명 테스트를 먼저 끝내고, 시간이 남을 때만 화면에 올립니다. 시연용으로 표시하고 Human blind evaluation 수치에는 넣지 않습니다.
 - 약속을 찾는 보고서: 2024 사업보고서 / 근거를 찾는 보고서: 2025 사업보고서, 2026 반기보고서
 
 ## 1. 핵심 AI 활용
@@ -47,7 +47,7 @@ python -m http.server 8000
 # 브라우저에서 http://localhost:8000 을 엽니다
 ```
 
-`index.html`을 더블클릭해 열면(주소가 `file://`로 시작) 브라우저 보안 규칙 때문에 결과 파일을 읽지 못하고 예시 데이터가 보입니다. 위처럼 작은 서버로 여세요.
+`index.html`을 더블클릭해 열면(주소가 `file://`로 시작) 브라우저 보안 규칙 때문에 결과 파일을 읽지 못하고 예시 데이터가 보입니다. 위처럼 작은 서버로 엽니다.
 
 **엔진 돌리기** (준비 약 30분, 자세한 순서는 [engine/README.md](engine/README.md))
 
@@ -70,7 +70,7 @@ python run.py check --file ../data/results/ai_promise_data.json
 python tests/test_config.py      # 엔진 설정: 핵심 2곳, 시연용 3곳, 검색 설정의 모양. 마지막 줄에 "설정 검사 통과"
 python tests/test_mock.py        # 엔진·평가: 마지막 줄에 "시험 통과"
 python tests/test_ui_static.py   # 화면: app.js가 쓰는 class가 CSS에 모두 있는지 (브라우저 없이)
-python tests/ui_check.py         # 화면: 모든 화면(예시 데이터 18개) x 다크/라이트의 글자 대비, 가로 넘침, 필수 부품 (Playwright 필요)
+python tests/ui_check.py         # 화면: 모든 화면(results.json이 있으면 그 화면, 없으면 예시 데이터 18개) x 다크/라이트의 글자 대비, 가로 넘침, 필수 부품 (Playwright 필요)
 ```
 
 네 검사는 Pull Request를 올리거나 main에 올릴 때 CI에서도 자동으로 돌아갑니다.
@@ -103,6 +103,8 @@ python tests/ui_check.py         # 화면: 모든 화면(예시 데이터 18개)
 
 이 임시 모드는 사용자 테스트에서 **UI/이해도/신뢰도/활용 의향**을 확인하기 위한 것입니다. 실제 AI 정확도 수치가 없으면 만들어 쓰지 않습니다.
 
+주의: SK하이닉스 사람 정답이 고정되기 전에는, 아직 판정하지 않은 사람은 서비스의 SK하이닉스 화면과 `app/data/results.json`의 SK하이닉스 부분을 열지 않습니다. 10/19 PR #19로 김서원 판정 1차가 화면에 올라가 있습니다. 평가 방법은 김성태가 정합니다.
+
 ## 6. 작업 규칙
 
 - main에 올라간 것은 바로 서비스 주소에 배포됩니다.
@@ -110,7 +112,7 @@ python tests/ui_check.py         # 화면: 모든 화면(예시 데이터 18개)
 - 실제 배포 여부와 배포 URL은 README 14장의 제출 링크에 적고, 배포가 확인되지 않은 상태를 '배포 완료'라고 쓰지 않습니다.
 - main에 합치기 전 `python tests/test_config.py`, `python tests/test_mock.py`, `python tests/test_ui_static.py`, `python tests/ui_check.py`를 통과시킵니다.
 - 디자인을 바꾸면 `app/css/style.css` 맨 아래 데이터 연결 부품을 유지하고, 320~390px 모바일 화면과 명도 대비를 다시 확인합니다.
-- 사용자 테스트 기간에는 테스트를 막는 오류만 바로 고칩니다. 나머지 발견된 문제는 먼저 기록하고, 테스트가 끝난 뒤 우선순위가 높은 피드백을 브랜치에서 수정합니다.
+- 사용자 테스트 기간(링크를 보내기 시작해 마지막 응답까지)에는 main의 화면과 `app/data/results.json`을 바꾸지 않습니다. 테스트를 막는 오류만 바로 고치고, 나머지는 기록해 두었다가 테스트가 끝난 뒤 우선순위가 높은 것부터 브랜치에서 고칩니다.
 
 ## 7. 지키는 것
 

@@ -56,21 +56,21 @@
 
 ## 3. 실행 순서 (팀 일정과 맞춤)
 
-명령은 모두 `engine` 폴더에서 실행합니다.
+명령은 모두 `engine` 폴더에서 실행합니다. 단계 번호 순서대로 합니다.
 
 > 10/19부터 화면에는 사람이 원문 대조한 검증용 시연 데이터가 있습니다(PR #19). 사용자 테스트가 끝날 때까지 `export`에 `--copy-to`를 붙이지 않습니다. 붙이면 화면 데이터(`app/data/results.json`)를 덮어씁니다.
 
-| 언제 | 명령 | 확인할 것 |
+| 단계 | 명령 | 확인할 것 |
 | --- | --- | --- |
-| 10/12 밤 | `python run.py doctor --company samsung` | "준비 완료", 장 찾기 3곳 OK |
-| 10/12 밤 | **1건 완주:** `python run.py collect --company samsung`, `extract`, `judge --limit 1`, `card` | 구체적 약속 1건이 근거 검색, 판정, 인용 검사, 면접 카드까지 실제 API로 끝남 |
-| 10/12 밤 | `python run.py judge --company samsung` (전체), `card`, `export --companies samsung --copy-to ../app/data/results.json` | "화면 점검 통과". 결과를 올리면(아래) 서비스 주소에 삼성전자가 뜸 |
-| Human Gold 작성 전 | `python run.py doctor --company skhynix`, `collect`, `extract` | SK하이닉스 AI 판정 결과와 결과 화면은 Human Validator에게 공유하지 않습니다 |
-| Human Gold 작성 | 서원님이 올린 SK하이닉스 약속 목록(약속 문장·위치·분류)을 복사해 내 판정을 v2로 매기고 `eval/gold/skhynix_김성태.csv`로 먼저 올리기 | AI 판정을 돌리기 전에 판정했다는 기록. 서원님 판정 칸은 보지 않고 매김 |
-| Human Gold 고정 후 | `python run.py judge --company skhynix`, `card`, `export --companies samsung skhynix --copy-to ../app/data/results.json` | "화면 점검 통과" |
-| 합의 단계 | 서원님 SK하이닉스 정답 표를 `eval/gold/skhynix_서원.csv`로 저장, 판정이 다른 건은 원문을 보며 합의해 `skhynix_합의.csv` | Human Gold 고정 전까지 AI 결과와 화면을 보지 않음 |
-| 10/14 | `python ../eval/evaluate.py` | `eval/results/results.md` |
-| 핵심 2곳과 사용자 테스트 뒤, 시간이 남으면 | 시연용 기업 3곳(카카오, 신한은행, NAVER) 실행 (6장) | 기업마다 구체적 약속 3개 이상인지, 원문 대조 |
+| 1. 시작 전 점검 | `python run.py doctor --company samsung` | "준비 완료", 장 찾기 3곳 OK |
+| 2. 1건 완주 | `python run.py collect --company samsung`, `extract`, `judge --limit 1`, `card` | 구체적 약속 1건이 근거 검색, 판정, 인용 검사, 면접 카드까지 실제 API로 끝남 |
+| 3. 삼성전자 전체 | `python run.py judge --company samsung` (전체), `card`, `export --companies samsung` | "화면 점검 통과". 결과는 `data/results/ai_promise_data.json`에만 남음. 화면에 올리기(`--copy-to`)는 사용자 테스트가 끝난 뒤 |
+| 4. SK하이닉스 준비 | `python run.py doctor --company skhynix`, `collect`, `extract` | SK하이닉스 AI 판정 결과와 결과 화면은 Human Validator에게 공유하지 않습니다 |
+| 5. SK하이닉스 사람 판정 | 서원님이 올린 SK하이닉스 약속 목록(약속 문장·위치·분류)을 복사해 내 판정을 v2로 매기고 `eval/gold/skhynix_김성태.csv`로 먼저 올리기 | AI 판정을 돌리기 전에 판정했다는 기록. 주의: 판정을 올리기 전에는 서비스의 SK하이닉스 화면과 `app/data/results.json`의 SK하이닉스 부분을 열지 않습니다 (10/19 PR #19로 서원님 판정 1차가 화면에 있음) |
+| 6. 합의와 정답 고정 | 서원님 SK하이닉스 정답 표를 `eval/gold/skhynix_서원.csv`로 저장, 판정이 다른 건은 원문을 보며 합의해 `skhynix_합의.csv` | Human Gold 고정 전까지 AI 결과를 보지 않음 |
+| 7. SK하이닉스 AI 판정 | `python run.py judge --company skhynix`, `card`, `export --companies samsung skhynix` | "화면 점검 통과". 화면에 올리기는 사용자 테스트가 끝난 뒤 |
+| 8. 평가 | `python ../eval/evaluate.py` | `eval/results/results.md` |
+| 9. 시간이 남으면 | 시연용 기업 3곳(카카오, 신한은행, NAVER) 실행 (6장) | 기업마다 구체적 약속 3개 이상인지, 원문 대조 |
 
 **결과 올리기** (둘 중 하나)
 - git을 쓰면: `app/data/results.json`, `data/work`, `data/results`, `eval/gold`를 커밋하고 main에 올립니다. 올리면 Vercel이 서비스 주소를 다시 배포합니다.
@@ -103,9 +103,9 @@
 
 ## 5. 화면에 넣기
 
-- `export --copy-to <경로>`는 결과 파일을 화면의 데이터 파일 자리에 같은 이름으로 복사합니다. 수민님 화면이 읽는 `sample_data.json`의 위치를 적으면 됩니다.
-- 결과 파일은 `meta.is_sample`이 false라서 "예시 데이터입니다" 띠가 사라집니다.
-- 수민님 압축본을 새로 받아 app 폴더를 바꿀 때마다 이 복사를 다시 합니다.
+- `export --copy-to ../app/data/results.json`은 화면 데이터를 덮어씁니다. 사용자 테스트가 끝나기 전에는 쓰지 않습니다 (3장).
+- 화면 점검에서 문제가 나오면(`(주의)` 항목 제외) 복사하지 않고 그 사실을 알려 줍니다.
+- 엔진 결과 파일은 `meta.is_sample`이 false라서, 화면에 올리면 맨 위 안내 띠가 사라집니다.
 
 ## 6. 시연용 기업 (카카오, 신한은행, NAVER)
 
@@ -127,12 +127,13 @@
 | --- | --- | --- |
 | 1 | PDF 9개를 `data/pdf`에 넣고, `config.yaml`의 시연용 `url` 9곳에 DART 주소를 붙여 넣기 | 파일 이름이 설정과 같은지 |
 | 2 | `python run.py all --company kakao` (`shinhanbank`, `naver`도 같게). 미리 보기만 하려면 `python run.py scan --company kakao` (2024 사업보고서 1개로 약속 추출까지) | 구체적 약속 3개 이상인지, 판정과 근거 문장 |
-| 3 | 화면에 나갈 약속을 원문과 대조하고(서원님 확인 표), `check_note`(시연용 안내)를 확인 | 사람 정답과 비교하지 않은 기업이라는 표시 |
-| 4 | `python run.py export --companies samsung skhynix kakao shinhanbank naver --copy-to ../app/data/results.json` (SK하이닉스 합의 전이면 `skhynix`를 뺌) | "화면 점검 통과" |
+| 3 | 사용자 테스트가 끝난 뒤, 브랜치에서 `python run.py export --companies samsung skhynix kakao shinhanbank naver --copy-to ../app/data/results.json` 하고 Pull Request를 올림 (Vercel 미리보기 주소가 생기고 main은 그대로) | "화면 점검 통과" |
+| 4 | 서원님이 미리보기 주소에서 시연 기업의 약속을 원문과 대조해 확인 표에 적음 | 화면 안내 문구가 "팀이 원문과 대조해 확인했어요"라서, 확인을 먼저 끝냄 |
+| 5 | 확인이 끝난 기업만 남기고(빠질 기업은 목록에서 빼고 다시 `export`) main에 합침 | "화면 점검 통과", 사람 정답과 비교하지 않은 기업이라는 표시(`check_note`) |
 
 - 구체적 약속이 3개보다 적은 기업은 `export` 목록에서 빼고 단톡에 알립니다.
 - SK하이닉스(`skhynix`)는 사람 정답 합의가 끝난 뒤에 `export` 목록에 넣습니다.
-- 사용자 테스트 링크를 보내는 중에는 화면을 바꾸지 않습니다 (README 6장). 시연용 기업은 테스트 응답을 다 받은 뒤에 올립니다.
+- 사용자 테스트 링크를 보내는 중에는 화면을 바꾸지 않습니다 (저장소 README 6장). 시연용 기업은 테스트 응답을 다 받은 뒤에 올립니다.
 - 시연용 기업은 평가 숫자(정확도, 일치도)에 넣지 않습니다.
 
 ## 7. 문제가 생기면

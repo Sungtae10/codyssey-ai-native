@@ -31,7 +31,7 @@ AI Promise는 DART 정기공시에서 기업의 AI 관련 미래 계획을 추�
 Collect → Extract → Retrieve → Judge → Citation Verify → Interview Card → Export 단계가 Python pipeline으로 연결됩니다.
 
 ### 4.4 Agent-style retry
-근거가 약할 때 제한된 횟수만큼 검색어를 바꿔 재검색합니다. 완전 자율 Agent라고 과장하지 않고 구현된 상태 기반 재검색만 설명합니다.
+AI 판정이 '공시에서 확인 불가'이면 새 검색어로 다시 찾습니다(처음 검색 포함 최대 3번, 쓸 새 검색어가 없으면 그 전에 멈춤). 완전 자율 Agent라고 과장하지 않고 구현된 상태 기반 재검색만 설명합니다.
 
 ## 5. 기술적 접근
 - 데이터: DART 정기공시

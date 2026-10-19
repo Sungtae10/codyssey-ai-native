@@ -126,13 +126,73 @@ function createSurvey() {
 const SERVICE_URL = 'https://ai-promise-six.vercel.app';
 const SELF_TEST_HEADER = '작은 과제 (약 3분)';
 
+// updateSurvey가 넣는 문항 6개. 순서대로 '참가자 번호' 바로 뒤(3번째 자리부터)에 놓입니다.
+const SELF_TEST_ITEMS = [
+  {
+    title: '지금 상황에 가장 가까운 것을 골라 주세요.',
+    add: function (form, title) {
+      return form.addMultipleChoiceItem()
+        .setTitle(title)
+        .setChoiceValues(['취업 준비 중', '이직 준비 중', '재직 중 (이직 생각은 없음)', '학생 (아직 취업 준비 전)'])
+        .showOtherOption(true)
+        .setRequired(true);
+    },
+  },
+  {
+    title: SELF_TEST_HEADER,
+    add: function (form, title) {
+      return form.addSectionHeaderItem()
+        .setTitle(title)
+        .setHelpText('서비스 주소(' + SERVICE_URL + ')에서 기업 1곳을 골라 아래 과제를 해 주세요. ' +
+                     '정답을 맞히는 시험이 아니라, 서비스가 쓰기 쉬운지 보려는 과제입니다.');
+    },
+  },
+  {
+    title: '과제 1. 고른 기업과, 그 기업에서 "근거 확인" 판정을 받은 약속 1개를 짧게 적어 주세요.',
+    add: function (form, title) {
+      return form.addTextItem()
+        .setTitle(title)
+        .setHelpText('예: 기업 이름 / 약속 한 줄. 못 찾으셨으면 "못 찾음"이라고 적어 주세요.')
+        .setRequired(true);
+    },
+  },
+  {
+    title: '과제 2. 그 약속의 근거가 나온 보고서는 무엇이었나요?',
+    add: function (form, title) {
+      return form.addMultipleChoiceItem()
+        .setTitle(title)
+        .setChoiceValues(['2025 사업보고서', '2026 반기보고서', '둘 다', '못 찾음'])
+        .setRequired(true);
+    },
+  },
+  {
+    title: '과제 3. 서비스에서 찾는 데 걸린 시간은 대략 얼마였나요?',
+    add: function (form, title) {
+      return form.addMultipleChoiceItem()
+        .setTitle(title)
+        .setChoiceValues(['1분 이내', '1~2분', '2~4분', '4분 넘게', '못 찾음'])
+        .setRequired(true);
+    },
+  },
+  {
+    title: '과제 4. 같은 내용을 공시(DART)에서 직접 찾는다면 얼마나 걸릴 것 같나요?',
+    add: function (form, title) {
+      return form.addMultipleChoiceItem()
+        .setTitle(title)
+        .setChoiceValues(['5분 이내', '5~15분', '15~30분', '30분 넘게', '잘 모르겠다'])
+        .setRequired(false);
+    },
+  },
+];
+
 /**
  * 10/19 추가: 이미 만든 설문을 비대면 참여용으로 고칩니다. 링크는 그대로입니다.
  *   - 안내문에 서비스 주소와 참여 순서를 넣습니다.
  *   - 참가자 번호는 선택으로 바꿉니다. (진행자에게 번호를 받은 사람만 적음)
- *   - '지금 상황' 1문항과 '작은 과제' 4문항을 사용 소감 앞에 넣습니다.
- * 쓰는 방법: 이 파일 전체를 같은 Apps Script 프로젝트에 붙여 넣고 저장 > 함수 목록에서 updateSurvey 선택 > 실행
- * 응답이 1개라도 있으면 바꾸지 않고 멈춥니다. 두 번 실행해도 문항이 두 번 들어가지 않습니다.
+ *   - '지금 상황' 1문항과 '작은 과제' 머리글·4문항을 사용 소감 앞에 넣습니다.
+ * 쓰는 방법: 이 파일 전체를 createSurvey를 실행했던 Apps Script 프로젝트에 붙여 넣고 저장 > 함수 목록에서 updateSurvey 선택 > 실행
+ * 응답이 1개라도 있으면 바꾸지 않고 멈춥니다. 이미 있는 문항은 다시 만들지 않으므로,
+ * 두 번 실행하거나 중간에 끊긴 뒤 다시 실행해도 문항이 두 번 들어가지 않습니다.
  */
 function updateSurvey() {
   const folder = DriveApp.getFolderById(FOLDER_ID);
@@ -147,12 +207,16 @@ function updateSurvey() {
     Logger.log('이미 응답이 ' + n + '개 있어서 바꾸지 않습니다. (응답이 섞이지 않게 하려는 것입니다)');
     return;
   }
+
   const items = form.getItems();
+  const existing = {};
   for (let i = 0; i < items.length; i++) {
-    if (items[i].getTitle() === SELF_TEST_HEADER) {
-      Logger.log('이미 고친 설문입니다. 참가자용 링크: ' + form.getPublishedUrl());
-      return;
-    }
+    if (!(items[i].getTitle() in existing)) existing[items[i].getTitle()] = items[i];
+  }
+  const missing = SELF_TEST_ITEMS.filter(function (spec) { return !(spec.title in existing); });
+  if (missing.length === 0) {
+    Logger.log('이미 고친 설문입니다. 참가자용 링크: ' + form.getPublishedUrl());
+    return;
   }
 
   form.setDescription(
@@ -173,42 +237,19 @@ function updateSurvey() {
     }
   }
 
-  const added = [];
-  added.push(form.addMultipleChoiceItem()
-    .setTitle('지금 상황에 가장 가까운 것을 골라 주세요.')
-    .setChoiceValues(['취업 준비 중', '이직 준비 중', '재직 중 (이직 생각은 없음)', '학생 (아직 취업 준비 전)'])
-    .showOtherOption(true)
-    .setRequired(true));
-  added.push(form.addSectionHeaderItem()
-    .setTitle(SELF_TEST_HEADER)
-    .setHelpText('서비스 주소(' + SERVICE_URL + ')에서 기업 1곳을 골라 아래 과제를 해 주세요. ' +
-                 '정답을 맞히는 시험이 아니라, 서비스가 쓰기 쉬운지 보려는 과제입니다.'));
-  added.push(form.addTextItem()
-    .setTitle('과제 1. 고른 기업과, 그 기업에서 "근거 확인" 판정을 받은 약속 1개를 짧게 적어 주세요.')
-    .setHelpText('예: 기업 이름 / 약속 한 줄. 못 찾으셨으면 "못 찾음"이라고 적어 주세요.')
-    .setRequired(true));
-  added.push(form.addMultipleChoiceItem()
-    .setTitle('과제 2. 그 약속의 근거가 나온 보고서는 무엇이었나요?')
-    .setChoiceValues(['2025 사업보고서', '2026 반기보고서', '둘 다', '못 찾음'])
-    .setRequired(true));
-  added.push(form.addMultipleChoiceItem()
-    .setTitle('과제 3. 서비스에서 찾는 데 걸린 시간은 대략 얼마였나요?')
-    .setChoiceValues(['1분 이내', '1~2분', '2~4분', '4분 넘게', '못 찾음'])
-    .setRequired(true));
-  added.push(form.addMultipleChoiceItem()
-    .setTitle('과제 4. 같은 내용을 공시(DART)에서 직접 찾는다면 얼마나 걸릴 것 같나요?')
-    .setChoiceValues(['5분 이내', '5~15분', '15~30분', '30분 넘게', '잘 모르겠다'])
-    .setRequired(false));
-
-  // 새 문항을 '참가자 번호' 바로 뒤로 옮깁니다 (동의, 번호 다음인 3번째 자리부터).
+  // 없는 문항만 새로 만들고, 6개 모두를 '참가자 번호' 바로 뒤(동의, 번호 다음인 3번째 자리)부터 순서대로 놓습니다.
+  const ordered = SELF_TEST_ITEMS.map(function (spec) {
+    return existing[spec.title] || spec.add(form, spec.title);
+  });
   let pos = 2;
-  added.forEach(function (it) {
+  ordered.forEach(function (it) {
     form.moveItem(it.getIndex(), pos);
     pos++;
   });
 
   Logger.log('설문을 비대면 참여용으로 고쳤습니다. 링크는 그대로입니다: ' + form.getPublishedUrl());
   Logger.log('문항 수: ' + form.getItems().length + ' (15면 정상)');
+  Logger.log('응답 시트에 새 질문 열이 생깁니다. 응답 시트의 \'요약\' 탭 숫자가 그대로 나오는지 한 번 확인하세요.');
 }
 
 // 계정 종류에 따라 지원하지 않는 설정이 있어도 나머지는 계속 만들도록 감쌉니다.

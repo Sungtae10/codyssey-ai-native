@@ -19,8 +19,9 @@
 
 ```bash
 cd engine
-python run.py export --companies samsung skhynix --copy-to ../app/data/results.json
-python run.py check --file ../app/data/results.json
+python run.py export --companies samsung   # 결과는 data/results/ai_promise_data.json 에만 저장
+python run.py check --file ../data/results/ai_promise_data.json
+# 사용자 테스트가 끝나고 SK하이닉스 합의 뒤에만: python run.py export --companies samsung skhynix --copy-to ../app/data/results.json
 ```
 
 `results.json`이 없으면 화면은 예시 데이터로 fallback합니다. 최종 심사용 URL에서는 반드시 화면 상단에 '예시 데이터' 띠가 없는지 확인합니다.

@@ -5,6 +5,7 @@
 - 
 
 ## 확인
+- [ ] `python tests/test_config.py`
 - [ ] `python tests/test_mock.py`
 - [ ] `node --check app/js/app.js`
 - [ ] 실제 데이터라면 `python engine/run.py check --file <results.json>`

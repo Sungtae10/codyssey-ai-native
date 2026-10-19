@@ -43,7 +43,12 @@ jobs:
         run: python eval/evaluate.py --help > /dev/null
 
       - name: Check frontend JavaScript syntax
-        run: node --check app/js/app.js
+        run: |
+          node --check app/js/app.js
+          node --check app/api/resume-fit.js
+
+      - name: Check resume-fit server function (fake OpenAI, no key)
+        run: node tests/test_resume_api.js
 
       - name: Check screen code and CSS match (no browser)
         run: python tests/test_ui_static.py

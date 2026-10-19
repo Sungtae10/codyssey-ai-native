@@ -4,6 +4,7 @@
    2. 약속 목록        #/c/<기업id>
    3. 약속 자세히 보기  #/c/<기업id>/p/<약속id>
    4. 면접 카드        #/c/<기업id>/card
+   5. 내 경험 연결     #/c/<기업id>/fit  (이력서 × 이 회사 AI 약속, 서버 함수 api/resume-fit)
 
    데이터: data/results.json 이 있으면 그걸 쓰고,
            없으면 data/sample-data.js 의 예시 데이터를 써요.
@@ -571,11 +572,186 @@
         '<section class="card interview-section"><div class="section-title-row"><span class="insight-eyebrow">공시 확인</span><h2 class="card-title">공시에서 확인할 핵심 이슈 ' + issuesData.length + '</h2></div>' + issues + '</section>' +
         '<section class="card interview-section"><div class="section-title-row"><span class="insight-eyebrow">면접 포인트</span><h2 class="card-title">면접에서 활용할 소재 ' + tpData.length + '</h2></div>' + answers + '</section>' +
         '<section class="card interview-section"><div class="section-title-row"><span class="insight-eyebrow">질문</span><h2 class="card-title">회사에 물어볼 역질문 ' + qData.length + '</h2></div>' + questions + '</section>' +
+        (isReady(company)
+          ? '<a class="fit-entry" href="' + listHref + '/fit">' +
+              '<span class="fit-entry-main"><span class="fit-entry-title">내 이력서로 맞춤 포인트 만들기</span>' +
+              '<span class="fit-entry-desc">이력서 경험과 이 회사 AI 약속이 만나는 지점을 AI가 찾아요. 이력서는 저장하지 않아요.</span></span>' + ICON.chevron +
+            '</a>'
+          : '') +
       '</main>' +
       '<footer class="bottombar two">' +
         '<button type="button" class="btn btn-secondary" id="copy-btn">카드 복사하기</button>' +
         '<a class="btn btn-primary" href="#/">다른 기업 보기</a>' +
       '</footer>';
+  }
+
+  /* ---------- 화면 5: 내 경험 연결 (이력서 × 이 회사 AI 약속) #/c/<기업id>/fit ----------
+     서버 함수 /api/resume-fit을 불러요. 이력서는 저장하지 않고, 서버가 근거 검사를 통과한 항목만 돌려줘요.
+     PDF는 이 브라우저 안에서 pdf.js(vendor/pdfjs, 3.11.174)로 글자만 뽑고, 파일은 보내지 않아요. */
+  var FIT_MAX = 6000;
+  var FIT_MIN = 80;
+  var PDFJS_SRC = 'vendor/pdfjs/pdf.min.js';
+  var PDFJS_WORKER = 'vendor/pdfjs/pdf.worker.min.js';
+
+  function viewFit(company) {
+    var listHref = '#/c/' + encodeURIComponent(company.id);
+    if (!isReady(company)) {
+      return topbar(backLink('#/', '처음으로'), company) +
+        '<main class="content">' + disclaimers(company) + '<p class="empty">분석을 마친 기업에서만 쓸 수 있어요.</p></main>';
+    }
+    return topbar(backLink(listHref + '/card', '면접 카드'), company) +
+      '<main class="content">' + disclaimers(company) +
+        '<section style="display:flex;flex-direction:column;gap:6px">' +
+          '<p class="eyebrow">' + esc(company.name) + ' · 내 경험 연결</p>' +
+          '<h1 class="headline">내 경험과 이 회사 AI 약속은<br><span class="hl">어디서 만날까요?</span></h1>' +
+          '<p class="lead">이력서 내용을 넣으면 이 회사의 AI 약속과 근거에 이어지는 경험, 보완할 점, 면접에서 말할 포인트를 찾아요.</p>' +
+        '</section>' +
+        '<section class="card fit-privacy" role="note" aria-label="개인정보 안내">' +
+          '<h2 class="card-title" style="font-size:13px">넣기 전에 확인해 주세요</h2>' +
+          '<ul class="fit-rules">' +
+            '<li>이름, 연락처, 주소, 생년월일은 빼고 넣어 주세요.</li>' +
+            '<li>이력서는 이 서비스에 저장하지 않아요. 분석을 위해 OpenAI API로만 보내요.</li>' +
+            '<li>결과는 AI가 만든 참고 자료예요. 점수나 합격 가능성은 만들지 않아요.</li>' +
+          '</ul>' +
+        '</section>' +
+        '<section class="card fit-form">' +
+          '<label class="fit-label" for="resume-text">이력서 내용</label>' +
+          '<textarea id="resume-text" class="fit-text" rows="9" maxlength="' + FIT_MAX + '" placeholder="경험, 프로젝트, 쓸 줄 아는 기술을 붙여 넣어 주세요"></textarea>' +
+          '<div class="fit-row"><span class="fit-count" id="resume-count">0 / 6,000자</span>' +
+            '<button type="button" class="btn btn-secondary btn-sm" id="resume-file-btn">PDF·TXT에서 가져오기</button>' +
+            '<input type="file" id="resume-file" accept=".pdf,.txt,application/pdf,text/plain" hidden>' +
+          '</div>' +
+          '<p class="fit-note" id="resume-file-note">PDF는 이 브라우저 안에서 글자만 뽑아요. 파일 자체는 보내지 않아요.</p>' +
+          '<button type="button" class="btn btn-primary" id="fit-run" disabled>연결 찾기</button>' +
+          '<p class="fit-note" id="fit-status" role="status">서버 준비 상태를 확인하고 있어요.</p>' +
+        '</section>' +
+        '<div id="fit-result" aria-live="polite"></div>' +
+      '</main>';
+  }
+
+  function fitPromiseLink(company, it) {
+    var p = findPromise(company, it.promise_id);
+    if (!p) return '';
+    var tag = isSpecific(p) ? verdictShort(p.verdict) : L.promise_types.directional.label;
+    return '<a class="q-link" href="' + promiseHref(company, p.id) + '">관련 약속: ' + esc(p.title) + ' (' + esc(tag) + ')</a>';
+  }
+  function fitSection(title, items, render) {
+    if (!items.length) return '';
+    return '<section class="card fit-section"><h2 class="card-title">' + esc(title) + ' ' + items.length + '</h2>' + items.map(render).join('') + '</section>';
+  }
+  function renderFit(company, r) {
+    var conns = r.connections || [];
+    var strong = conns.filter(function (c) { return c.category === 'strong'; });
+    var related = conns.filter(function (c) { return c.category !== 'strong'; });
+    function conn(c) {
+      return '<div class="fit-item"><p class="fit-quote">내 이력서: "' + esc(c.resume_quote) + '"</p>' +
+        '<p class="fit-why">' + esc(c.why) + '</p>' + fitPromiseLink(company, c) + '</div>';
+    }
+    var html = fitSection('강하게 연결', strong, conn) + fitSection('관련 있음', related, conn);
+    if (!conns.length) {
+      html += '<p class="note">이력서에서 이 회사 AI 약속과 바로 이어지는 경험을 찾지 못했어요. 아래 보완할 점을 참고해 주세요.</p>';
+    }
+    html += fitSection('보완할 점', r.gaps || [], function (g) {
+      return '<div class="fit-item"><p class="fit-why">' + esc(g.why) + '</p><p class="fit-prepare">준비: ' + esc(g.prepare) + '</p>' + fitPromiseLink(company, g) + '</div>';
+    });
+    html += fitSection('면접에서 말할 포인트', r.talking_points || [], function (t) {
+      return '<div class="fit-item"><p class="fit-why">' + esc(t.text) + '</p>' + fitPromiseLink(company, t) + '</div>';
+    });
+    html += fitSection('회사에 물어볼 질문', r.questions || [], function (q) {
+      return '<div class="fit-item"><p class="fit-why">' + esc(q.text) + '</p>' + fitPromiseLink(company, q) + '</div>';
+    });
+    html += '<p class="note fit-foot">AI 생성(' + esc(r.model || '') + '). 이력서 인용은 넣은 글에 그대로 있는 구절만 보여 줘요. ' +
+      '검사에서 빠진 항목 ' + Number(r.dropped || 0) + '개. 회사 쪽 근거는 약속 화면의 원문 링크로 확인해 주세요.</p>';
+    return html;
+  }
+
+  function loadPdfJs() {
+    if (window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
+    return new Promise(function (resolve, reject) {
+      var s = document.createElement('script');
+      s.src = PDFJS_SRC;
+      s.onload = function () {
+        if (!window.pdfjsLib) { reject(new Error('pdfjs')); return; }
+        window.pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS_WORKER;
+        resolve(window.pdfjsLib);
+      };
+      s.onerror = function () { reject(new Error('pdfjs')); };
+      document.head.appendChild(s);
+    });
+  }
+  function readResumeFile(f) {
+    if (/\.txt$/i.test(f.name) || f.type === 'text/plain') return f.text();
+    if (!(/\.pdf$/i.test(f.name) || f.type === 'application/pdf')) return Promise.reject(new Error('type'));
+    if (f.size > 10 * 1024 * 1024) return Promise.reject(new Error('size'));
+    return loadPdfJs()
+      .then(function (lib) { return f.arrayBuffer().then(function (buf) { return lib.getDocument({ data: buf }).promise; }); })
+      .then(function (doc) {
+        var pages = [], chain = Promise.resolve();
+        for (var i = 1; i <= Math.min(doc.numPages, 10); i++) {
+          (function (n) {
+            chain = chain.then(function () { return doc.getPage(n); })
+              .then(function (pg) { return pg.getTextContent(); })
+              .then(function (tc) { pages.push(tc.items.map(function (it) { return it.str; }).join(' ')); });
+          })(i);
+        }
+        return chain.then(function () { return pages.join('\n').replace(/[ \t]+/g, ' ').trim(); });
+      });
+  }
+
+  function initFit(company) {
+    var ta = document.getElementById('resume-text');
+    if (!ta) return;
+    var count = document.getElementById('resume-count');
+    var btn = document.getElementById('fit-run');
+    var status = document.getElementById('fit-status');
+    var out = document.getElementById('fit-result');
+    var fileBtn = document.getElementById('resume-file-btn');
+    var fileInput = document.getElementById('resume-file');
+    var fileNote = document.getElementById('resume-file-note');
+    var ready = false, busy = false;
+    function update() {
+      count.textContent = ta.value.length.toLocaleString('ko-KR') + ' / 6,000자';
+      btn.disabled = !ready || busy || ta.value.trim().length < FIT_MIN;
+    }
+    ta.addEventListener('input', update);
+    fileBtn.addEventListener('click', function () { fileInput.click(); });
+    fileInput.addEventListener('change', function () {
+      var f = fileInput.files && fileInput.files[0];
+      if (!f) return;
+      fileNote.textContent = '파일에서 글자를 뽑고 있어요.';
+      readResumeFile(f).then(function (text) {
+        ta.value = String(text || '').slice(0, FIT_MAX);
+        fileNote.textContent = '글자를 가져왔어요. 이름, 연락처, 주소가 있으면 지우고 보내 주세요.';
+        update();
+      }, function () {
+        fileNote.textContent = '파일에서 글자를 뽑지 못했어요. 내용을 복사해 붙여 넣어 주세요.';
+      });
+      fileInput.value = '';
+    });
+    fetch('api/resume-fit', { cache: 'no-store' })
+      .then(function (r) { if (!r.ok) throw new Error('health'); return r.json(); })
+      .then(function (h) {
+        ready = Boolean(h && h.ok && h.configured);
+        status.textContent = ready ? '준비됐어요. 이력서를 넣고 "연결 찾기"를 눌러 주세요 (' + FIT_MIN + '자 이상).' : '이 기능은 아직 준비 중이에요 (서버 설정 전).';
+      }, function () { status.textContent = '이 기능은 아직 준비 중이에요 (서버에 연결하지 못함).'; })
+      .then(update);
+    btn.addEventListener('click', function () {
+      busy = true; update();
+      status.textContent = 'AI가 연결을 찾고 있어요. 1~2분 걸릴 수 있어요.';
+      out.innerHTML = '';
+      fetch('api/resume-fit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ company: company.id, resume: ta.value }) })
+        .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { status: r.status, json: j }; }); })
+        .then(function (x) {
+          if (x.status === 200 && x.json && x.json.ok) {
+            out.innerHTML = renderFit(company, x.json);
+            status.textContent = '결과가 나왔어요. 아래에서 확인해 주세요.';
+          } else {
+            status.textContent = (x.json && x.json.error) || '분석하지 못했어요. 잠시 뒤 다시 시도해 주세요.';
+          }
+        }, function () { status.textContent = '서버에 연결하지 못했어요. 인터넷 연결을 확인해 주세요.'; })
+        .then(function () { busy = false; update(); });
+    });
+    update();
   }
 
   function cardAsText(company) {
@@ -636,6 +812,8 @@
     } else if (company && parts[2] === 'p' && findPromise(company, parts[3])) {
       var p = findPromise(company, parts[3]);
       html = viewDetail(company, p); title = p.title;
+    } else if (company && parts[2] === 'fit') {
+      html = viewFit(company); title = company.name + ' 내 경험 연결';
     } else if (company && parts[2] === 'card') {
       html = viewCard(company); title = company.name + ' 면접 카드';
     } else {
@@ -662,6 +840,7 @@
       });
       loadListed();
     }
+    if (company && parts[2] === 'fit') initFit(company);
     var copyBtn = document.getElementById('copy-btn');
     if (copyBtn && company) {
       copyBtn.addEventListener('click', function () {

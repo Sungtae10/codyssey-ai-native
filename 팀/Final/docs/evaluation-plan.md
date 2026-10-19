@@ -5,7 +5,7 @@
 ## 평가 설계
 - **삼성전자**: calibration / development 기업
 - **SK하이닉스**: blind evaluation 기업
-- 추가 기업 (관문 2를 통과했을 때만, 업종이 다른 시연용 기업 최대 3곳): 제품 확장성 데모용입니다. 사람 정답과 비교하지 않고, Human blind evaluation의 핵심 수치에는 섞지 않습니다.
+- 시연용 기업 3곳 (카카오, 신한은행, NAVER, 10/19 확정): 제품 확장성 데모용입니다. 사람 정답과 비교하지 않고, Human blind evaluation의 핵심 수치에는 섞지 않습니다.
 
 ## Human Ground Truth
 두 사람이 AI 결과를 보기 전에 독립적으로 판정합니다.

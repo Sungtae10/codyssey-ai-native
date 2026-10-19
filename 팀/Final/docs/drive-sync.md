@@ -19,7 +19,7 @@
 - 실제 `app/data/results.json`
 - SK하이닉스 blind Gold Label
 - 사용자 테스트 실측 결과
-- (관문 2를 통과했을 때만) 시연용 추가 기업의 실제 결과
+- 시연용 기업 3곳(카카오, 신한은행, NAVER)의 실제 결과 (PDF는 드라이브 `1019_추가기업_PDF`)
 - 서준용 디자인 시안 원본 zip (화면 반영은 PR #9로 완료, `app/css/style.css`)
 
 판정기준 v2는 2026-10-15 확정·동결했습니다. Drive와 GitHub는 같은 v2를 사용하며, SK하이닉스 blind evaluation 종료 전에는 기준을 바꾸지 않습니다.

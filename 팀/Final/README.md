@@ -5,18 +5,18 @@
 - 서비스 주소: https://ai-promise-six.vercel.app (Vercel, `app/` 폴더. main에 올리면 자동으로 다시 배포됩니다)
 - 사용자: 취업·이직 준비자 (면접 전 5분 안에 지원 회사의 AI 계획과 실행을 공시 원문으로 확인)
 - 핵심 기업: 삼성전자(개발·시연용), SK하이닉스(평가용)
-- 기업 추가: 관문 2를 통과하면 업종이 다른 시연용 기업을 최대 3곳 (후보: 현대자동차, NAVER, LG전자). 시연용 기업은 사람 정답과 비교하지 않고 화면에 시연용으로 표시합니다.
+- 확장 데모 기업: 카카오, 신한은행, NAVER. 시간 부족 시 Core 2(삼성전자·SK하이닉스)를 먼저 완성하고, 확장 3곳은 시연용으로 표시해 Human blind evaluation 수치에는 포함하지 않습니다.
 - 약속을 찾는 보고서: 2024 사업보고서 / 근거를 찾는 보고서: 2025 사업보고서, 2026 반기보고서
 
 ## 1. 핵심 AI 활용
 
-미션의 필수 기술 요소 5개(AI Agent, RAG, 멀티모달 AI, 자동화 워크플로우, Long-term Memory) 중 3개를 씁니다. 자세한 내용은 [기능 요구 명세서](docs/requirements.md) 4장에 있습니다.
+미션의 필수 기술 요소 5개(AI Agent, RAG, 멀티모달 AI, 자동화 워크플로우, Long-term Memory) 중 2개 이상이 필요합니다. AI Promise는 **RAG와 자동화 워크플로우를 주 근거**로 제시하고, **AI Agent는 제한적 재검색 형태로 보조**로 씁니다. 자세한 내용은 [기능 요구 명세서](docs/requirements.md) 4장에 있습니다.
 
 | 기술 요소 | AI Promise에서 하는 일 | 코드 |
 | --- | --- | --- |
-| RAG | 후속 보고서에서 키워드 검색(BM25)과 의미 검색(OpenAI 임베딩 + ChromaDB)으로 근거 후보를 찾고, 그 후보 문장만 근거로 LLM이 판정합니다 | `engine/aipromise/retrieve.py`, `engine/aipromise/judge.py` |
-| AI Agent (정보 검색 Agent) | 근거를 못 찾으면 AI가 새 검색어를 정하고, 코드가 그 검색어로 다시 검색합니다. 근거를 찾거나, 처음 검색을 포함해 3번이 되거나, 더 쓸 검색어가 없으면 멈추고, 검색 기록을 남깁니다 | `engine/aipromise/judge.py` |
-| 자동화 워크플로우 | `run.py all` 한 번으로 7단계(수집, 약속 추출, 분류, 근거 검색, 판정, 인용 검사, 면접 카드)가 차례로 돌고, 결과 파일을 내보내 main에 올리면 GitHub Actions 검사와 Vercel 배포가 자동으로 이어집니다 | `engine/run.py`, `.github/workflows/ci.yml` |
+| RAG (주) | 후속 보고서에서 키워드 검색(BM25)과 의미 검색(OpenAI 임베딩 + ChromaDB)으로 근거 후보를 찾고, 그 후보 문장만 근거로 LLM이 판정합니다 | `engine/aipromise/retrieve.py`, `engine/aipromise/judge.py` |
+| 자동화 워크플로우 (주) | `run.py all` 한 번으로 7단계(수집, 약속 추출, 분류, 근거 검색, 판정, 인용 검사, 면접 카드)가 차례로 돌고, 결과 파일을 내보내 main에 올리면 GitHub Actions 검사와 Vercel 배포가 자동으로 이어집니다 | `engine/run.py`, `.github/workflows/ci.yml` |
+| AI Agent (보조: 제한적 재검색) | 근거를 못 찾으면 AI가 새 검색어를 정하고, 코드가 그 검색어로 다시 검색합니다. 근거를 찾거나, 처음 검색을 포함해 3번이 되거나, 더 쓸 검색어가 없으면 멈추고, 검색 기록을 남깁니다. 완전 자율 Agent라고 부르지 않습니다 | `engine/aipromise/judge.py` |
 
 AI가 고른 근거는 원문에 그대로 있는지 코드로 다시 검사합니다(인용 검사). 통과하지 못한 근거는 빼고, 근거가 필요한 판정인데 통과한 근거가 하나도 없으면 "공시에서 확인 불가"로 낮춥니다.
 
@@ -31,7 +31,7 @@ AI가 고른 근거는 원문에 그대로 있는지 코드로 다시 검사합�
 | PDF 읽기 | pypdf | DART에서 받은 정기보고서 PDF를 장별 문장으로 나눕니다 |
 | 화면 | HTML, CSS, JavaScript (빌드 없음) | 화면 담당이 React·Streamlit 경험이 없고 AI 도구로 Vercel에 배포해 본 경험이 있어 가장 단순한 정적 웹을 골랐습니다. 화면은 결과 파일 하나만 읽어 엔진과 따로 만들 수 있습니다 |
 | 배포 | Vercel (Root Directory: `app`) | 빌드 없이 `app/` 폴더를 바로 배포하고, main에 올리면 자동으로 다시 배포됩니다. 저장소와 배포를 김성태 계정 하나로 모았습니다 (10/8 결정) |
-| 자동 검사 | GitHub Actions, Playwright | Pull Request를 올리거나 main에 올릴 때마다 엔진 시험과 화면 검사(글자 대비, 가로 넘침)를 자동으로 돌립니다 |
+| 자동 검사 | GitHub Actions, Playwright | Pull Request를 올리거나 main에 올릴 때마다 엔진 설정 검사, 엔진 시험, 화면 검사(글자 대비, 가로 넘침)를 자동으로 돌립니다 |
 | 사용자 테스트 설문 | Google Forms, Google Sheets (Apps Script로 생성) | 이름·연락처·이메일을 받지 않게 설정할 수 있고, 응답이 시트에 자동으로 쌓입니다 |
 | 협업 | GitHub Issues·Pull Request, Google Drive | 팀원은 드라이브에 파일을 올리고 김성태가 저장소에 반영합니다. 기록은 커밋, PR, 이슈에 남깁니다 |
 
@@ -56,22 +56,23 @@ cd engine
 pip install -r requirements.txt
 cp .env.example .env        # .env에 OPENAI_API_KEY를 적습니다. 이 파일은 저장소에 올리지 않습니다
 python run.py doctor --company samsung     # 설치, 키, PDF 점검 (판정 모델·임베딩 모델을 1번씩 실제 호출)
-python run.py all --company samsung        # 1~7단계 실행
-python run.py export --companies samsung skhynix --copy-to ../app/data/results.json
+python run.py all --company samsung        # 1~7단계 실행 (시연용 기업은 kakao, shinhanbank, naver)
+python run.py export --companies samsung --copy-to ../app/data/results.json
 python run.py check --file ../app/data/results.json
 ```
 
-PDF 6개는 `data/pdf/`에 둡니다 (저장소에 올리지 않습니다).
+SK하이닉스(`skhynix`)는 평가용이라 사람 정답 합의가 끝난 뒤에 `export` 목록에 넣고, 시연용 3곳(`kakao shinhanbank naver`)은 핵심 2곳과 사용자 테스트가 끝난 뒤 시간이 남으면 넣습니다. PDF는 `data/pdf/`에 둡니다 (핵심 2곳 6개, 시연용 3곳 9개. 저장소에 올리지 않습니다).
 
 **코드 점검** (키 없이 가상 회사로 시험)
 
 ```bash
+python tests/test_config.py      # 엔진 설정: 핵심 2곳, 시연용 3곳, 검색 설정의 모양. 마지막 줄에 "설정 검사 통과"
 python tests/test_mock.py        # 엔진·평가: 마지막 줄에 "시험 통과"
 python tests/test_ui_static.py   # 화면: app.js가 쓰는 class가 CSS에 모두 있는지 (브라우저 없이)
 python tests/ui_check.py         # 화면: 모든 화면(예시 데이터 18개) x 다크/라이트의 글자 대비, 가로 넘침, 필수 부품 (Playwright 필요)
 ```
 
-세 검사는 Pull Request를 올리거나 main에 올릴 때 CI에서도 자동으로 돌아갑니다.
+네 검사는 Pull Request를 올리거나 main에 올릴 때 CI에서도 자동으로 돌아갑니다.
 
 ## 4. 폴더
 
@@ -92,10 +93,12 @@ python tests/ui_check.py         # 화면: 모든 화면(예시 데이터 18개)
 
 ## 6. 작업 규칙
 
-- main에 올라간 것은 바로 서비스 주소에 배포됩니다. main에 올리기 전에 `python tests/test_mock.py`가 "시험 통과"여야 합니다.
-- 사용자 테스트 기간(R0 예행연습부터 마지막 테스트까지)에는 main의 화면을 바꾸지 않습니다. 테스트를 막는 오류만 바로 고치고, 나머지는 브랜치에서 만들어 테스트가 끝난 뒤 합칩니다.
-- 디자인을 바꾸면 `tests/ui_check.py`로 글자 대비(작은 글자 4.5:1, 큰 글자 3:1 이상)와 화면 깨짐을 확인합니다.
-- 다른 AI 도구에 저장소 접근을 주면 main에 직접 올리지 않고 브랜치와 Pull Request로만 작업하고, 김성태가 확인한 뒤 합칩니다. (두 도구가 main을 동시에 고치면 서로 덮어씁니다)
+- main에 올라간 것은 바로 서비스 주소에 배포됩니다.
+- 최종 마감 구간에는 **최신 main → 작업 브랜치 → 테스트 → Pull Request → merge** 순서만 사용합니다. 두 도구가 main을 동시에 고치면 서로 덮어쓰기 때문입니다.
+- 실제 배포 여부와 배포 URL은 README 14장의 제출 링크에 적고, 배포가 확인되지 않은 상태를 '배포 완료'라고 쓰지 않습니다.
+- main에 합치기 전 `python tests/test_config.py`, `python tests/test_mock.py`, `python tests/test_ui_static.py`, `python tests/ui_check.py`를 통과시킵니다.
+- 디자인을 바꾸면 `app/css/style.css` 맨 아래 데이터 연결 부품을 유지하고, 320~390px 모바일 화면과 명도 대비를 다시 확인합니다.
+- 사용자 테스트 기간에는 테스트를 막는 오류만 바로 고칩니다. 나머지 발견된 문제는 먼저 기록하고, 테스트가 끝난 뒤 우선순위가 높은 피드백을 브랜치에서 수정합니다.
 
 ## 7. 지키는 것
 
@@ -113,13 +116,13 @@ python tests/ui_check.py         # 화면: 모든 화면(예시 데이터 18개)
 
 ## 9. 결과
 
-사용자 테스트(10/16)와 SK하이닉스 정답 평가가 끝나면 10/17에 이 장을 채웁니다. 숫자는 실제로 잰 값만 씁니다.
+사용자 테스트와 SK하이닉스 정답 평가가 끝나면 이 장을 채웁니다. 숫자는 실제로 잰 값만 씁니다.
 
 | 결과 | 원자료 | 계산 |
 | --- | --- | --- |
 | AI 판정 평가 (사람 합의 정답 대비 정확도, macro-F1, 혼동표, 사람 간 kappa) | `eval/gold/`(사람 정답), `data/work/<기업>/judged.json`(엔진 판정) | `python eval/evaluate.py` |
-| 사용자 테스트 (4분 안에 정답을 찾은 비율, 설문 점수) | `eval/user_test/results.csv` (이름 없이 번호만) | `python eval/user_test/analyze.py eval/user_test/results.csv` |
-| 피드백 반영 (의견, 원인, 조치, 커밋, 재확인) | 반영 기록 표 | 10/17 작성 |
+| 사용자 테스트 (응답 수, 설문 점수 평균, 작은 과제를 4분 안에 해낸 비율) | 설문 응답 시트 (이름·연락처 없음). 화면공유 테스트를 했으면 `eval/user_test/results.csv` (번호만) | 응답 시트 집계. 화면공유 테스트는 `python eval/user_test/analyze.py eval/user_test/results.csv` |
+| 피드백 반영 (의견, 원인, 조치, 커밋, 재확인) | [사용자 피드백 반영 로그](docs/feedback-log.md) | 테스트가 끝난 뒤 작성 |
 
 ## 10. AI 사용
 
@@ -127,20 +130,55 @@ python tests/ui_check.py         # 화면: 모든 화면(예시 데이터 18개)
 
 ## 11. 프로젝트 문서
 
-- [기능 요구 명세서](docs/requirements.md)
+- [기능 요구 명세서 (기능·비기능 요구사항)](docs/requirements.md)
+- [공식 요구사항 ↔ 증빙 매트릭스](docs/official-requirements-matrix.md)
+- [제출 증빙 체크리스트 (공식 미션 19개 항목)](docs/submission-evidence-checklist.md)
+- [최종 제출 Release Checklist](docs/release-checklist.md)
+- [마감 최소 완성안](docs/final-sprint.md)
 - [진행 기록](docs/progress-log.md)
 - [아키텍처](docs/architecture.md)
 - [평가 계획](docs/evaluation-plan.md)
-- [10분 비대면 사용자 테스트](docs/user-test-protocol.md)
-- [시연용 기업 확장 계획 (관문 2 통과 시)](docs/company-expansion-plan.md)
+- [빠른 사용자 테스트 (혼자 써 보기)](docs/user-test-quick.md)
+- [10분 비대면 사용자 테스트 (화면공유)](docs/user-test-protocol.md)
+- [사용자 피드백 반영 로그](docs/feedback-log.md)
+- [최종 발표 구성안](docs/presentation-outline.md)
+- [시연용 기업 확장 계획](docs/company-expansion-plan.md)
 - [AI 윤리·신뢰성](docs/ai-ethics.md)
 - [Vercel 배포](docs/deploy.md)
 - [Google Drive ↔ GitHub 동기화](docs/drive-sync.md)
-- [제출 증빙 체크리스트 (공식 미션 기준)](docs/submission-evidence-checklist.md)
 - [후속 연구 계획](docs/follow-up-study-plan.md)
 - [팀 협업 규칙](CONTRIBUTING.md)
 
 ## 12. 추가 평가
 
 - 사용자 테스트: `eval/user_test/`
-- 문장 분류 ML 실험 (`eval/ml/`): 이번 제출(10/18)에서는 하지 않고 다음 단계로 둡니다 (기획 보고서 8.3). 코드와 데이터 형식만 있습니다.
+- 문장 분류 ML 실험 (`eval/ml/`): 이번 제출에서는 하지 않고 다음 단계로 둡니다 (기획 보고서 8.3). 코드와 데이터 형식만 있습니다.
+
+## 13. 공식 Final Project 요구사항 대응
+
+- 생성형 AI / AI Agent 핵심 기능: 약속 추출, 근거 검색·재검색, 판정, citation verification, 면접 카드
+- 필수 기술요소: **RAG + 자동화 워크플로우** (AI Agent는 제한적 재검색으로 보조)
+- 외부 배포: 공개 URL (14장 제출 링크)
+- 실제 사용자: **최소 5명 이상**
+- 사용자 피드백: 수집 후 최소 1건 이상 실제 서비스에 반영하고 commit/PR로 증빙
+- AI 윤리: AI 생성 분석 고지, 단정 표현 금지, 개인정보 비저장
+- 기능·비기능 요구사항: [docs/requirements.md](docs/requirements.md)
+- 마감 최소 완성안: [docs/final-sprint.md](docs/final-sprint.md)
+- 빠른 사용자 테스트: [docs/user-test-quick.md](docs/user-test-quick.md)
+
+## 14. 심사자에게 보여줄 핵심
+
+**AI Promise는 공시 요약기가 아니라 ‘기업의 AI 약속 ↔ 후속 실행 근거’를 연결하는 조사 서비스입니다.**
+
+1. **공식 데이터**: DART 정기공시를 근거로 사용
+2. **AI Native 구조**: LLM 약속 추출 + RAG 검색 + 제한적 재검색 + 판정 + citation verification + 면접 카드
+3. **검증 가능성**: 사용자가 판정에서 DART 원문까지 되돌아갈 수 있음
+4. **안전한 표현**: ‘공시에서 확인 불가’를 실제 미이행으로 단정하지 않음
+5. **실사용 검증**: 최소 5명 테스트 및 실제 피드백 반영을 제출 증빙으로 남김
+
+### 제출 링크
+- 서비스 URL: https://ai-promise-six.vercel.app (10/19 접속 확인. 실제 기업 데이터는 엔진 결과 파일을 올린 뒤 보입니다)
+- 사용자 테스트: **[실제 인원 입력]명**
+- 피드백 반영: [docs/feedback-log.md](docs/feedback-log.md)
+- 발표자료: **[완성 후 링크 입력]**
+- 시연 영상: **[완성 후 링크 입력]**

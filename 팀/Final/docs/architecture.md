@@ -3,7 +3,7 @@
 ## 목표
 기업이 정기공시에서 밝힌 AI 계획과 이후 정기공시의 실행 근거를 연결하고, 근거가 검증된 정보만 면접 준비에 사용합니다.
 
-이 문서는 엔진 7단계를 다룹니다. 화면, 배포, 평가까지 포함한 시스템 전체 그림은 [기능 요구 명세서](requirements.md) 5장에 있습니다.
+이 문서는 엔진 7단계와 그 흐름 그림을 다룹니다. 화면, 배포, 평가까지 포함한 시스템 전체 그림은 [기능 요구 명세서](requirements.md) 5장에 있습니다.
 
 ## 7단계
 1. **Collect**: 2024 사업보고서와 후속 보고서에서 지정 섹션을 추출
@@ -37,3 +37,35 @@ DART PDF
 - 엔진 설정: `engine/config.yaml`
 - 화면 데이터 계약: `tests/sample_data.json` + `engine/aipromise/checker.py`
 - 실제 결과: `app/data/results.json` (생성 후)
+
+
+## 시스템 아키텍처
+
+```mermaid
+flowchart LR
+    A[DART 정기공시 PDF] --> B[Collect<br/>지정 섹션 추출]
+    B --> C[LLM Promise Extraction<br/>AI 미래 계획 추출]
+    C --> D[Specificity Classification<br/>구체적/방향성]
+    D --> E[RAG Retrieval<br/>키워드 + 의미 검색]
+    E --> H[LLM Judgment<br/>4개 판정]
+    H --> F{공시에서<br/>확인 불가?}
+    F -- 예, 3번 전이면 --> G[AI가 새 검색어 제안]
+    G --> E
+    F -- 아니오, 또는 3번째 --> I[Citation Verification<br/>원문 exact-match]
+    I --> J[Interview Card<br/>검증 근거 중심]
+    J --> K[results.json]
+    K --> L[Web UI<br/>약속→근거→원문→면접 카드]
+```
+
+## 공식 필수 기술요소 대응
+
+### 1. RAG
+후속 정기공시를 작은 단위로 검색해 약속과 관련된 근거 후보를 LLM 판정 컨텍스트에 제공합니다. 검색 실패 시 전체 보고서를 통째로 생성 모델에 넣는 대신 관련 후보를 재검색합니다.
+
+### 2. 자동화 워크플로우
+PDF 입력부터 화면 JSON 출력까지 Collect → Extract → Retrieve → Judge → Verify → Card → Export가 하나의 Python pipeline으로 연결됩니다.
+
+### 3. Agent-style retry (보조)
+근거가 충분하지 않으면 검색어를 바꿔 제한된 횟수만큼 재검색합니다. 완전 자율 Agent라고 과장하지 않고, 구현된 **상태 기반 재검색·도구 사용 흐름**만 설명합니다.
+
+심사 시 필수 기술요소는 **RAG + 자동화 워크플로우**를 주 근거로 제시하고, Agent-style retry는 추가 AI Native 설계로 설명합니다.

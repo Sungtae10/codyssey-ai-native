@@ -8,7 +8,7 @@ llm:
   temperature: 0
 
 paths:
-  pdf_dir: ../data/pdf                          # DART에서 받은 PDF 6개를 여기에
+  pdf_dir: ../data/pdf                          # DART에서 받은 PDF를 여기에 (핵심 2곳 6개 + 시연 3곳 9개)
   work_dir: ../data/work                        # 단계별 중간 결과 (저장소에 올려도 됨, chroma_db는 제외)
   results_file: ../data/results/ai_promise_data.json   # 화면에 넣을 결과 파일
   labels_file: labels.json                      # 화면 문구 (sample_data.json의 labels와 같음)
@@ -23,7 +23,7 @@ retrieval:
   max_candidates: 24    # 판정 때 AI에게 보여 줄 후보 문장 수
   max_attempts: 3       # 근거를 못 찾으면 검색어를 바꿔 다시 찾는 횟수 (처음 포함)
 
-# url: DART에서 그 보고서를 열었을 때 주소창의 주소를 그대로 붙여 넣으세요. 화면의 "원문 링크"가 됩니다.
+# 핵심 기업 2곳. url: DART에서 그 보고서를 열었을 때 주소창의 주소를 그대로 붙여 넣으세요. 화면의 "원문 링크"가 됩니다.
 companies:
   samsung:
     name: 삼성전자
@@ -42,10 +42,11 @@ companies:
 # check_note (선택): 기업 카드와 약속 목록 위에 작게 보이는 검증 안내. 비워 두면 보이지 않습니다.
 #   예) check_note: "사람 2명이 따로 매긴 정답과 AI 판정을 비교한 기업이에요."
 
-# 후보 기업(시연용): doctor, export를 그냥 돌릴 때는 들어가지 않고, --company나 --companies에 이름을 적을 때만 씁니다.
-# 10/19 결정: 시연용 3곳은 카카오(IT 플랫폼), 신한은행(금융), 현대자동차(자동차). NAVER, LG전자는 예비입니다.
-# 업종이 다른 기업일수록 "반도체·전자에서만 되나?"라는 질문에 답이 됩니다 (LG전자는 삼성전자 DX와 같은 전자 업종).
-# 실행 예) python run.py all --company kakao   /   python run.py export --companies samsung skhynix kakao shinhanbank hyundai --copy-to ../app/data/results.json
+# 시연용 기업 3곳 (10/19 결정: 카카오, 신한은행, NAVER). 사람 정답과 비교하지 않고 화면에 시연용으로 표시합니다.
+# 핵심 2곳과 사용자 테스트를 먼저 끝내고, 시간이 남으면 실행합니다.
+# doctor, export를 그냥 돌릴 때는 들어가지 않고, --company나 --companies에 이름을 적을 때만 씁니다.
+# 실행 예) python run.py all --company kakao
+#          python run.py export --companies samsung skhynix kakao shinhanbank naver --copy-to ../app/data/results.json
 candidates:
   kakao:
     name: 카카오
@@ -59,18 +60,10 @@ candidates:
     name: 신한은행
     check_note: "시연용 기업이에요. 화면의 약속은 팀이 원문과 대조해 확인했고, 사람 정답과 비교한 정확도는 없어요."
     promise_reports:
-      - {key: y2024, title: "2024 사업보고서", pdf: shinhanbank_2024.pdf, url: ""}
+      - {key: y2024, title: "2024 사업보고서", pdf: shinhan_2024.pdf, url: ""}
     evidence_reports:
-      - {key: y2025, title: "2025 사업보고서", pdf: shinhanbank_2025.pdf, url: ""}
-      - {key: h2026, title: "2026 반기보고서", pdf: shinhanbank_2026h1.pdf, url: ""}
-  hyundai:
-    name: 현대자동차
-    check_note: "시연용 기업이에요. 화면의 약속은 팀이 원문과 대조해 확인했고, 사람 정답과 비교한 정확도는 없어요."
-    promise_reports:
-      - {key: y2024, title: "2024 사업보고서", pdf: hyundai_2024.pdf, url: ""}
-    evidence_reports:
-      - {key: y2025, title: "2025 사업보고서", pdf: hyundai_2025.pdf, url: ""}
-      - {key: h2026, title: "2026 반기보고서", pdf: hyundai_2026h1.pdf, url: ""}
+      - {key: y2025, title: "2025 사업보고서", pdf: shinhan_2025.pdf, url: ""}
+      - {key: h2026, title: "2026 반기보고서", pdf: shinhan_2026h1.pdf, url: ""}
   naver:
     name: NAVER
     check_note: "시연용 기업이에요. 화면의 약속은 팀이 원문과 대조해 확인했고, 사람 정답과 비교한 정확도는 없어요."
@@ -79,14 +72,6 @@ candidates:
     evidence_reports:
       - {key: y2025, title: "2025 사업보고서", pdf: naver_2025.pdf, url: ""}
       - {key: h2026, title: "2026 반기보고서", pdf: naver_2026h1.pdf, url: ""}
-  lge:
-    name: LG전자
-    check_note: "시연용 기업이에요. 화면의 약속은 팀이 원문과 대조해 확인했고, 사람 정답과 비교한 정확도는 없어요."
-    promise_reports:
-      - {key: y2024, title: "2024 사업보고서", pdf: lge_2024.pdf, url: ""}
-    evidence_reports:
-      - {key: y2025, title: "2025 사업보고서", pdf: lge_2025.pdf, url: ""}
-      - {key: h2026, title: "2026 반기보고서", pdf: lge_2026h1.pdf, url: ""}
 
 # 장을 자동으로 못 찾을 때만 적습니다. 쪽 번호는 PDF 뷰어 기준(1부터, 양끝 포함).
 section_pages: {}

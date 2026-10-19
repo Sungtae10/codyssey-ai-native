@@ -5,7 +5,7 @@
    2. 준비 상태(GET): 키가 없으면 configured: false, POST는 503
    3. POST 정상: 가짜 OpenAI 응답으로 결과가 나오고, 회사 쪽 정보는 결과 파일에서 붙는지
    4. 대체 모델: 설정한 모델이 실패하면 대체 모델로 넘어가는지
-   5. 입력 검사: 너무 짧거나 긴 이력서, 분석 안 된 기업은 400
+   5. 입력 검사: 너무 짧거나 긴 이력서, 결과 파일에 없는 기업은 400
    6. 같은 주소에서 너무 자주 부르면 429
 */
 'use strict';
@@ -122,9 +122,9 @@ async function call(method, body, ip, url) {
   check(r.status === 400, '짧은 이력서는 400');
   r = await call('POST', { company: 'samsung', resume: 'ㄱ'.repeat(6001) }, '4.4.4.4');
   check(r.status === 400, '6,000자 넘으면 400');
-  r = await call('POST', { company: 'kakao', resume: RESUME }, '4.4.4.4');
-  check(r.status === 400 || r.status === 200, '분석 안 된 기업 처리');
-  if (r.status === 200) check(false, '약속이 없는 기업은 400이어야 함');
+  // 10/19: 카카오는 이제 분석 완료 기업이라, 결과 파일에 없는 기업 id로 시험합니다
+  r = await call('POST', { company: 'no-such-company', resume: RESUME }, '4.4.4.4');
+  check(r.status === 400, '분석 안 된(결과 파일에 없는) 기업은 400이어야 함, 받은 값 ' + r.status);
 
   // 6) 같은 주소 반복
   let last = 0;

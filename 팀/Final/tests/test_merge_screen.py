@@ -15,7 +15,14 @@ from aipromise.checker import check  # noqa: E402
 
 def main():
     problems = []
-    screen = json.load(open(os.path.join(ROOT, "app", "data", "results.json"), encoding="utf-8"))
+    real = json.load(open(os.path.join(ROOT, "app", "data", "results.json"), encoding="utf-8"))
+    # 10/19: 화면 데이터에 이미 엔진 결과 기업이 들어 있어도 같은 상황을 시험하도록, 사람 대조 기업 + 준비 중 기업 2곳으로 시험 자료를 만듭니다
+    screen = copy.deepcopy(real)
+    human = [c for c in screen["companies"] if c.get("data_mode") != "engine" and c.get("promises")]
+    def pending(cid, name):
+        return {"id": cid, "name": name, "reports": copy.deepcopy(human[0]["reports"]), "promises": [],
+                "interview_card": {"issues": [], "talking_points": [], "questions": []}}
+    screen["companies"] = human + [pending("kakao", "카카오"), pending("naver", "NAVER")]
     before = copy.deepcopy(screen)
     sam = [c for c in screen["companies"] if c["id"] == "samsung"][0]
     fake = json.loads(json.dumps(sam).replace("samsung", "kakao"))

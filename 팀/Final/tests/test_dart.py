@@ -197,6 +197,16 @@ def main():
     check(dart.decode_xml('<?xml version="1.0" encoding="euc-kr"?><A>가</A>'.encode("cp949")).endswith("<A>가</A>"), "euc-kr XML 읽기")
     check(dart.main_xml_name(["1.xml", "20250402000002_00760.xml", "20250402000002.xml"], "20250402000002") == "20250402000002.xml", "본문 XML 고르기")
 
+    # 3-2) 문장 나누기: 번호 목록·줄표 목록·각주가 한 줄로 붙은 공시 글 (10/19 보강)
+    from aipromise.collect import section_sentences
+    glued = ("운영은 수탁사가 담당합니다.(5) 기존 사업과의 연관성- 해당 사항이 없습니다.(7) 향후 추진계획- 시간을 거듭하면서 "
+             "AI 캠퍼스의 활용이 증가되는 것이 목표입니다. 6월 개발 완료 후 10월 양산 시작됨- 이전 세대보다 약 10% 향상된 "
+             "동작속도 구현됨- Module 형태의 새로운 Form Factor로 AI 서버 시장 대응 예정 (*) GDDR: 그래픽 처리용 메모리")
+    parts = [t for _, t in section_sentences([(1, glued)])]
+    check("(7) 향후 추진계획- 시간을 거듭하면서 AI 캠퍼스의 활용이 증가되는 것이 목표입니다." in parts, f"번호 목록 나누기: {parts}")
+    check("Module 형태의 새로운 Form Factor로 AI 서버 시장 대응 예정" in parts, f"줄표 목록·각주 나누기: {parts}")
+    check(not any("수탁사" in t and "AI 캠퍼스" in t for t in parts), f"다른 항목이 한 문장에 섞임: {parts}")
+
     # 4) 가짜 OpenDART로 기업 1곳 전체
     real_get, real_sleep = dart._get, dart.time.sleep
     dart._get, dart.time.sleep = fake_get, (lambda s: None)
@@ -222,6 +232,11 @@ def main():
         lists = [c for c in calls if c[0] == "list.json"]
         check(len(lists) == 1 and lists[0][1]["bgn_de"] == "20250101", f"목록은 한 번에, 가장 이른 시작일부터: {lists}")
         check(lists[0][1]["last_reprt_at"] == "N" and lists[0][1]["pblntf_ty"] == "A", "정정 전 보고서까지, 정기공시만")
+        # 화면 이름과 법인 이름이 다르면 dart_names로 찾음 (예: 화면 'KB국민은행', 법인 '국민은행')
+        alias = dict(comp, key="alias", name="테스트전자 브랜드", stock_code=None, dart_names=["없는이름", "테스트전자"])
+        e3 = dart.fetch_company("TESTKEY", alias, os.path.join(TMP, "dart"),
+                                lambda: dart.parse_corp_codes(fake_get("corpCode.xml", {}, "k")), log=logs.append)
+        check(e3["corp_code"] == "00999999", f"dart_names로 법인 찾기: {e3['corp_code']}")
         # 이름이 같은 법인이 여럿이면 보고서를 낸 법인만
         dup = dict(comp, key="dup", name="중복은행", stock_code=None)
         e2 = dart.fetch_company("TESTKEY", dup, os.path.join(TMP, "dart"),

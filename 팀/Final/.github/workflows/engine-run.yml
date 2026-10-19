@@ -13,7 +13,7 @@ on:
   workflow_dispatch:
     inputs:
       companies:
-        description: 'config.yaml 기업 이름 JSON 목록 (예: ["kakao","naver","shinhanbank","skhynix"])'
+        description: 'config.yaml 기업 이름 JSON 목록 (예: ["kakao","naver","shinhanbank","skhynix"]). 같은 이름을 여러 번 쓰면 재현성 점검으로 여러 번 돌림'
         required: true
         default: '["kakao","naver","shinhanbank","skhynix"]'
   push:
@@ -24,7 +24,7 @@ permissions:
 
 jobs:
   analyze:
-    name: analyze (${{ matrix.company }})
+    name: analyze (${{ matrix.company }} ${{ strategy.job-index }})
     runs-on: ubuntu-latest
     timeout-minutes: 120
     strategy:
@@ -69,7 +69,8 @@ jobs:
       - name: Push results to engine-results branch
         if: always()
         run: |
-          B="engine-results/${GITHUB_RUN_ID}-${COMPANY}"
+          # 같은 기업을 여러 번 돌릴 때(재현성 점검) 브랜치가 겹치지 않게 순번을 붙입니다
+          B="engine-results/${GITHUB_RUN_ID}-${COMPANY}-${{ strategy.job-index }}"
           git config user.name "Sungtae10"
           git config user.email "kkst01221203@gmail.com"
           git checkout -b "$B"

@@ -299,7 +299,14 @@ def fetch_company(key, company, out_dir, corps_loader, log=print, today=None):
         corp = {"corp_code": str(company["corp_code"]), "corp_name": company["name"],
                 "stock_code": str(company.get("stock_code") or ""), "how": "config"}
     else:
-        found = match_corps(corps_loader(), company["name"], company.get("stock_code"))
+        # dart_names: OpenDART 기업 목록의 법인 이름이 화면 이름과 다를 때 (예: 화면 'KB국민은행', 법인 이름 '국민은행')
+        names = company.get("dart_names") or [company["name"]]
+        found, seen = [], set()
+        for nm in names:
+            for c in match_corps(corps_loader(), nm, company.get("stock_code")):
+                if c["corp_code"] not in seen:
+                    seen.add(c["corp_code"])
+                    found.append(c)
         how = "종목코드" if company.get("stock_code") else "정확히 같은 이름"
         if len(found) > 1:  # 이름이 같은 법인이 여럿: 필요한 보고서를 낸 법인만 남김
             keep = []

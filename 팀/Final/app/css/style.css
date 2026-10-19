@@ -372,3 +372,72 @@ a.issue { align-items: center; }
 a.issue .chevron { margin-left: auto; }
 a.answer-tag { text-decoration: underline; }
 a.question { color: inherit; }
+
+
+/* ---------- 13. Final v5: 회사 직접 선택 + AI 분석 개요 ---------- */
+.tech-strip {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px;
+}
+.tech-strip span {
+  display: inline-flex; align-items: center; min-height: 28px;
+  padding: 6px 10px; border-radius: 999px;
+  background: var(--chip); color: var(--body);
+  font-size: 11px; font-weight: 700; letter-spacing: 0.01em;
+  box-shadow: inset 0 0 0 1px var(--glass-line);
+}
+.hero-stats {
+  display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px;
+  margin-top: 14px;
+}
+.hero-stats > div {
+  display: flex; flex-direction: column; gap: 3px;
+  padding: 12px; border-radius: var(--radius-sm);
+  background: var(--surface); box-shadow: inset 0 0 0 1px var(--glass-line);
+}
+.hero-stats strong {
+  font-size: 20px; line-height: 1; color: var(--text); font-variant-numeric: tabular-nums;
+}
+.hero-stats span { font-size: 11px; line-height: 1.35; color: var(--sub); }
+
+.company-picker { display: flex; flex-direction: column; gap: 12px; }
+.picker-head {
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 12px;
+}
+.picker-help { margin: 4px 0 0; font-size: 12px; line-height: 1.5; color: var(--sub); }
+.analysis-ready {
+  flex: none; display: inline-flex; align-items: center; min-height: 28px;
+  padding: 6px 9px; border-radius: 999px;
+  background: var(--v-bg, rgba(30,200,140,.12)); color: var(--confirmed);
+  font-size: 11px; font-weight: 800;
+}
+.company-search { display: block; }
+.company-search input {
+  width: 100%; min-height: 48px; padding: 0 15px;
+  border: 1px solid var(--line); border-radius: var(--radius-md);
+  background: var(--surface); color: var(--text);
+  font: inherit; font-size: 14px; outline: none;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+}
+.company-search input::placeholder { color: var(--muted); }
+.company-search input:focus {
+  border-color: var(--confirmed);
+  box-shadow: 0 0 0 3px rgba(32, 201, 151, .13);
+}
+.company[hidden] { display: none !important; }
+.company-no-result {
+  display: flex; flex-direction: column; gap: 5px;
+  padding: 18px; border-radius: var(--radius-md);
+  background: var(--surface); box-shadow: inset 0 0 0 1px var(--glass-line);
+}
+.company-no-result[hidden] { display: none; }
+.company-no-result strong { font-size: 14px; color: var(--text); }
+.company-no-result span { font-size: 12px; line-height: 1.6; color: var(--sub); }
+
+@media (max-width: 480px) {
+  .hero-stats { grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+  .hero-stats > div { padding: 10px 8px; }
+  .hero-stats strong { font-size: 18px; }
+  .hero-stats span { font-size: 10px; }
+  .picker-head { align-items: flex-start; flex-direction: column; gap: 8px; }
+  .analysis-ready { align-self: flex-start; }
+}

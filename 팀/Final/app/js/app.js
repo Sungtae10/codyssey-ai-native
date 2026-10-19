@@ -163,12 +163,20 @@
         '<div class="company-reports">' + esc('약속: ' + reportTitles(reports.promise) + ' · 근거: ' + reportTitles(reports.evidence)) + '</div>' +
         (c.check_note ? '<div class="company-reports check-note">' + esc(c.check_note) + '</div>' : '') +
         '<div class="company-meta">' + esc(meta) + '</div></div>' + ICON.chevron;
+      var attrs = ' data-company-name="' + esc(c.name.toLowerCase()) + '" data-company-id="' + esc(c.id) + '"';
       return ready
-        ? '<a class="company" href="#/c/' + encodeURIComponent(c.id) + '">' + inner + '</a>'
-        : '<div class="company" aria-disabled="true">' + inner + '</div>';
+        ? '<a class="company"' + attrs + ' href="#/c/' + encodeURIComponent(c.id) + '">' + inner + '</a>'
+        : '<div class="company"' + attrs + ' aria-disabled="true">' + inner + '</div>';
     }).join('');
 
     var allReports = [];
+    var readyCompanies = (DATA.companies || []).filter(function (c) { return (c.promises || []).length > 0; });
+    var totalSpecific = readyCompanies.reduce(function (sum, c) { return sum + specifics(c).length; }, 0);
+    var verifiedCitations = readyCompanies.reduce(function (sum, c) {
+      return sum + (c.promises || []).reduce(function (s, p) {
+        return s + (p.evidence || []).filter(function (e) { return e.citation_verified === true; }).length;
+      }, 0);
+    }, 0);
     (DATA.companies || []).forEach(function (c) {
       var r = c.reports || {};
       (r.promise || []).concat(r.evidence || []).forEach(function (x) {
@@ -182,10 +190,29 @@
           '<p class="eyebrow">' + esc(L.service_subtitle) + ' · ' + esc(L.tagline) + '</p>' +
           '<h1 class="headline">면접 볼 회사의 AI 약속,<br><span class="hl">실제로 실행됐을까요?</span></h1>' +
           '<p class="lead">사업보고서 속 "하겠다"와 다음 해의 "했다"를 AI가 찾아 나란히 보여드려요.</p>' +
+          '<div class="tech-strip" aria-label="서비스 핵심 기술">' +
+            '<span>DART 공시</span><span>RAG 근거 검색</span><span>Citation 검증</span>' +
+          '</div>' +
+          '<div class="hero-stats" aria-label="현재 분석 범위">' +
+            '<div><strong>' + readyCompanies.length + '</strong><span>분석 기업</span></div>' +
+            '<div><strong>' + totalSpecific + '</strong><span>구체적 AI 약속</span></div>' +
+            '<div><strong>' + verifiedCitations + '</strong><span>원문 대조 근거</span></div>' +
+          '</div>' +
         '</section>' +
-        '<section style="display:flex;flex-direction:column;gap:10px">' +
-          '<h2 class="section-label">기업 고르기</h2>' +
-          '<div class="company-list">' + companies + '</div>' +
+        '<section class="company-picker">' +
+          '<div class="picker-head">' +
+            '<div><h2 class="section-label">분석할 회사 선택</h2><p class="picker-help">회사명을 직접 검색하거나 아래 기업을 선택하세요.</p></div>' +
+            '<span class="analysis-ready">' + readyCompanies.length + '개 기업 분석 가능</span>' +
+          '</div>' +
+          '<label class="company-search">' +
+            '<span class="sr-only">회사명 검색</span>' +
+            '<input id="company-search" type="search" autocomplete="off" placeholder="회사명을 검색하세요 (예: 삼성전자)" aria-controls="company-list">' +
+          '</label>' +
+          '<div class="company-list" id="company-list">' + companies + '</div>' +
+          '<div class="company-no-result" id="company-no-result" hidden>' +
+            '<strong>아직 분석 준비 전인 회사예요.</strong>' +
+            '<span>현재 분석 완료된 기업에서 선택해 주세요. 지원 기업은 계속 확대할 예정입니다.</span>' +
+          '</div>' +
         '</section>' +
         '<section class="card">' +
           '<h2 class="card-title" style="font-size:13px">이렇게 확인해요</h2>' +
@@ -436,6 +463,31 @@
 
     var themeBtn = document.getElementById('theme-btn');
     if (themeBtn) themeBtn.addEventListener('click', toggleTheme);
+    var searchInput = document.getElementById('company-search');
+    if (searchInput) {
+      var companyCards = Array.prototype.slice.call(document.querySelectorAll('#company-list .company'));
+      var noResult = document.getElementById('company-no-result');
+      function filterCompanies() {
+        var q = searchInput.value.trim().toLowerCase();
+        var visible = 0;
+        companyCards.forEach(function (card) {
+          var name = (card.getAttribute('data-company-name') || '').toLowerCase();
+          var show = !q || name.indexOf(q) !== -1;
+          card.hidden = !show;
+          if (show) visible += 1;
+        });
+        if (noResult) noResult.hidden = visible !== 0;
+      }
+      searchInput.addEventListener('input', filterCompanies);
+      searchInput.addEventListener('keydown', function (e) {
+        if (e.key !== 'Enter') return;
+        var first = companyCards.filter(function (card) { return !card.hidden && card.tagName === 'A'; })[0];
+        if (first) {
+          e.preventDefault();
+          location.hash = first.getAttribute('href');
+        }
+      });
+    }
     var copyBtn = document.getElementById('copy-btn');
     if (copyBtn && company) {
       copyBtn.addEventListener('click', function () {

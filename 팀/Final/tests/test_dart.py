@@ -111,6 +111,8 @@ FILINGS = [
     {"report_nm": "분기보고서 (2025.03)", "rcept_no": "20250515000009", "rcept_dt": "20250515"},
     {"report_nm": "반기보고서 (2025.06)", "rcept_no": "20250814000008", "rcept_dt": "20250814"},
     {"report_nm": "사업보고서 (2025.12)", "rcept_no": "20260312000004", "rcept_dt": "20260312"},
+    # 원문 파일이 아직 없는 최신 정정 (OpenDART 상태 014): 그 전 보고서로 넘어가야 함 (10/19 KB금융)
+    {"report_nm": "[기재정정]사업보고서 (2025.12)", "rcept_no": "20261001000099", "rcept_dt": "20261001"},
     {"report_nm": "반기보고서 (2026.06)", "rcept_no": "20260814000005", "rcept_dt": "20260814"},
 ]
 DOCS = {"20250402000002": Y2024, "20260312000004": Y2025, "20260814000005": H2026}
@@ -161,7 +163,9 @@ def main():
     check(dart.report_target("h2026") == ("반기보고서", "2026.06"), "h2026 → 반기보고서 (2026.06)")
     check(dart.report_target("x1") is None, "알 수 없는 키는 None")
     check(dart.pick_report(FILINGS, "y2024")["rcept_no"] == "20250402000002", "정정 보고서 중 본문 정정(가장 늦은 것)을 골라야 함")
-    check(dart.pick_report(FILINGS, "y2025")["rcept_no"] == "20260312000004", "2025 사업보고서")
+    check(dart.pick_report(FILINGS, "y2025")["rcept_no"] == "20261001000099", "2025 사업보고서: 가장 늦은 정정이 먼저")
+    check([f["rcept_no"] for f in dart.pick_reports(FILINGS, "y2024")] == ["20250402000002", "20250310000001", "20250520000003"],
+          "쓸 순서: 본문 정정(늦은 순) → 원본 → 첨부정정")
     check(dart.pick_report(FILINGS, "h2026")["rcept_no"] == "20260814000005", "2026 반기보고서")
     check(dart.pick_report(FILINGS[:3][2:], "y2024")["rcept_no"] == "20250520000003", "첨부정정만 있으면 그것이라도")
     check(dart.pick_report(FILINGS, "y2023") is None, "없는 보고서는 None")
@@ -222,6 +226,8 @@ def main():
         check(entry["corp_code"] == "00999999", f"고유번호: {entry['corp_code']}")
         check(all(reps[k]["found"] for k in ("y2024", "y2025", "h2026")), f"보고서 3개 모두 찾아야 함: {reps}")
         check(reps["y2024"]["url"] == "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250402000002", reps["y2024"].get("url"))
+        check(reps["y2025"]["rcept_no"] == "20260312000004" and any("원문 파일이 없어" in ln for ln in logs),
+              f"원문 파일이 없는 정정은 건너뛰고 그 전 보고서를 받아야 함: {reps['y2025'].get('rcept_no')}")
         check(reps["y2024"]["xml_member"] == "20250402000002.xml", "첨부가 아닌 본문 XML을 읽어야 함")
         check(reps["y2024"]["sections_found"] == {"I5": True, "II": True, "IV": True}, reps["y2024"]["sections_found"])
         check(reps["y2024"]["section_chars"]["II"] > 150 and reps["y2024"]["xml_tags"]["SECTION-1"] == 5,

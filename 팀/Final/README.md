@@ -74,6 +74,7 @@ python tests/test_config.py      # 엔진 설정: 핵심 2곳, 시연용 3곳, �
 python tests/test_mock.py        # 엔진·평가: 마지막 줄에 "시험 통과"
 python tests/test_ui_static.py   # 화면: app.js가 쓰는 class가 CSS에 모두 있는지 (브라우저 없이)
 python tests/ui_check.py         # 화면: 모든 화면(results.json이 있으면 그 화면, 없으면 예시 데이터 18개) x 다크/라이트의 글자 대비, 가로 넘침, 필수 부품 (Playwright 필요)
+python tests/check_citation_badges.py   # 화면: 약속 상세의 "원문 대조됨" 표시가 results.json의 citation_verified와 같은지 (Playwright 필요)
 ```
 
 네 검사는 Pull Request를 올리거나 main에 올릴 때 CI에서도 자동으로 돌아갑니다.
@@ -167,7 +168,7 @@ SK하이닉스 사람 정답은 10/19 김성태·김서원 공동 검토로 고�
 | 가장 도움 된 기능 | 이력서 맞춤 4명, 면접 카드 3명, 약속과 근거 비교 3명, 약속 목록 2명 | |
 | 개선 의견 | 6건 | 4건 반영(FB-01, FB-02, FB-04, FB-05), 2건 후속 과제(FB-06, FB-07). 설문 밖 후기 2건으로 FB-03을 더 반영하고 FB-04, FB-05가 반복 의견임을 확인 ([피드백 반영 로그](docs/feedback-log.md)) |
 
-설문 점수는 화면 구성과 근거 제시 방식에 대한 평가이고 AI 판정 정확도가 아닙니다. 고친 화면(PR #41)은 마지막 응답(23:58) 뒤에 합쳤고, 위 응답은 모두 고치기 전 화면을 본 응답입니다.
+설문 점수는 화면 구성과 근거 제시 방식에 대한 평가이고 AI 판정 정확도가 아닙니다. 고친 화면(PR #41)은 마지막 응답(23:58) 뒤에 합쳤고, 위 응답은 모두 고치기 전 화면을 본 응답입니다. 응답과 설문 밖 후기를 종합한 분석 보고서와 보고서의 개선 과제별 반영 현황은 [사용자 테스트 분석 보고서](docs/user-test-report.md)에 있습니다.
 
 | 결과 | 원자료 | 계산 |
 | --- | --- | --- |
@@ -194,6 +195,7 @@ SK하이닉스 사람 정답은 10/19 김성태·김서원 공동 검토로 고�
 - [빠른 사용자 테스트 (혼자 써 보기)](docs/user-test-quick.md)
 - [10분 비대면 사용자 테스트 (화면공유)](docs/user-test-protocol.md)
 - [사용자 피드백 반영 로그](docs/feedback-log.md)
+- [사용자 테스트 분석 보고서와 반영 현황](docs/user-test-report.md)
 - [최종 발표 구성안](docs/presentation-outline.md)
 - [3분 시연 대본](docs/demo-script-3min.md)
 - [예상 심사 질문과 답](docs/judge-qa.md)
@@ -236,7 +238,7 @@ SK하이닉스 사람 정답은 10/19 김성태·김서원 공동 검토로 고�
 
 ### 제출 링크
 - 서비스 URL: https://ai-promise-six.vercel.app (검증 시연 기업 2곳은 사람이 원문 대조, 확장 분석 기업 3곳은 AI 엔진 결과. 5장)
-- 서비스 URL 최종 검증: **제출 전 시크릿 창/모바일에서 직접 확인 필요**
+- 서비스 URL 최종 검증: 10/20 01:16 시크릿 창에서 첫 화면(PR #41 반영)과 DART 원문 링크 확인 (김성태). 휴대폰 폭 화면은 `tests/ui_check.py`가 390·320px로 검사
 - 사용자 테스트: **12명** (10/19 23:15~23:58, 9장)
 - 피드백 반영: 5건 (FB-01 사용 순서 안내, FB-02 약속과 근거에 함께 나오는 말 형광 표시, FB-03 "실행 시기 전" 표시, FB-04 이력서 분석 진행 표시, FB-05 용어 풀이, PR #41), [docs/feedback-log.md](docs/feedback-log.md)
 - 발표자료: [드라이브 폴더 `1020_발표자료_영상`](https://drive.google.com/drive/folders/10GobC-Tp1ROIlxsMdvtc1s90YzkIAMBo) (10/20에 올림. 폴더 주소는 파일을 올려도 바뀌지 않습니다)

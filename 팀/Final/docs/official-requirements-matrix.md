@@ -8,21 +8,21 @@
 | 타겟 사용자 | 취업·이직 준비자 | README, docs/requirements.md | 완료 |
 | 생성형 AI 핵심 기능 | 약속 추출, 판정, 면접 카드 생성, 내 경험 연결(이력서, 요청마다 생성) | engine/, docs/architecture.md, data/work/<기업>/llm_log.jsonl, app/api/resume-fit.js | 완료 |
 | 필수 기술요소 2개 이상 | RAG + 자동화 워크플로우(OpenDART 자동 수집 → 엔진 → 화면 데이터, GitHub Actions `Engine run`), Agent-style retry 보조 | engine/, docs/architecture.md, .github/workflows/engine-run.yml | 완료 |
-| 서비스 아키텍처 | 7단계 파이프라인 | docs/architecture.md | 완료 |
-| 기능/비기능 요구사항 | FR-01~FR-38(31개) / NFR-01~NFR-14 | docs/requirements.md | 완료 |
+| 서비스 아키텍처 | OpenDART 자동 수집 + 7단계 파이프라인, GitHub Actions, 화면 데이터 규칙, 내 경험 연결 서버 함수 | docs/architecture.md, docs/requirements.md 5장 | 완료 (10/20 최신화) |
+| 기능/비기능 요구사항 | FR-01~FR-39(32개) / NFR-01~NFR-14 | docs/requirements.md | 완료 |
 | GitHub 버전관리 | 브랜치/PR/CI/역할 기록 | Git history, CONTRIBUTING.md | 완료 |
 | 팀 역할 분담 | PM·AI·Frontend·Validation·UX | README 8장 | 완료 |
-| AI 윤리 | 비단정 표현, AI 고지, citation verification | docs/ai-ethics.md | 완료 |
+| AI 윤리 | 비단정 표현, AI 고지, 원문 존재 확인(citation verification)과 사람 원문 검토 구분 표시 | docs/ai-ethics.md, docs/architecture.md | 완료 |
 | 개인정보 보호 | 사용자 테스트 실명·연락처 비수집 | docs/ai-ethics.md, 설문 | 완료 |
-| 외부 배포 | 공개 URL https://ai-promise-six.vercel.app | README 14장 제출 링크 | 완료 (10/19 접속 확인). 지금 화면은 검증 시연 2곳(사람이 원문 대조, PR #19)과 확장 분석 3곳(AI 엔진 결과, 사람 검토 전, PR #39) |
-| 실제 사용자 5명+ | 같은 Google Form에 작은 과제를 더해 혼자 써 보는 방식으로 최소 5명 (여유가 있으면 6~10명) | docs/user-test-quick.md, README 9장 | 완료 (12명, 10/19 23:15~23:58) |
-| 사용자 피드백 반영 | 반복 피드백 1~2건 → commit/PR | docs/feedback-log.md, docs/user-test-report.md | 완료 (FB-01~FB-05, PR #41) |
-| README 결과 정리 | 배포 URL·사용자 수·피드백·결과 | README 9장, 14장 | 완료 (배포 URL, 사용자 수와 점수, 피드백 반영, 발표자료·영상 폴더 링크, SK하이닉스 시범 평가) |
-| 발표자료 | 문제→AI→데모→검증→피드백→한계 | docs/presentation-outline.md, 드라이브 `1020_발표자료_영상`(README 14장 링크) | 구성안 완료. 파일은 10/20에 올림 |
+| 외부 배포 | 공개 URL https://ai-promise-six.vercel.app | README 14장 제출 링크 | 완료 (10/19 접속 확인, 10/20 01:16 시크릿 창 재확인). 지금 화면은 검증 시연 2곳(사람 원문 검토 완료, PR #19)과 확장 분석 3곳(AI 엔진 결과, 사람 검토 전, PR #39) |
+| 실제 사용자 5명+ | 같은 Google Form에 작은 과제를 더해 혼자 써 보는 방식으로 최소 5명 (여유가 있으면 6~10명) | docs/user-test-quick.md, README 9장 | 완료 (설문 14명: 고치기 전 화면 12명 10/19 23:15~23:58, 고친 화면 배포 뒤 2명 10/20 02:17·02:25) |
+| 사용자 피드백 반영 | 반복 피드백 1~2건 → commit/PR | docs/feedback-log.md, docs/user-test-report.md | 완료 (FB-01~FB-05 PR #41, FB-08·FB-09 10/20 v2) |
+| README 결과 정리 | 배포 URL·사용자 수·피드백·결과 | README 9장, 14장 | 완료 (배포 URL, 사용자 수와 점수, 피드백 반영, 피드백 증빙 드라이브 폴더 링크, SK하이닉스 시범 평가) |
+| 발표자료 | 문제→AI→데모→검증→피드백→한계 | docs/presentation-outline.md, docs/demo-script-3min.md | 구성안 완료. 발표자료와 시연 영상은 10/20 제작 예정이라 저장소 동결(07:00) 뒤 드라이브 `1020_발표자료_영상`에 올림 |
 
 ## 제출 직전 반드시 채울 3개
 1. 공개 서비스 URL 최종 확인 (완료: 10/20 01:16 시크릿 창)
-2. 실제 사용자 수 및 설문 집계 (완료: 12명, README 9장)
-3. 실제 피드백 반영 commit/PR (완료: PR #41)
+2. 실제 사용자 수 및 설문 집계 (완료: 설문 14명, README 9장)
+3. 실제 피드백 반영 commit/PR (완료: PR #41, 10/20 v2)
 
 1번은 10/20 01:16 PR #41 배포 뒤 시크릿 창에서 다시 확인했습니다 (김성태). 휴대폰 폭 화면은 `tests/ui_check.py`가 390·320px로 검사합니다.

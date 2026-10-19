@@ -3,15 +3,17 @@
 ## 김성태: PM / AI Engine / Evaluation / Integration
 - 문제 정의와 서비스 범위 설계
 - 판정기준 v2 확정·동결
-- 공시 수집·약속 추출·검색·판정·citation verification pipeline
-- Human evaluation 설계
+- 공시 수집(OpenDART 자동 수집, GitHub Actions 엔진 실행)·약속 추출·검색·판정·원문 존재 확인(citation verification) pipeline
+- Human evaluation 설계, SK하이닉스 공동 판정(김서원과 함께, 엔진을 돌리기 전에 고정)
+- 내 경험 연결 서버 함수 (10/20 v2: 경험 → 지원 직무 → 회사 AI 약속)
 - GitHub repository/PR/CI 관리
 - Frontend 엔진 결과 연결
 - 최종 요구사항·증빙·배포 관리
 
 ## 김서원: Human Validation / Research / User Test
 - 삼성전자 연습 판정
-- SK하이닉스 약속 목록 및 독립 판정
+- SK하이닉스 약속 목록 정리와 1차 판정(10/17), 김성태와 공동 검토로 정답 고정(10/19, 엔진을 돌리기 전. 평가 정답은 한 사람의 독립 판정이 아니라 공동 검토 결과)
+- 사람 원문 검토: 삼성전자·SK하이닉스 판정을 DART 원문을 읽고 확인 (코드가 하는 원문 존재 확인과는 다른 일)
 - 판정기준 경계 사례 검토
 - 실제 사용자 테스트 진행
 - 반복 사용자 피드백 정리

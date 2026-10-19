@@ -951,3 +951,48 @@ a.search-item:active { transform: scale(0.985); }
   .fit-progress-bar span { animation: none; left: 0; width: 100%; opacity: 0.5; }
 }
 .fit-progress-time { flex: none; min-width: 52px; text-align: right; font-size: 12px; font-weight: 700; color: var(--body); font-variant-numeric: tabular-nums; }
+
+/* ---------- 19. v2 (10/20): 지원 직무 기준 이력서 연결, 분석 정보, 사람 원문 검토, 접어 둔 용어 칸 ---------- */
+.fit-select, .fit-input {
+  width: 100%; min-height: 44px; padding: 10px 12px;
+  border: 1px solid var(--line); border-radius: var(--radius-sm);
+  background: var(--bg); color: var(--text); font: inherit; font-size: 15px;
+}
+.fit-select:focus, .fit-input:focus { outline: none; border-color: var(--confirmed); box-shadow: 0 0 0 3px rgba(32, 201, 151, .13); }
+.fit-input[hidden] { display: none; }
+.fit-summary { gap: 8px; }
+.fit-havegap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; }
+@media (max-width: 360px) { .fit-havegap { grid-template-columns: minmax(0, 1fr); } }
+.fit-col { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.fit-chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.fit-chip { font-size: 12px; font-weight: 700; line-height: 1.4; padding: 3px 9px; border-radius: 999px; color: var(--text); overflow-wrap: anywhere; }
+.fit-chip.is-have { background: var(--confirmed-bg); box-shadow: inset 0 0 0 1px var(--confirmed-line); }
+.fit-chip.is-missing { background: var(--partial-bg); box-shadow: inset 0 0 0 1px var(--partial-line); }
+.fit-competency { margin: 0; font-size: 14px; font-weight: 800; color: var(--text); }
+.fit-k { display: inline-block; margin-right: 6px; font-size: 11px; font-weight: 800; color: var(--sub); }
+.fit-limit { margin: 0; padding: 8px 10px; border-radius: var(--radius-sm); background: var(--chip); font-size: 13px; line-height: 1.6; color: var(--body); }
+.fit-limit strong { margin-right: 6px; font-weight: 800; color: var(--text); }
+.fit-prep-title { margin: 2px 0 0; font-size: 12px; font-weight: 800; color: var(--sub); }
+.fit-prep { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 2px; font-size: 13px; line-height: 1.6; color: var(--body); }
+.review-line { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 4px 18px 0; font-size: 12px; }
+.review-k { font-weight: 800; color: var(--text); }
+.review-v { padding: 2px 8px; border-radius: 999px; font-weight: 700; line-height: 1.5; color: var(--text); background: var(--chip); }
+.review-v.is-done { background: var(--confirmed-bg); box-shadow: inset 0 0 0 1px var(--confirmed-line); }
+.review-v.is-todo { color: var(--body); box-shadow: inset 0 0 0 1px var(--line); }
+.provenance { gap: 0; }
+.provenance > summary { list-style: none; cursor: pointer; display: flex; flex-direction: column; gap: 3px; }
+.provenance > summary::-webkit-details-marker { display: none; }
+.provenance > summary span { font-size: 13px; font-weight: 800; color: var(--text); }
+.provenance > summary small { font-size: 12px; line-height: 1.5; color: var(--sub); }
+.provenance[open] > summary { margin-bottom: 10px; }
+.prov-list { margin: 0; display: flex; flex-direction: column; gap: 8px; }
+.prov-list div { display: grid; grid-template-columns: 104px minmax(0, 1fr); gap: 8px; }
+.prov-list dt { font-size: 12px; font-weight: 700; line-height: 1.55; color: var(--sub); }
+.prov-list dd { margin: 0; font-size: 13px; line-height: 1.55; color: var(--body); overflow-wrap: anywhere; }
+.prov-list a { color: var(--text); text-decoration: underline; text-underline-offset: 2px; }
+.glossary-card { gap: 0; }
+.glossary-card > summary { list-style: none; cursor: pointer; display: flex; flex-direction: column; gap: 3px; }
+.glossary-card > summary::-webkit-details-marker { display: none; }
+.glossary-card > summary span { font-size: 13px; font-weight: 800; color: var(--text); }
+.glossary-card > summary small { font-size: 12px; line-height: 1.5; color: var(--sub); }
+.glossary-card[open] > summary { margin-bottom: 10px; }

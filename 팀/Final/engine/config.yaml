@@ -64,7 +64,7 @@ candidates:
   kakao:
     name: 카카오
     stock_code: "035720"
-    check_note: "AI 엔진 결과예요(사람 검토 전). 근거 문장은 코드가 원문과 글자 그대로 대조했고, 사람 정답과 비교한 정확도는 없어요."
+    check_note: "AI 엔진 결과예요(사람 원문 검토 전). 근거 문장이 원문에 글자 그대로 있는지는 코드가 확인했고(원문 존재 확인), 사람 정답과 비교한 정확도는 없어요."
     promise_reports:
       - {key: y2024, title: "2024 사업보고서", pdf: kakao_2024.pdf, url: ""}
     evidence_reports:
@@ -72,7 +72,7 @@ candidates:
       - {key: h2026, title: "2026 반기보고서", pdf: kakao_2026h1.pdf, url: ""}
   shinhanbank:
     name: 신한은행   # 비상장 법인(신한지주 055550과 다른 법인). 자동 수집은 이름이 정확히 '신한은행'인 법인만 씁니다
-    check_note: "AI 엔진 결과예요(사람 검토 전). 근거 문장은 코드가 원문과 글자 그대로 대조했고, 사람 정답과 비교한 정확도는 없어요."
+    check_note: "AI 엔진 결과예요(사람 원문 검토 전). 근거 문장이 원문에 글자 그대로 있는지는 코드가 확인했고(원문 존재 확인), 사람 정답과 비교한 정확도는 없어요."
     promise_reports:
       - {key: y2024, title: "2024 사업보고서", pdf: shinhan_2024.pdf, url: ""}
     evidence_reports:
@@ -81,7 +81,7 @@ candidates:
   naver:
     name: NAVER
     stock_code: "035420"
-    check_note: "AI 엔진 결과예요(사람 검토 전). 근거 문장은 코드가 원문과 글자 그대로 대조했고, 사람 정답과 비교한 정확도는 없어요."
+    check_note: "AI 엔진 결과예요(사람 원문 검토 전). 근거 문장이 원문에 글자 그대로 있는지는 코드가 확인했고(원문 존재 확인), 사람 정답과 비교한 정확도는 없어요."
     promise_reports:
       - {key: y2024, title: "2024 사업보고서", pdf: naver_2024.pdf, url: ""}
     evidence_reports:
@@ -94,7 +94,7 @@ candidates:
   kbbank:
     name: KB국민은행
     dart_names: [국민은행, KB국민은행]
-    check_note: "AI 엔진 결과예요(사람 검토 전). 근거 문장은 코드가 원문과 글자 그대로 대조했고, 사람 정답과 비교한 정확도는 없어요."
+    check_note: "AI 엔진 결과예요(사람 원문 검토 전). 근거 문장이 원문에 글자 그대로 있는지는 코드가 확인했고(원문 존재 확인), 사람 정답과 비교한 정확도는 없어요."
     promise_reports:
       - {key: y2024, title: "2024 사업보고서", pdf: kbbank_2024.pdf, url: ""}
     evidence_reports:
@@ -103,7 +103,7 @@ candidates:
   wooribank:
     name: 우리은행
     dart_names: [우리은행]
-    check_note: "AI 엔진 결과예요(사람 검토 전). 근거 문장은 코드가 원문과 글자 그대로 대조했고, 사람 정답과 비교한 정확도는 없어요."
+    check_note: "AI 엔진 결과예요(사람 원문 검토 전). 근거 문장이 원문에 글자 그대로 있는지는 코드가 확인했고(원문 존재 확인), 사람 정답과 비교한 정확도는 없어요."
     promise_reports:
       - {key: y2024, title: "2024 사업보고서", pdf: wooribank_2024.pdf, url: ""}
     evidence_reports:
@@ -112,7 +112,7 @@ candidates:
   hanabank:
     name: 하나은행
     dart_names: [하나은행]
-    check_note: "AI 엔진 결과예요(사람 검토 전). 근거 문장은 코드가 원문과 글자 그대로 대조했고, 사람 정답과 비교한 정확도는 없어요."
+    check_note: "AI 엔진 결과예요(사람 원문 검토 전). 근거 문장이 원문에 글자 그대로 있는지는 코드가 확인했고(원문 존재 확인), 사람 정답과 비교한 정확도는 없어요."
     promise_reports:
       - {key: y2024, title: "2024 사업보고서", pdf: hanabank_2024.pdf, url: ""}
     evidence_reports:
@@ -124,7 +124,7 @@ candidates:
   hyundai:
     name: 현대자동차
     stock_code: "005380"
-    check_note: "AI 엔진 결과예요(사람 검토 전). 근거 문장은 코드가 원문과 글자 그대로 대조했고, 사람 정답과 비교한 정확도는 없어요."
+    check_note: "AI 엔진 결과예요(사람 원문 검토 전). 근거 문장이 원문에 글자 그대로 있는지는 코드가 확인했고(원문 존재 확인), 사람 정답과 비교한 정확도는 없어요."
     promise_reports:
       - {key: y2024, title: "2024 사업보고서", pdf: hyundai_2024.pdf, url: ""}
     evidence_reports:
@@ -133,7 +133,7 @@ candidates:
   skt:
     name: SK텔레콤
     stock_code: "017670"
-    check_note: "AI 엔진 결과예요(사람 검토 전). 근거 문장은 코드가 원문과 글자 그대로 대조했고, 사람 정답과 비교한 정확도는 없어요."
+    check_note: "AI 엔진 결과예요(사람 원문 검토 전). 근거 문장이 원문에 글자 그대로 있는지는 코드가 확인했고(원문 존재 확인), 사람 정답과 비교한 정확도는 없어요."
     promise_reports:
       - {key: y2024, title: "2024 사업보고서", pdf: skt_2024.pdf, url: ""}
     evidence_reports:
@@ -142,7 +142,7 @@ candidates:
   kbfg:
     name: KB금융
     stock_code: "105560"
-    check_note: "AI 엔진 결과예요(사람 검토 전). 근거 문장은 코드가 원문과 글자 그대로 대조했고, 사람 정답과 비교한 정확도는 없어요."
+    check_note: "AI 엔진 결과예요(사람 원문 검토 전). 근거 문장이 원문에 글자 그대로 있는지는 코드가 확인했고(원문 존재 확인), 사람 정답과 비교한 정확도는 없어요."
     promise_reports:
       - {key: y2024, title: "2024 사업보고서", pdf: kbfg_2024.pdf, url: ""}
     evidence_reports:
@@ -153,7 +153,7 @@ candidates:
   shinhanfg:
     name: 신한지주
     stock_code: "055550"
-    check_note: "AI 엔진 결과예요(사람 검토 전). 근거 문장은 코드가 원문과 글자 그대로 대조했고, 사람 정답과 비교한 정확도는 없어요."
+    check_note: "AI 엔진 결과예요(사람 원문 검토 전). 근거 문장이 원문에 글자 그대로 있는지는 코드가 확인했고(원문 존재 확인), 사람 정답과 비교한 정확도는 없어요."
     promise_reports:
       - {key: y2024, title: "2024 사업보고서", pdf: shinhanfg_2024.pdf, url: ""}
     evidence_reports:
@@ -162,7 +162,7 @@ candidates:
   kakaobank:
     name: 카카오뱅크
     stock_code: "323410"
-    check_note: "AI 엔진 결과예요(사람 검토 전). 근거 문장은 코드가 원문과 글자 그대로 대조했고, 사람 정답과 비교한 정확도는 없어요."
+    check_note: "AI 엔진 결과예요(사람 원문 검토 전). 근거 문장이 원문에 글자 그대로 있는지는 코드가 확인했고(원문 존재 확인), 사람 정답과 비교한 정확도는 없어요."
     promise_reports:
       - {key: y2024, title: "2024 사업보고서", pdf: kakaobank_2024.pdf, url: ""}
     evidence_reports:

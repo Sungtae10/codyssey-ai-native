@@ -24,7 +24,7 @@ python run.py check --file ../data/results/ai_promise_data.json
 # 사용자 테스트가 끝나고 SK하이닉스 합의 뒤에만: python run.py export --companies samsung skhynix --copy-to ../app/data/results.json
 ```
 
-`results.json`이 없으면 화면은 예시 데이터로 fallback합니다. 최종 심사용 URL에서는 반드시 화면 상단에 '예시 데이터' 띠가 없는지 확인합니다.
+운영 사이트에서 `results.json`을 못 읽으면 화면은 예시 데이터로 바꾸지 않고 "분석 데이터를 불러오지 못했어요" 안내를 띄웁니다(10/20). 예시 데이터는 이 컴퓨터에서 열 때(파일 더블클릭, localhost, 127.0.0.1)나 주소에 `?sample=1`이 있을 때만 씁니다. 최종 심사용 URL에서는 화면 상단에 '예시 데이터' 띠가 없고 검토 상태 안내 띠가 나오는지 확인합니다.
 
 ## 배포 QA
 - [ ] 기업 선택

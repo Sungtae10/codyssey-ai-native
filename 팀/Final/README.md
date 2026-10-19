@@ -4,8 +4,8 @@
 
 - 서비스 주소: https://ai-promise-six.vercel.app (Vercel, `app/` 폴더. main에 올리면 자동으로 다시 배포됩니다)
 - 사용자: 취업·이직 준비자 (면접 전 5분 안에 지원 회사의 AI 계획과 실행을 공시 원문으로 확인)
-- 핵심 기업: 삼성전자(개발·시연용), SK하이닉스(평가용)
-- 시연용 기업: 카카오, 신한은행, NAVER. 핵심 2곳(삼성전자·SK하이닉스)과 사용자 5명 테스트를 먼저 끝내고, 시간이 남을 때만 화면에 올립니다. 시연용으로 표시하고 Human blind evaluation 수치에는 넣지 않습니다.
+- 검증 시연 기업 (사람이 공시 원문 대조): 삼성전자(개발용), SK하이닉스(평가용)
+- 확장 분석 기업 (AI 엔진 결과, 사람 검토 전): 카카오, 현대자동차, 신한지주. 10/19 OpenDART 자동 수집으로 후보 11곳을 돌려 미리 정한 기준(구체적 AI 약속 3개 이상)을 넘은 기업만 넣었습니다. 신한은행·NAVER 등 기준 미달 기업과 이유는 [시연용 기업 계획](docs/company-expansion-plan.md)에 있습니다. 평가 수치에는 넣지 않습니다.
 - 약속을 찾는 보고서: 2024 사업보고서 / 근거를 찾는 보고서: 2025 사업보고서, 2026 반기보고서
 
 ## 1. 핵심 AI 활용
@@ -15,7 +15,7 @@
 | 기술 요소 | AI Promise에서 하는 일 | 코드 |
 | --- | --- | --- |
 | RAG (주) | 후속 보고서에서 키워드 검색(BM25)과 의미 검색(OpenAI 임베딩 + ChromaDB)으로 근거 후보를 찾고, 그 후보 문장만 근거로 LLM이 판정합니다 | `engine/aipromise/retrieve.py`, `engine/aipromise/judge.py` |
-| 자동화 워크플로우 (주) | `run.py all` 한 번으로 7단계(수집, 약속 추출, 분류, 근거 검색, 판정, 인용 검사, 면접 카드)가 차례로 돌고, 결과 파일을 내보내 main에 올리면 GitHub Actions 검사와 Vercel 배포가 자동으로 이어집니다 | `engine/run.py`, `.github/workflows/ci.yml` |
+| 자동화 워크플로우 (주) | 기업 이름만 주면 OpenDART에서 보고서 3개를 찾아 받고(10/19), 7단계(수집, 약속 추출, 분류, 근거 검색, 판정, 인용 검사, 면접 카드)와 결과 파일, 사람 정답 비교까지 차례로 돕니다. GitHub Actions `Engine run`이 기업마다 병렬로 돌려 결과 브랜치에 남기고, 화면에 합쳐 main에 올리면 CI 검사와 Vercel 배포가 이어집니다 | `engine/analyze_companies.py`, `engine/aipromise/dart.py`, `.github/workflows/engine-run.yml`, `.github/workflows/ci.yml` |
 | AI Agent (보조: 제한적 재검색) | 근거를 못 찾으면 AI가 새 검색어를 정하고, 코드가 그 검색어로 다시 검색합니다. 근거를 찾거나, 처음 검색을 포함해 3번이 되거나, 더 쓸 검색어가 없으면 멈추고, 검색 기록을 남깁니다. 완전 자율 Agent라고 부르지 않습니다 | `engine/aipromise/judge.py` |
 
 AI가 고른 근거는 원문에 그대로 있는지 코드로 다시 검사합니다(인용 검사). 통과하지 못한 근거는 빼고, 근거가 필요한 판정인데 통과한 근거가 하나도 없으면 "공시에서 확인 불가"로 낮춥니다.
@@ -28,7 +28,7 @@ AI가 고른 근거는 원문에 그대로 있는지 코드로 다시 검사합�
 | LLM | OpenAI: 약속 추출 gpt-6-luna, 판정·면접 카드 gpt-6.1-sol, "일부 확인" 판정만 gpt-6-astra로 두 번째 판정 (10/19 올림, 처음 구성은 gpt-4o-mini) | 작업마다 모델을 나눴습니다. 약속 추출은 구조화 작업이라 가벼운 모델, 판정은 약속과 근거의 차이를 보는 핵심 단계라 더 강한 모델을 씁니다. 상위 모델은 경계가 애매한 판정에만 써서 비용을 줄입니다. 설정한 모델을 부를 수 없으면 gpt-4o-mini로 바꿔 계속하고, 실제로 답한 모델을 결과 파일(`models_used`, `judge_model_used`)과 기록에 남깁니다. 모델을 바꾼 효과는 엔진 결과를 같은 사람 정답과 비교해서만 말합니다 |
 | AI 연결 | LangChain (langchain-openai, langchain-chroma) | DART-Foresight AI의 검색 구성을 출처를 밝히고 다시 씁니다 |
 | 근거 검색 | BM25(직접 구현) + text-embedding-3-large(10/19 올림, 처음은 small) + ChromaDB, RRF로 순위 합치기 | DART-Foresight AI 평가에서 의미 검색만으로는 Hit@4가 14/20으로 약했습니다(`engine/README.md` 9장). 제품명, 공장명처럼 글자가 같은 문장을 잘 찾는 키워드 검색을 더했습니다 |
-| PDF 읽기 | pypdf | DART에서 받은 정기보고서 PDF를 장별 문장으로 나눕니다 |
+| 공시 수집 | OpenDART API (기업 고유번호, 정기공시 목록, 공시서류 원본) + pypdf | 10/19부터 OpenDART에서 보고서 원본(XML)을 자동으로 받아 글로 바꿉니다. 사람이 PDF를 받던 방법(pypdf)도 그대로 씁니다. 인증키는 GitHub Secrets와 `engine/.env`에만 둡니다 |
 | 화면 | HTML, CSS, JavaScript (빌드 없음) | 화면 담당이 React·Streamlit 경험이 없고 AI 도구로 Vercel에 배포해 본 경험이 있어 가장 단순한 정적 웹을 골랐습니다. 화면은 결과 파일 하나만 읽어 엔진과 따로 만들 수 있습니다 |
 | 배포 | Vercel (Root Directory: `app`) | 빌드 없이 `app/` 폴더를 바로 배포하고, main에 올리면 자동으로 다시 배포됩니다. 저장소와 배포를 김성태 계정 하나로 모았습니다 (10/8 결정) |
 | 서버 함수 | Vercel Node.js 함수 `app/api/resume-fit.js` (내 경험 연결) | 화면은 그대로 정적 파일이고, 이력서 분석만 서버에서 OpenAI를 부릅니다. 키는 Vercel 환경 변수 `OPENAI_API_KEY`에만 둡니다 |
@@ -57,14 +57,15 @@ cd engine
 pip install -r requirements.txt
 cp .env.example .env        # .env에 OPENAI_API_KEY를 적습니다. 이 파일은 저장소에 올리지 않습니다
 python run.py doctor --company samsung     # 설치, 키, PDF 점검 (판정 모델·임베딩 모델을 1번씩 실제 호출)
-python run.py all --company samsung        # 1~7단계 실행 (시연용 기업은 kakao, shinhanbank, naver)
+python run.py all --company samsung        # 1~7단계 실행 (PDF 또는 자동 수집 글)
+python analyze_companies.py kakao hyundai shinhanfg  # OpenDART 자동 수집부터 결과 파일까지 한 번에 (.env에 OPENDART_API_KEY 필요)
 python run.py export --companies samsung   # 결과는 data/results/ai_promise_data.json 에만 저장
 python run.py check --file ../data/results/ai_promise_data.json
-# 시연용 3곳을 화면에 더할 때 (삼성·SK 사람 대조 데이터는 그대로 둠):
-#   python merge_screen.py --engine ../data/results/ai_promise_data.json --companies kakao shinhanbank naver --write
+# 확장 분석 기업을 화면에 더할 때 (삼성·SK 사람 대조 데이터는 그대로 둠):
+#   python merge_screen.py --engine ../data/results/ai_promise_data.json --companies kakao hyundai shinhanfg --write
 ```
 
-사용자 테스트 중에는 `--copy-to`를 붙이지 않습니다. 붙이면 지금 화면의 검증용 시연 데이터(`app/data/results.json`)를 덮어씁니다. SK하이닉스(`skhynix`)는 평가용이라 사람 정답 합의가 끝난 뒤에 `export` 목록에 넣고, 시연용 3곳(`kakao shinhanbank naver`)은 핵심 2곳과 사용자 테스트가 끝난 뒤 시간이 남으면 넣습니다. PDF는 `data/pdf/`에 둡니다 (핵심 2곳 6개, 시연용 3곳 9개. 저장소에 올리지 않습니다).
+사용자 테스트 중에는 `--copy-to`를 붙이지 않습니다. 붙이면 지금 화면의 검증용 시연 데이터(`app/data/results.json`)를 덮어씁니다. SK하이닉스(`skhynix`)는 평가용이라 화면 데이터에 엔진 결과를 넣지 않고 사람 정답과 비교만 합니다. PDF는 `data/pdf/`, 자동 수집 글은 `data/dart/`에 둡니다 (둘 다 저장소에 올리지 않고, 접수번호와 원문 주소는 `data/dart/manifest.json`에 남깁니다). GitHub에서 돌릴 때는 Actions > `Engine run` > Run workflow에 기업 목록(예: `["kakao","hyundai"]`)을 넣습니다.
 
 **코드 점검** (키 없이 가상 회사로 시험)
 
@@ -93,9 +94,10 @@ python tests/ui_check.py         # 화면: 모든 화면(results.json이 있으�
 - `app/index.html`은 `app/data/results.json`을 먼저 읽고, 없으면 `app/data/sample-data.js`(가상 회사 2곳 예시 데이터)를 보여줍니다. 결과 파일의 `meta.is_sample`이 true이면 화면 맨 위에 안내 띠(`meta.notice`)가 나옵니다.
 - 모든 화면에 안내 문구 2개가 항상 보입니다. 엔진 결과일 때는 "공시 범위 안에서 확인한 결과입니다.", "AI가 생성한 분석입니다."이고, 지금의 검증용 시연 데이터에서는 두 번째 문구가 "AI 기반 서비스의 검증용 시연 데이터이며 사람이 공시 원문을 대조했습니다."입니다 (결과 파일의 `labels.disclaimers`).
 - 화면 고치는 규칙은 `app/README.md`에 있습니다. 디자인 변경은 CSS에서 합니다.
-- 첫 화면(10/19, Final v5에 사실 맞춤): 회사 검색이 중심입니다. 검색 결과는 분석 완료(결과 열기), 분석 준비 중(카카오, 신한은행, NAVER), 상장 기업이지만 아직 분석 전, 세 가지로 보여줍니다. 상장 기업 목록(`app/data/listed-companies.json`)은 한국거래소 상장 종목 보통주 2,753곳(2026-10-15 기준)으로, 공개 저장소 FinanceData/marcap의 2026년 파일에서 뽑았습니다. 목록에 있다고 분석했다는 뜻은 아닙니다.
-- 아무 회사나 바로 분석하는 기능(실시간 분석)은 아직 없습니다. 새 기업은 사업보고서 3개(약속 1, 근거 2)를 엔진에 넣어 돌립니다. 확장 설계는 `docs/architecture.md`에 있습니다.
-- 내 경험 연결(10/19, `#/c/<기업>/fit`): 면접 카드 아래 입구에서 이력서 내용을 넣으면 이 회사 AI 약속과 이어지는 경험(강하게 연결, 관련 있음), 보완할 점, 면접 포인트, 역질문을 AI가 만듭니다. 근거 검사(약속 번호가 결과 파일에 있는지, 이력서 인용이 보낸 글에 그대로 있는지)를 통과한 항목만 보여주고, 점수나 합격 가능성은 만들지 않습니다. 이력서는 저장하지 않습니다.
+- 첫 화면(10/19 최종): "기업의 AI 약속, 실행됐는지 공시로 검증합니다" 문구와 신뢰 장치 4개(OpenDART 정기공시 기반, 원문 인용 검사, AI 판정 + 재검토, 면접 활용 인사이트), 회사 검색, 숫자 4개(검색 가능한 상장사, 분석 기업, 구체적 AI 약속, 원문 대조를 통과한 근거), 기업 묶음 2개(검증 시연 기업: 삼성전자·SK하이닉스, 사람이 원문 대조 / 확장 분석 기업: 카카오·현대자동차·신한지주, AI 엔진 · 사람 검토 전), 검증 방식 4단계와 SK하이닉스 시범 평가 한 줄입니다. 숫자는 모두 데이터에서 셉니다.
+- 검색 결과는 분석 완료(결과 열기), 분석 준비 중, 상장 기업이지만 아직 분석 전, 세 가지로 보여줍니다. 상장 기업 목록(`app/data/listed-companies.json`)은 한국거래소 상장 종목 보통주 2,753곳(2026-10-15 기준)으로, 공개 저장소 FinanceData/marcap의 2026년 파일에서 뽑았습니다. 목록에 있다고 분석했다는 뜻은 아닙니다.
+- 웹에서 아무 회사나 바로 분석하는 기능(실시간 분석)은 없습니다. 새 기업은 엔진이 OpenDART에서 보고서 3개(약속 1, 근거 2)를 자동으로 받아 분석하고, 기준을 넘으면 화면에 올립니다. 확장 설계는 `docs/architecture.md`에 있습니다.
+- 내 경험 연결(10/19, `#/c/<기업>/fit`): 기업 화면(약속 목록)과 면접 카드 아래 입구에서 이력서 내용을 넣으면 이 회사 AI 약속과 이어지는 경험(강하게 연결, 관련 있음), 보완할 점, 면접 포인트, 역질문을 AI가 만듭니다. 근거 검사(약속 번호가 결과 파일에 있는지, 이력서 인용이 보낸 글에 그대로 있는지)를 통과한 항목만 보여주고, 점수나 합격 가능성은 만들지 않습니다. 이력서는 저장하지 않습니다.
 - 약속 상세는 약속 → 근거 → 판정 시간축과 "확인 4단계"(단계마다 누가 했는지), 면접 카드는 공시에서 확인할 핵심 이슈, 면접에서 활용할 소재, 회사에 물어볼 역질문입니다. 화면 문구는 한국어로 쓰고, 링크는 http(s) 주소만 만듭니다.
 
 ### Final Sprint 데이터 모드 (10/19, PR #19)
@@ -136,17 +138,31 @@ SK하이닉스 사람 정답은 10/19 김성태·김서원 공동 검토로 고�
 
 ## 9. 결과
 
-사용자 테스트와 SK하이닉스 정답 평가가 끝나면 이 장을 채웁니다. 숫자는 실제로 잰 값만 씁니다.
+숫자는 실제로 잰 값만 씁니다. 사용자 테스트는 응답이 모이면 채웁니다.
+
+**AI 판정 시범 평가 (SK하이닉스, n=3)**: 사람 정답(김성태·김서원 공동 검토, 엔진 실행 전 고정)과 최종 엔진을 같은 입력으로 3번 돌린 판정을 비교했습니다. 자세한 표와 엔진 버전별 기록은 [eval/results/skhynix_runs.md](eval/results/skhynix_runs.md)에 있습니다.
+
+| 지표 | 결과 | 비고 |
+| --- | --- | --- |
+| 판정 일치 | 3건 중 2, 3, 2건 (9번 중 7번, 78%) | 건수가 적어 정확도로 주장하지 않음 |
+| 다른 판정 | 매번 QLC 61TB 1건 | AI는 2025 사업보고서 PS1012 문장을 근거로 근거 확인(2번)·일부 확인(1번), 사람은 일부 확인. 정답 재검토 후보 (정답은 바꾸지 않음) |
+| 인용 원문 일치 | 100% (3번 모두) | AI가 고른 근거 문장이 원문에 글자 그대로 있음 |
+| 근거 없는 실행 판정 | 0건 | |
+| 약속 찾기 | 사람 약속 4/4 | AI 관련 말이 없는 1문장은 판정기준 v2로 뺌 |
+
+**자동화 워크플로우 실행 기록 (10/19)**: OpenDART 자동 수집 → 엔진 → 결과 파일을 GitHub Actions로 기업마다 병렬 실행했습니다(엔진 실행은 기업당 1~3분). 후보 11곳 중 기준(구체적 약속 3개 이상)을 넘은 카카오, 현대자동차, 신한지주를 화면에 넣었습니다 (SK텔레콤도 넘었지만 예비) ([선별 기록](docs/company-expansion-plan.md)). 실행 중 찾은 수집 오류 3가지(그림 태그를 지우다 본문 삭제, 정정 보고서의 정정표를 장 제목으로 잡음, 최신 정정본 원문 파일 없음)를 고치고 시험(`tests/test_dart.py`)에 넣었습니다.
+
+**내 경험 연결 실배포 점검 (10/19 22:05)**: GitHub Actions `Resume fit smoke test`가 배포된 `/api/resume-fit`을 지어낸 가상 이력서로 불렀습니다. 응답 200, 27.0초, 실제로 답한 모델 gpt-6.1-sol(대체 모델 아님), 연결 3, 보완점 2, 면접 포인트 3, 질문 2, 근거 검사에서 빠진 항목 0개.
 
 | 결과 | 원자료 | 계산 |
 | --- | --- | --- |
-| AI 판정 평가 (사람 합의 정답 대비 정확도, macro-F1, 혼동표, 따로 매긴 판정이 있을 때 사람 간 kappa) | `eval/gold/`(사람 정답), `data/work/<기업>/judged.json`(엔진 판정) | `python eval/evaluate.py` |
-| 사용자 테스트 (응답 수, 설문 점수 평균, 작은 과제를 4분 안에 해낸 비율) | 설문 응답 시트 (이름·연락처 없음). 화면공유 테스트를 했으면 `eval/user_test/results.csv` (번호만) | 응답 시트 집계. 화면공유 테스트는 `python eval/user_test/analyze.py eval/user_test/results.csv` |
+| AI 판정 평가 | `eval/gold/skhynix_합의.csv`(사람 정답), 결과 브랜치의 `data/work/skhynix/judged.json` | `python eval/evaluate.py --companies skhynix` (Actions `Engine run`이 자동 실행) |
+| 사용자 테스트 (응답 수, 핵심 과업 완료율, 이해도·신뢰도·활용 의향 평균, 이력서 기능 사용 수) | 설문 응답 시트 `1019_AI_Promise_사용자테스트_설문응답_최종` (이름·연락처 없음) | 시트 `요약` 탭 (자동 계산) |
 | 피드백 반영 (의견, 원인, 조치, 커밋, 재확인) | [사용자 피드백 반영 로그](docs/feedback-log.md) | 테스트가 끝난 뒤 작성 |
 
 ## 10. AI 사용
 
-엔진 코드의 첫 버전, 화면의 엔진 결과 연결 수정, 디자인 시안 반영과 접근성 보정, 화면 자동 검사, 기능 요구 명세서와 진행 기록의 초안은 AI 도구(Claude)로 작성했습니다. 문서, CI, 평가 코드 일부(PR #1, #2)와 판정기준 v2 동결 및 엔진 검색어·지시문 동기화(PR #13)는 ChatGPT가 Pull Request로 올렸습니다. 실행, 점검, 수정은 김성태가 합니다. 엔진의 모든 LLM 호출 기록은 실행할 때 `data/work/<기업>/llm_log.jsonl`에 남습니다.
+엔진 코드의 첫 버전, 화면의 엔진 결과 연결 수정, 디자인 시안 반영과 접근성 보정, 화면 자동 검사, 기능 요구 명세서와 진행 기록의 초안은 AI 도구(Claude)로 작성했습니다. 문서, CI, 평가 코드 일부(PR #1, #2)와 판정기준 v2 동결 및 엔진 검색어·지시문 동기화(PR #13)는 ChatGPT가 Pull Request로 올렸습니다. 10/19 OpenDART 자동 수집과 자동 실행 워크플로(PR #35, #37), 화면 최종 수정은 Claude(Claude Code)로 작성했고, 면접 카드 디자인 수정은 서준용 시안을 박수민이 반영했습니다(PR #36). 실행, 점검, 수정은 김성태가 합니다. 엔진의 모든 LLM 호출 기록은 실행할 때 `data/work/<기업>/llm_log.jsonl`에 남습니다 (화면에 넣은 카카오, 현대자동차, 신한지주 기록은 저장소에 있음).
 
 ## 11. 프로젝트 문서
 
@@ -197,13 +213,14 @@ SK하이닉스 사람 정답은 10/19 김성태·김서원 공동 검토로 고�
 **AI Promise는 공시 요약기가 아니라 ‘기업의 AI 약속 ↔ 후속 실행 근거’를 연결하는 조사 서비스입니다.**
 
 1. **공식 데이터**: DART 정기공시를 근거로 사용
-2. **AI Native 구조**: LLM 약속 추출 + RAG 검색 + 제한적 재검색 + 판정 + citation verification + 면접 카드
+2. **AI Native 구조**: OpenDART 자동 수집 + LLM 약속 추출 + RAG 검색 + 제한적 재검색 + 판정(경계 판정은 상위 모델이 재검토) + citation verification + 면접 카드 + 내 경험 연결
 3. **검증 가능성**: 사용자가 판정에서 DART 원문까지 되돌아갈 수 있음
 4. **안전한 표현**: ‘공시에서 확인 불가’를 실제 미이행으로 단정하지 않음
 5. **실사용 검증**: 최소 5명 테스트 및 실제 피드백 반영을 제출 증빙으로 남김
+6. **정직한 평가**: SK하이닉스 n=3 시범 평가(9번 중 7번 일치)와 다른 판정의 원인, 기준 미달 기업 제외 기록을 그대로 공개
 
 ### 제출 링크
-- 서비스 URL: https://ai-promise-six.vercel.app (10/19 접속 확인. 지금은 사람이 원문 대조한 검증용 시연 데이터, 5장)
+- 서비스 URL: https://ai-promise-six.vercel.app (검증 시연 기업 2곳은 사람이 원문 대조, 확장 분석 기업 3곳은 AI 엔진 결과. 5장)
 - 서비스 URL 최종 검증: **제출 전 시크릿 창/모바일에서 직접 확인 필요**
 - 사용자 테스트: **[실제 인원 입력]명**
 - 피드백 반영: [docs/feedback-log.md](docs/feedback-log.md)

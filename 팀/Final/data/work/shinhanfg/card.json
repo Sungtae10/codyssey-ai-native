@@ -1,0 +1,43 @@
+{
+ "issues": [
+  {
+   "text": "신한투자증권의 AI 투자정보 제공 및 AI 기반 MTS 전환 방향 제시 (일부 확인)",
+   "promise_id": "shinhanfg-p1"
+  },
+  {
+   "text": "AI 해외 공시·뉴스 번역 서비스 제공의 후속 공시 근거 확인 어려움 (확인 불가)",
+   "promise_id": "shinhanfg-p2"
+  },
+  {
+   "text": "AI 활용 내부통제 모니터링 강화의 후속 공시 근거 확인 어려움 (확인 불가)",
+   "promise_id": "shinhanfg-p3"
+  }
+ ],
+ "talking_points": [
+  {
+   "text": "신한투자증권은 AI 기술을 기반으로 고객에게 다양한 투자정보를 제공하고 있습니다.",
+   "promise_id": "shinhanfg-p1",
+   "evidence_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261007000218"
+  },
+  {
+   "text": "신한투자증권은 AI 기반 투자정보 제공을 통해 정보탐색 효율성을 확보하고 있다고 설명하고 있습니다.",
+   "promise_id": "shinhanfg-p1",
+   "evidence_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261007000218"
+  },
+  {
+   "text": "신한투자증권은 MTS 전반에 AI가 결합된 AI 기반 MTS로 나아가고 있다고 설명하고 있습니다.",
+   "promise_id": "shinhanfg-p1",
+   "evidence_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261007000218"
+  }
+ ],
+ "questions": [
+  {
+   "text": "읽은 공시 범위에서는 AI 해외 공시·뉴스 번역 서비스의 후속 내용을 확인하기 어려웠습니다. 현재 서비스 제공 여부와 적용 범위가 궁금합니다.",
+   "promise_id": "shinhanfg-p2"
+  },
+  {
+   "text": "읽은 공시 범위에서는 AI 활용 내부통제 모니터링 강화의 후속 내용을 확인하기 어려웠습니다. 현재 추진 현황과 적용 대상 업무가 궁금합니다.",
+   "promise_id": "shinhanfg-p3"
+  }
+ ]
+}

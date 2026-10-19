@@ -1,0 +1,473 @@
+{
+ "retrieval_mode": "키워드 + 의미",
+ "models_used": {
+  "extract": [
+   "gpt-6-luna"
+  ],
+  "judge": [
+   "gpt-6.1-sol"
+  ],
+  "judge_escalation": [
+   "gpt-6-astra"
+  ],
+  "related": [
+   "gpt-6.1-sol"
+  ]
+ },
+ "promises": [
+  {
+   "type": "specific",
+   "title": "AI 캠퍼스 활용 확대",
+   "sentence": "(7) 향후 추진계획- 시간을 거듭하면서 AI 캠퍼스의 활용이 증가되는 것이 목표이며, 이를 통해 계열사 내 지속적인 홍보와 각 종 프로모션과 컨텐츠 제안을 계획하고 있습니다.",
+   "sentence_id": "y2024-I5-0063",
+   "source": {
+    "report": "2024 사업보고서",
+    "section": "I. 회사의 개요 > 5. 정관에 관한 사항",
+    "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250324000901",
+    "page": null
+   },
+   "id": "kakao-p1",
+   "verdict": "partial",
+   "reason": "후속 공시에서 약속 대상인 카카오 AI 캠퍼스를 카카오와 그룹사가 사용하고 있으며, 예약과 이용객 응대 등 운영이 이루어지고 있음은 확인됩니다. 다만 기존 대비 활용이 증가했는지와 계열사 대상 홍보·프로모션·콘텐츠 제안의 실행 여부는 확인되지 않아 일부 확인으로 판단합니다.",
+   "evidence": [
+    {
+     "sentence": "(4) 사업 추진현황(조직 및 인력구성 현황, 연구개발활동 내역, 제품 및 서비스 개발 진척도 및 상용화 여부, 매출 발생여부 등)- 카카오 AI 캠퍼스는 카카오와 카카오 그룹사를 위한 AI 인재양성 공간으로 현재는 카카오와 그룹사 위주로 사용이 나타나고 있어, 일부 사용 건을 제외하고는 연결기준으로는 매출이 거의 발생하지 않는 구조입니다.",
+     "source": {
+      "report": "2026 반기보고서",
+      "section": "I. 회사의 개요 > 5. 정관에 관한 사항",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260819000055",
+      "page": null
+     },
+     "citation_verified": true,
+     "sentence_id": "h2026-I5-0041"
+    },
+    {
+     "sentence": "카카오본사 조직의 경우 기획 및 관리 인력으로 상황별/기간별 특성에 맞춰 3~6명 내외로 운영 중이며 캠퍼스 예약, 이용객 응대, 식사제공 등 전반적인 운영은 운영사(수탁사)를 통해 이루어지고 있고 도급사는 미화, 보안 등의 업무를 담당합니다.",
+     "source": {
+      "report": "2026 반기보고서",
+      "section": "I. 회사의 개요 > 5. 정관에 관한 사항",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260819000055",
+      "page": null
+     },
+     "citation_verified": true,
+     "sentence_id": "h2026-I5-0043"
+    }
+   ],
+   "search_attempts": 3,
+   "search_log": [
+    {
+     "attempt": 1,
+     "query": "AI 캠퍼스 활용 확대 (7) 향후 추진계획- 시간을 거듭하면서 AI 캠퍼스의 활용이 증가되는 것이 목표이며, 이를 통해 계열사 내 지속적인 홍보와 각 종 프로모션과 컨텐츠 제안을 계획하고 있습니다.",
+     "candidates": [
+      "h2026-I5-0045",
+      "h2026-I5-0046",
+      "h2026-I5-0047",
+      "y2025-I5-0072",
+      "y2025-I5-0073",
+      "y2025-I5-0074",
+      "h2026-I5-0044",
+      "y2025-I5-0071",
+      "h2026-I5-0048",
+      "y2025-I5-0075",
+      "h2026-I5-0064",
+      "h2026-I5-0065"
+     ],
+     "verdict": "not_verifiable",
+     "evidence_ids": []
+    },
+    {
+     "attempt": 2,
+     "query": "\"AI 캠퍼스\" 계열사 이용 실적 홍보 프로모션 콘텐츠 제안",
+     "candidates": [
+      "h2026-I5-0045",
+      "h2026-I5-0046",
+      "h2026-I5-0047",
+      "y2025-I5-0071",
+      "y2025-I5-0072",
+      "y2025-I5-0073",
+      "y2025-I5-0074",
+      "h2026-I5-0044",
+      "h2026-I5-0048",
+      "y2025-I5-0075",
+      "h2026-II-0126",
+      "h2026-II-0127"
+     ],
+     "verdict": "not_verifiable",
+     "evidence_ids": []
+    },
+    {
+     "attempt": 3,
+     "query": "\"AI 캠퍼스\" 이용률 이용건수 계열사 행사 개최 콘텐츠 운영 실적",
+     "candidates": [
+      "h2026-I5-0045",
+      "h2026-I5-0046",
+      "h2026-I5-0047",
+      "y2025-I5-0072",
+      "y2025-I5-0073",
+      "y2025-I5-0074",
+      "h2026-I5-0044",
+      "y2025-I5-0071",
+      "h2026-I5-0041",
+      "h2026-I5-0042",
+      "h2026-I5-0043",
+      "y2025-I5-0068"
+     ],
+     "verdict": "partial",
+     "evidence_ids": [
+      "h2026-I5-0041",
+      "h2026-I5-0043"
+     ]
+    }
+   ],
+   "flags": [],
+   "judge_model_used": "gpt-6.1-sol",
+   "escalation": {
+    "model": "gpt-6-astra",
+    "first_verdict": "partial",
+    "second_verdict": "partial",
+    "adopted": true
+   }
+  },
+  {
+   "type": "specific",
+   "title": "카카오톡 AI 신규 기능·서비스 선보임",
+   "sentence": "카카오톡의 지속적인 성장을 위해 카카오만의 AI 기술이 집약된 신규 기능과 서비스들을 선보이고, 이용자들이 관심사 중심의 콘텐츠를 탐색할 수 있는 새로운 지면을 마련하면서, 채팅 중심의 목적형 트래픽에서 새로운 맥락의 트래픽으로 확대하며, 유저 활동성을 대폭 개선할 수 있는 기반을 구축하고자 합니다.",
+   "sentence_id": "y2024-IV-0010",
+   "source": {
+    "report": "2024 사업보고서",
+    "section": "IV. 이사의 경영진단 및 분석의견",
+    "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250324000901",
+    "page": null
+   },
+   "id": "kakao-p2",
+   "verdict": "partial",
+   "reason": "2025 사업보고서는 카카오톡 내 AI 서비스인 'ChatGPT for Kakao'와 'Kanana in KakaoTalk'의 정식 서비스 출시 및 CBT 진행을 기재하여, 약속한 카카오톡 AI 신규 기능·서비스와 관련된 실행을 확인할 수 있습니다. 다만 일부는 CBT 단계이며, 관심사 중심 콘텐츠 탐색 지면 마련과 트래픽 확대·이용자 활동성 개선 기반 구축까지 확인되지는 않아 일부 확인으로 판단합니다.",
+   "evidence": [
+    {
+     "sentence": "글로벌 파트너십 강화와 지속적인 연구 개발을 통해 국민 누구나 카카오톡 안에서 AI를 일상적으로 경험할 수 있도록 '모두의 AI' 기반을 다져나갈 계획으로, 정식 서비스 출시 및 CBT를 진행한 'ChatGPT for Kakao'와 'Kanana in KakaoTalk'은 이용자 저변을 확대하고, 반복 사용을 유도할 수 있도록 사용 맥락을 강화하면서 AI 트래픽이 플랫폼 내에 새로운 성장 동력으로서 자리매김하는 것을 기대하고 있습니다.",
+     "source": {
+      "report": "2025 사업보고서",
+      "section": "IV. 이사의 경영진단 및 분석의견",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260318001423",
+      "page": null
+     },
+     "citation_verified": true,
+     "sentence_id": "y2025-IV-0012"
+    }
+   ],
+   "search_attempts": 1,
+   "search_log": [
+    {
+     "attempt": 1,
+     "query": "카카오톡 AI 신규 기능·서비스 선보임 카카오톡의 지속적인 성장을 위해 카카오만의 AI 기술이 집약된 신규 기능과 서비스들을 선보이고, 이용자들이 관심사 중심의 콘텐츠를 탐색할 수 있는 새로운 지면을 마련하면서, 채팅 중심의 목적형 트래픽에서 새로운 맥락의 트래픽으로 확대하며, 유저 활동성을 대폭 개선할 수 있는 기반을 구축하고자 합니다.",
+     "candidates": [
+      "h2026-I5-0066",
+      "h2026-I5-0067",
+      "h2026-I5-0068",
+      "h2026-I5-0069",
+      "y2025-IV-0011",
+      "y2025-IV-0012",
+      "y2025-IV-0013",
+      "y2025-IV-0014",
+      "h2026-I5-0065",
+      "h2026-I5-0078",
+      "h2026-I5-0079",
+      "h2026-I5-0080"
+     ],
+     "verdict": "partial",
+     "evidence_ids": [
+      "y2025-IV-0012"
+     ]
+    }
+   ],
+   "flags": [],
+   "judge_model_used": "gpt-6.1-sol",
+   "escalation": {
+    "model": "gpt-6-astra",
+    "first_verdict": "partial",
+    "second_verdict": "partial",
+    "adopted": true
+   }
+  },
+  {
+   "type": "specific",
+   "title": "카카오톡 AI 기능 및 별도 앱 서비스 준비",
+   "sentence": "카카오는 각 서비스에서 최고의 사용자 경험을 비용 경쟁력 있게 제공하기 위해 다양한 내부 및 외부 AI 모델을 활용한 모델 오케스트레이션 전략을 통해 카카오톡 내 AI 기능 적용와 별도의 앱 출시를 통한 AI 서비스를 준비하고 있습니다.",
+   "sentence_id": "y2024-IV-0013",
+   "source": {
+    "report": "2024 사업보고서",
+    "section": "IV. 이사의 경영진단 및 분석의견",
+    "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250324000901",
+    "page": null
+   },
+   "id": "kakao-p3",
+   "verdict": "partial",
+   "reason": "후보 문장에는 카카오톡 내 AI 서비스인 'ChatGPT for Kakao'와 'Kanana in KakaoTalk'의 정식 서비스 출시 및 CBT 진행이 기재되어 있습니다. 자체·외부 모델을 선택하는 오케스트레이션 모델 연구와 다중 모델 조합 응답 시스템 구현도 확인되지만, 이를 해당 서비스에 적용했는지와 별도 앱 출시 여부는 확인되지 않아 약속의 일부만 확인됩니다.",
+   "evidence": [
+    {
+     "sentence": "글로벌 파트너십 강화와 지속적인 연구 개발을 통해 국민 누구나 카카오톡 안에서 AI를 일상적으로 경험할 수 있도록 '모두의 AI' 기반을 다져나갈 계획으로, 정식 서비스 출시 및 CBT를 진행한 'ChatGPT for Kakao'와 'Kanana in KakaoTalk'은 이용자 저변을 확대하고, 반복 사용을 유도할 수 있도록 사용 맥락을 강화하면서 AI 트래픽이 플랫폼 내에 새로운 성장 동력으로서 자리매김하는 것을 기대하고 있습니다.",
+     "source": {
+      "report": "2025 사업보고서",
+      "section": "IV. 이사의 경영진단 및 분석의견",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260318001423",
+      "page": null
+     },
+     "citation_verified": true,
+     "sentence_id": "y2025-IV-0012"
+    },
+    {
+     "sentence": "ᄂ 논문명: Online Knowledge Distillation of Decoder-Only Large Language Models for Efficient Speech Recognition 2024 Tech 채널메시지 타겟팅 알고리즘 연구 개발 유저 관심사 및 내재된 반응성 정보를 활용한 채널메시지 타겟팅효율 증대 알고리즘 연구 개발 2025 Tech AI 오케스트레이션 모델 개발 사용자의 편의성, 비용효율성, 성능 등 다양한 요소를 종합적으로 고려해 자체 모델과 외부 모델 중 최적의 모델을 선택하는 오케스트레이션 모델 연구.",
+     "source": {
+      "report": "2026 반기보고서",
+      "section": "II. 사업의 내용",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260819000055",
+      "page": null
+     },
+     "citation_verified": true,
+     "sentence_id": "h2026-II-0159"
+    },
+    {
+     "sentence": "다중 모델 조합을 통한 효율적인 AI 응답 시스템 구현.",
+     "source": {
+      "report": "2026 반기보고서",
+      "section": "II. 사업의 내용",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260819000055",
+      "page": null
+     },
+     "citation_verified": true,
+     "sentence_id": "h2026-II-0160"
+    }
+   ],
+   "search_attempts": 1,
+   "search_log": [
+    {
+     "attempt": 1,
+     "query": "카카오톡 AI 기능 및 별도 앱 서비스 준비 카카오는 각 서비스에서 최고의 사용자 경험을 비용 경쟁력 있게 제공하기 위해 다양한 내부 및 외부 AI 모델을 활용한 모델 오케스트레이션 전략을 통해 카카오톡 내 AI 기능 적용와 별도의 앱 출시를 통한 AI 서비스를 준비하고 있습니다.",
+     "candidates": [
+      "h2026-I5-0067",
+      "h2026-I5-0068",
+      "h2026-I5-0069",
+      "h2026-II-0158",
+      "h2026-II-0159",
+      "h2026-II-0160",
+      "h2026-II-0157",
+      "h2026-I5-0066",
+      "y2025-IV-0012",
+      "y2025-IV-0013",
+      "y2025-IV-0014",
+      "h2026-II-0161"
+     ],
+     "verdict": "partial",
+     "evidence_ids": [
+      "y2025-IV-0012",
+      "h2026-II-0159",
+      "h2026-II-0160"
+     ]
+    }
+   ],
+   "flags": [],
+   "judge_model_used": "gpt-6.1-sol",
+   "escalation": {
+    "model": "gpt-6-astra",
+    "first_verdict": "partial",
+    "second_verdict": "partial",
+    "adopted": true
+   }
+  },
+  {
+   "type": "directional",
+   "title": "AI 관련 인프라 확충",
+   "sentence": "카카오데이터센터 운영 및 부가사업 등에 따른 사업의 목적 추가 이사회 회사의 주된 사업 및 공동체 서비스를 안정적으로 지원하고 동시에 클라우드 및 AI 관련 인프라 확충이 가능할 것으로 기대 2025.03.26",
+   "sentence_id": "y2024-I5-0029",
+   "source": {
+    "report": "2024 사업보고서",
+    "section": "I. 회사의 개요 > 5. 정관에 관한 사항",
+    "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250324000901",
+    "page": null
+   },
+   "id": "kakao-d1",
+   "verdict": null,
+   "reason": null,
+   "evidence": [
+    {
+     "sentence": "호스팅 및 관련 서비스업] (1) 그 사업 분야(업종, 제품 및 서비스의 내용 등) 및 진출 목적- 당사는 2021년 3월 12일 이사회 결의를 통해, 공동체의 서비스를 안정적으로 지원하고 동시에 클라우드 및 AI 관련 인프라 확충을 목적으로 자체 인터넷데이터센터(IDC)의 구축을 결정했습니다.",
+     "source": {
+      "report": "2026 반기보고서",
+      "section": "I. 회사의 개요 > 5. 정관에 관한 사항",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260819000055",
+      "page": null
+     },
+     "citation_verified": true,
+     "sentence_id": "h2026-I5-0048"
+    },
+    {
+     "sentence": "카카오의 첫 번째 자체 데이터센터인 '카카오 데이터센터 안산'은 지난 2023년 9월 준공되었으며, 2024년 1분기부터 본격적인 가동을 시작하였습니다.",
+     "source": {
+      "report": "2026 반기보고서",
+      "section": "I. 회사의 개요 > 5. 정관에 관한 사항",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260819000055",
+      "page": null
+     },
+     "citation_verified": true,
+     "sentence_id": "h2026-I5-0049"
+    }
+   ],
+   "search_attempts": 1,
+   "search_log": [
+    {
+     "attempt": 1,
+     "query": "AI 관련 인프라 확충 카카오데이터센터 운영 및 부가사업 등에 따른 사업의 목적 추가 이사회 회사의 주된 사업 및 공동체 서비스를 안정적으로 지원하고 동시에 클라우드 및 AI 관련 인프라 확충이 가능할 것으로 기대 2025.03.26",
+     "candidates": [
+      "h2026-I5-0027",
+      "h2026-I5-0028",
+      "h2026-I5-0029",
+      "y2025-I5-0030",
+      "y2025-I5-0031",
+      "y2025-I5-0032",
+      "h2026-I5-0026",
+      "y2025-I5-0029",
+      "h2026-I5-0025",
+      "y2025-I5-0028",
+      "h2026-I5-0048",
+      "h2026-I5-0049"
+     ],
+     "related_ids": [
+      "h2026-I5-0048",
+      "h2026-I5-0049"
+     ]
+    }
+   ],
+   "flags": []
+  },
+  {
+   "type": "directional",
+   "title": "AI 기반 서비스 확대",
+   "sentence": "당사는 AI 기반 서비스 확대를 미래성장동력으로 생각하고 사업을 전개해 나가고 있습니다.",
+   "sentence_id": "y2024-IV-0012",
+   "source": {
+    "report": "2024 사업보고서",
+    "section": "IV. 이사의 경영진단 및 분석의견",
+    "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250324000901",
+    "page": null
+   },
+   "id": "kakao-d2",
+   "verdict": null,
+   "reason": null,
+   "evidence": [
+    {
+     "sentence": "글로벌 파트너십 강화와 지속적인 연구 개발을 통해 국민 누구나 카카오톡 안에서 AI를 일상적으로 경험할 수 있도록 '모두의 AI' 기반을 다져나갈 계획으로, 정식 서비스 출시 및 CBT를 진행한 'ChatGPT for Kakao'와 'Kanana in KakaoTalk'은 이용자 저변을 확대하고, 반복 사용을 유도할 수 있도록 사용 맥락을 강화하면서 AI 트래픽이 플랫폼 내에 새로운 성장 동력으로서 자리매김하는 것을 기대하고 있습니다.",
+     "source": {
+      "report": "2025 사업보고서",
+      "section": "IV. 이사의 경영진단 및 분석의견",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260318001423",
+      "page": null
+     },
+     "citation_verified": true,
+     "sentence_id": "y2025-IV-0012"
+    },
+    {
+     "sentence": "인공지능 개발 및 이용업] (1) 그 사업 분야(업종, 제품 및 서비스의 내용 등) 및 진출 목적- 당사는 AI 기반 서비스 및 AI 생태계 협력 사업을 추진하기 위해 사업 목적을 추가함으로써 안정적인 법적 근거를 마련하였습니다.",
+     "source": {
+      "report": "2026 반기보고서",
+      "section": "I. 회사의 개요 > 5. 정관에 관한 사항",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260819000055",
+      "page": null
+     },
+     "citation_verified": true,
+     "sentence_id": "h2026-I5-0066"
+    }
+   ],
+   "search_attempts": 1,
+   "search_log": [
+    {
+     "attempt": 1,
+     "query": "AI 기반 서비스 확대 당사는 AI 기반 서비스 확대를 미래성장동력으로 생각하고 사업을 전개해 나가고 있습니다.",
+     "candidates": [
+      "h2026-I5-0066",
+      "h2026-I5-0067",
+      "h2026-I5-0068",
+      "y2025-IV-0011",
+      "y2025-IV-0012",
+      "y2025-IV-0013",
+      "y2025-IV-0010",
+      "h2026-I5-0069",
+      "h2026-I5-0070",
+      "h2026-I5-0076",
+      "h2026-I5-0077",
+      "h2026-I5-0078"
+     ],
+     "related_ids": [
+      "y2025-IV-0012",
+      "h2026-I5-0066"
+     ]
+    }
+   ],
+   "flags": []
+  },
+  {
+   "type": "directional",
+   "title": "AI 대중화 서비스 구축",
+   "sentence": "카카오는 카카오톡뿐만 아니라, 커머스, 모빌리티, 콘텐츠, 금융까지 이용자의 일상 전반에 걸친 다양한 서비스에서 이용자들의 일상에서 필수적인 서비스를 제공해오고 있으며, AI서비스를 일상에서도 널리 사용할 수 있도록 AI 대중화 실현을 위한 서비스 구축 및 기반을 마련하는데 집중하고 있습니다.",
+   "sentence_id": "y2024-IV-0014",
+   "source": {
+    "report": "2024 사업보고서",
+    "section": "IV. 이사의 경영진단 및 분석의견",
+    "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250324000901",
+    "page": null
+   },
+   "id": "kakao-d3",
+   "verdict": null,
+   "reason": null,
+   "evidence": [
+    {
+     "sentence": "글로벌 파트너십 강화와 지속적인 연구 개발을 통해 국민 누구나 카카오톡 안에서 AI를 일상적으로 경험할 수 있도록 '모두의 AI' 기반을 다져나갈 계획으로, 정식 서비스 출시 및 CBT를 진행한 'ChatGPT for Kakao'와 'Kanana in KakaoTalk'은 이용자 저변을 확대하고, 반복 사용을 유도할 수 있도록 사용 맥락을 강화하면서 AI 트래픽이 플랫폼 내에 새로운 성장 동력으로서 자리매김하는 것을 기대하고 있습니다.",
+     "source": {
+      "report": "2025 사업보고서",
+      "section": "IV. 이사의 경영진단 및 분석의견",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260318001423",
+      "page": null
+     },
+     "citation_verified": true,
+     "sentence_id": "y2025-IV-0012"
+    },
+    {
+     "sentence": "인공지능 개발 및 이용업] (1) 그 사업 분야(업종, 제품 및 서비스의 내용 등) 및 진출 목적- 당사는 AI 기반 서비스 및 AI 생태계 협력 사업을 추진하기 위해 사업 목적을 추가함으로써 안정적인 법적 근거를 마련하였습니다.",
+     "source": {
+      "report": "2026 반기보고서",
+      "section": "I. 회사의 개요 > 5. 정관에 관한 사항",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260819000055",
+      "page": null
+     },
+     "citation_verified": true,
+     "sentence_id": "h2026-I5-0066"
+    }
+   ],
+   "search_attempts": 1,
+   "search_log": [
+    {
+     "attempt": 1,
+     "query": "AI 대중화 서비스 구축 카카오는 카카오톡뿐만 아니라, 커머스, 모빌리티, 콘텐츠, 금융까지 이용자의 일상 전반에 걸친 다양한 서비스에서 이용자들의 일상에서 필수적인 서비스를 제공해오고 있으며, AI서비스를 일상에서도 널리 사용할 수 있도록 AI 대중화 실현을 위한 서비스 구축 및 기반을 마련하는데 집중하고 있습니다.",
+     "candidates": [
+      "y2025-IV-0011",
+      "y2025-IV-0012",
+      "y2025-IV-0013",
+      "y2025-IV-0014",
+      "y2025-IV-0015",
+      "h2026-I5-0066",
+      "h2026-I5-0067",
+      "h2026-I5-0068",
+      "h2026-I5-0069",
+      "h2026-II-0001",
+      "h2026-II-0002",
+      "h2026-II-0003"
+     ],
+     "related_ids": [
+      "y2025-IV-0012",
+      "h2026-I5-0066"
+     ]
+    }
+   ],
+   "flags": []
+  }
+ ]
+}

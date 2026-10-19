@@ -35,3 +35,35 @@ DART PDF
 - 엔진 설정: `engine/config.yaml`
 - 화면 데이터 계약: `tests/sample_data.json` + `engine/aipromise/checker.py`
 - 실제 결과: `app/data/results.json` (생성 후)
+
+
+## 시스템 아키텍처
+
+```mermaid
+flowchart LR
+    A[DART 정기공시 PDF] --> B[Collect\n지정 섹션 추출]
+    B --> C[LLM Promise Extraction\nAI 미래 계획 추출]
+    C --> D[Specificity Classification\n구체적/방향성]
+    D --> E[RAG Retrieval\n키워드 + 의미 검색]
+    E --> F{근거 충분?}
+    F -- 아니오 --> G[검색어 재구성\n최대 횟수 제한]
+    G --> E
+    F -- 예 --> H[LLM Judgment\n4개 판정]
+    H --> I[Citation Verification\n원문 exact-match]
+    I --> J[Interview Card\n검증 근거 중심]
+    J --> K[results.json]
+    K --> L[Web UI\n약속→근거→원문→면접 카드]
+```
+
+## 공식 필수 기술요소 대응
+
+### 1. RAG
+후속 정기공시를 작은 단위로 검색해 약속과 관련된 근거 후보를 LLM 판정 컨텍스트에 제공합니다. 검색 실패 시 전체 보고서를 통째로 생성 모델에 넣는 대신 관련 후보를 재검색합니다.
+
+### 2. 자동화 워크플로우
+PDF 입력부터 화면 JSON 출력까지 Collect → Extract → Retrieve → Judge → Verify → Card → Export가 하나의 Python pipeline으로 연결됩니다.
+
+### 3. Agent-style retry (보조)
+근거가 충분하지 않으면 검색어를 바꿔 제한된 횟수만큼 재검색합니다. 완전 자율 Agent라고 과장하지 않고, 구현된 **상태 기반 재검색·도구 사용 흐름**만 설명합니다.
+
+심사 시 필수 기술요소는 **RAG + 자동화 워크플로우**를 주 근거로 제시하고, Agent-style retry는 추가 AI Native 설계로 설명합니다.

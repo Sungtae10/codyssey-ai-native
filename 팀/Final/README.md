@@ -42,10 +42,11 @@ python tests/ui_check.py         # 화면: 모든 화면(예시 데이터 18개)
 
 ## 4. 작업 규칙
 
-- main에 올라간 것은 바로 서비스 주소에 배포됩니다. main에 올리기 전에 `python tests/test_mock.py`가 "시험 통과"여야 합니다.
-- 화면은 10/13(화) 17:00에 고정합니다. 사용자 테스트 기간(10/14~16)에는 main의 화면을 바꾸지 않습니다. 고칠 것은 브랜치에서 만들고 테스트가 끝난 뒤 합칩니다.
-- 디자인을 바꾸면 `tests/ui_check.py`로 글자 대비(작은 글자 4.5:1, 큰 글자 3:1 이상)와 화면 깨짐을 확인합니다.
-- 다른 AI 도구에 저장소 접근을 주면 main에 직접 올리지 않고 브랜치와 Pull Request로만 작업하고, 김성태가 확인한 뒤 합칩니다. (두 도구가 main을 동시에 고치면 서로 덮어씁니다)
+- 최종 마감 구간에는 **최신 main → 작업 브랜치 → 테스트 → Pull Request → merge** 순서만 사용합니다.
+- 실제 배포 여부와 배포 URL은 README의 링크 섹션에 명시하며, 배포가 확인되지 않은 상태를 '배포 완료'라고 표현하지 않습니다.
+- main에 합치기 전 `python tests/test_mock.py`, `python tests/test_ui_static.py`, `python tests/ui_check.py`를 통과시킵니다.
+- 디자인을 바꾸면 `app/css/style.css` 맨 아래 데이터 연결 부품을 유지하고, 320~390px 모바일 화면과 명도 대비를 다시 확인합니다.
+- 사용자 테스트 중 발견된 문제는 먼저 기록하고, 테스트가 끝난 뒤 우선순위가 높은 피드백을 브랜치에서 수정합니다.
 
 ## 5. 지키는 것
 
@@ -76,6 +77,11 @@ python tests/ui_check.py         # 화면: 모든 화면(예시 데이터 18개)
 - [Google Drive ↔ GitHub 동기화](docs/drive-sync.md)
 - [제출 증빙 체크리스트](docs/submission-evidence-checklist.md)
 - [팀 협업 규칙](CONTRIBUTING.md)
+- [기능·비기능 요구사항](docs/requirements.md)
+- [공식 요구사항 ↔ 증빙 매트릭스](docs/official-requirements-matrix.md)
+- [사용자 피드백 반영 로그](docs/feedback-log.md)
+- [최종 발표 구성안](docs/presentation-outline.md)
+- [최종 제출 Release Checklist](docs/release-checklist.md)
 
 ## 9. 추가 평가
 
@@ -94,3 +100,21 @@ python tests/ui_check.py         # 화면: 모든 화면(예시 데이터 18개)
 - 기능·비기능 요구사항: [docs/requirements.md](docs/requirements.md)
 - 마감 최소 완성안: [docs/final-sprint.md](docs/final-sprint.md)
 - 빠른 사용자 테스트: [docs/user-test-quick.md](docs/user-test-quick.md)
+
+
+## 11. 심사자에게 보여줄 핵심
+
+**AI Promise는 공시 요약기가 아니라 ‘기업의 AI 약속 ↔ 후속 실행 근거’를 연결하는 조사 서비스입니다.**
+
+1. **공식 데이터**: DART 정기공시를 근거로 사용
+2. **AI Native 구조**: LLM 약속 추출 + RAG 검색 + 제한적 재검색 + 판정 + citation verification + 면접 카드
+3. **검증 가능성**: 사용자가 판정에서 DART 원문까지 되돌아갈 수 있음
+4. **안전한 표현**: ‘공시에서 확인 불가’를 실제 미이행으로 단정하지 않음
+5. **실사용 검증**: 최소 5명 테스트 및 실제 피드백 반영을 제출 증빙으로 남김
+
+### 제출 링크
+- 서비스 URL: **[배포 후 입력]**
+- 사용자 테스트: **[실제 인원 입력]명**
+- 피드백 반영: [docs/feedback-log.md](docs/feedback-log.md)
+- 발표자료: **[완성 후 링크 입력]**
+- 시연 영상: **[완성 후 링크 입력]**

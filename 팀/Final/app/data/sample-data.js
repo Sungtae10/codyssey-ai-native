@@ -53,7 +53,7 @@ window.AI_PROMISE_SAMPLE = {
     },
     "not_verifiable_message": "읽은 공시 범위에서 관련 내용을 찾지 못했습니다. 면접에서 추진 방향을 질문해 보세요.",
     "no_related_activity_message": "읽은 공시 범위에서 관련 활동을 찾지 못했습니다.",
-    "citation_verified_label": "원문 확인됨",
+    "citation_verified_label": "원문 존재 확인",
     "interview_card_notice": "완성된 답변이 아니라 근거가 붙은 소재입니다. 자신의 말로 바꿔 쓰세요."
   },
   "companies": [

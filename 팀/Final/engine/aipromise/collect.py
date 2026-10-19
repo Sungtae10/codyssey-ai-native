@@ -60,8 +60,59 @@ def _find(pages, pattern, start_page=0, start_pos=0, anchored=True):
     return None
 
 
-def locate_sections(pages, wanted, overrides=None):
-    """장마다 (시작 쪽, 시작 글자 위치, 끝 쪽, 끝 글자 위치)를 찾습니다. 쪽 번호는 0부터."""
+def _heading_lines(pages, pattern, start_page=0, start_pos=0, slack=12):
+    """제목 줄 후보: 줄 맨 앞이 장 제목이고 뒤에 붙은 글이 짧은(slack자 이하) 줄만. (DART 자동 수집 글용)
+    정정 보고서 앞의 '정정 사항' 표처럼 장 제목 뒤에 다른 칸 글이 이어지는 줄은 빼려는 것입니다."""
+    rx = re.compile(r"(?m)^[ \t]*(?:" + pattern + r")(.*)$")
+    out = []
+    for i in range(start_page, len(pages)):
+        if _is_toc(pages[i]):
+            continue
+        for m in rx.finditer(pages[i], start_pos if i == start_page else 0):
+            if len(m.group(1).strip()) <= slack:
+                out.append((i, m.start()))
+    return out
+
+
+def span_chars(pages, start, end):
+    """(쪽, 글자 위치) 시작과 끝 사이 글자 수 (끝이 없으면 문서 끝까지)."""
+    (sp, spos) = start
+    ep, epos = end if end else (len(pages) - 1, None)
+    total = 0
+    for i in range(sp, min(ep, len(pages) - 1) + 1):
+        a = spos if i == sp else 0
+        b = epos if (i == ep and epos is not None) else len(pages[i])
+        total += max(0, b - a)
+    return total
+
+
+# 이보다 짧으면 본문 장이 아니라 표 칸 등으로 봅니다 (II장은 길고, 정관 장과 반기보고서의 IV장은 짧을 수 있음)
+_DART_MIN_CHARS = {"I5": 150, "II": 2000, "IV": 150}
+
+
+def _locate_dart(pages, spec, min_chars=2000):
+    """DART 자동 수집 글: 제목 줄 후보 가운데 장 길이가 min_chars 이상인 첫 후보, 없으면 가장 긴 후보.
+    (10/19 고침) 카카오 2026 반기보고서([기재정정])는 맨 앞 정정 사항 표의 'II. 사업의 내용' 칸이 먼저 잡혀
+    II장이 91자만 남았습니다. 본문 장 제목(XML의 TITLE)은 한 줄에 제목만 있으므로 이 규칙으로 본문을 고릅니다."""
+    best = None
+    for st in _heading_lines(pages, spec["start"]):
+        en = None
+        for pat in spec["end"]:
+            cands = _heading_lines(pages, pat, st[0], st[1] + 1)
+            cand = cands[0] if cands else None
+            if cand and (en is None or cand < en):
+                en = cand
+        size = span_chars(pages, st, en)
+        if size >= min_chars:
+            return st, en
+        if best is None or size > best[2]:
+            best = (st, en, size)
+    return (best[0], best[1]) if best else None
+
+
+def locate_sections(pages, wanted, overrides=None, dart=False):
+    """장마다 (시작 쪽, 시작 글자 위치, 끝 쪽, 끝 글자 위치)를 찾습니다. 쪽 번호는 0부터.
+    dart=True(OpenDART 자동 수집 글)면 제목 줄 규칙(_locate_dart)을 먼저 쓰고, 못 찾으면 원래 방법으로 찾습니다."""
     overrides = overrides or {}
     found = {}
     for key in wanted:
@@ -70,6 +121,11 @@ def locate_sections(pages, wanted, overrides=None):
             s, e = overrides[key]
             found[key] = {"start": (s - 1, 0), "end": (e - 1, None), "how": "config"}
             continue
+        if dart:
+            got = _locate_dart(pages, spec, _DART_MIN_CHARS.get(key, 150))
+            if got:
+                found[key] = {"start": got[0], "end": got[1], "how": "auto"}
+                continue
         st = _find(pages, spec["start"]) or _find(pages, spec["start"], anchored=False)
         if not st:
             found[key] = None
@@ -181,7 +237,7 @@ def collect_report(cfg, company, report, role):
     # DART 자동 수집 글은 쪽이 PDF 쪽과 다르므로 쪽 번호를 남기지 않습니다 (화면에 'p.' 표시 안 함)
     no_pages = bool(report.get("no_pages"))
     overrides = (cfg.get("section_pages") or {}).get(company["key"], {}).get(report["key"], {})
-    loc = locate_sections(pages, cfg["sections"], overrides)
+    loc = locate_sections(pages, cfg["sections"], overrides, dart=no_pages)
     kw = keyword_regex(cfg.get("keywords") or DEFAULT_KEYWORDS)
 
     result = {

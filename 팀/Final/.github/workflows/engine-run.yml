@@ -79,6 +79,10 @@ jobs:
           for p in "data/runs/$COMPANY.log" data/dart/manifest.json data/results "data/work/$COMPANY" eval/results; do
             if [ -e "$p" ]; then git add "$p"; fi
           done
+          # 결과 브랜치에만: 받은 DART 글도 올려 장 찾기와 인용 검사를 다시 확인할 수 있게 (main에는 합치지 않음)
+          for f in data/dart/"$COMPANY"_*.txt; do
+            if [ -e "$f" ]; then git add -f "$f"; fi
+          done
           git status --short | head -40
           if git diff --cached --quiet; then echo "올릴 결과가 없습니다"; exit 0; fi
           git commit -q -m "엔진 자동 실행 결과: $COMPANY (GitHub Actions run $GITHUB_RUN_ID)"

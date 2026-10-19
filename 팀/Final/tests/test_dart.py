@@ -44,6 +44,11 @@ def dart_xml(sections, kind="사업보고서"):
            '<COMPANY-NAME AREGCIK="00999999">테스트전자</COMPANY-NAME>',
            '<SUMMARY><EXTRACTION ACODE="FSCC">II. 사업의 내용 요약에만 있는 글</EXTRACTION></SUMMARY>',
            '<BODY>',
+           # 정정 보고서 맨 앞의 '정정 사항' 표 (10/19 카카오 반기보고서): 표 칸의 장 제목이 본문 장으로 잡히면 안 됨
+           '<P>【 정 정 신 고 (보고) 】</P><TABLE><TBODY>'
+           '<TR><TD>정정사항</TD><TD>정정전</TD><TD>정정후</TD><TD>정정사유</TD></TR>'
+           '<TR><TD>II. 사업의 내용</TD></TR><TR><TD>아니오</TD><TD>기재정정</TD></TR>'
+           '<TR><TD>III. 재무에 관한 사항</TD></TR></TBODY></TABLE>',
            '<COVER><COVER-TITLE AUNIT="SUBMIT_DOC">사 업 보 고 서</COVER-TITLE><P>(제 9 기)</P></COVER>',
            # 표지 뒤 목차처럼 보이는 짧은 쪽: 본문 장으로 잘못 잡히면 안 됨
            '<P>목 차</P><P>I. 회사의 개요</P><P>II. 사업의 내용</P><P>III. 재무에 관한 사항</P><P>IV. 이사의 경영진단 및 분석의견</P>']
@@ -179,11 +184,14 @@ def main():
     check("그림 아래 설명 문장입니다." in text and "외관 검사" in text and "6. 주요계약 및 연구개발활동" in text,
           "스스로 닫는 IMG 뒤의 본문이 지워짐 (10/19 카카오 반기보고서 문제)")
     check(any(ln == "II. 사업의 내용" for ln in text.splitlines()), "장 제목이 한 줄로 있어야 함")
-    # 쪽: 문서 이름(표지 앞) 1 + 표지와 목차 1 + 큰 장 5 = 7
-    check(len(pages) == 7, f"문서 이름 1쪽 + 표지(목차) 1쪽 + 큰 장 5쪽이어야 함: {len(pages)}")
+    # 쪽: 문서 이름과 정정 사항 표(표지 앞) 1 + 표지와 목차 1 + 큰 장 5 = 7
+    check(len(pages) == 7, f"표지 앞 1쪽 + 표지(목차) 1쪽 + 큰 장 5쪽이어야 함: {len(pages)}")
     toc_page = next(i for i, pg in enumerate(pages) if "목 차" in pg)
-    loc = locate_sections(pages, ["I5", "II", "IV"])
+    loc = locate_sections(pages, ["I5", "II", "IV"], dart=True)
     check(all(loc.get(k) for k in ("I5", "II", "IV")), f"장 찾기 실패: {loc}")
+    old_loc = locate_sections(pages, ["II"])   # 예전 방법(첫 제목 줄)은 정정 사항 표의 칸을 잡음
+    check(old_loc["II"]["start"][0] == 0, "시험 자료 확인: 예전 방법이면 정정 사항 표(첫 쪽)가 잡혀야 함")
+    check(loc["II"]["start"][0] != 0, "DART 방법은 정정 사항 표가 아니라 본문 II장을 잡아야 함")
     check(loc["II"]["start"][0] != toc_page and "외관 검사" in pages[loc["II"]["start"][0]],
           f"II장이 목차 쪽이 아니라 본문 쪽에서 시작해야 함: {loc['II']}, 목차 쪽 {toc_page}")
     check(dart.decode_xml('<?xml version="1.0" encoding="euc-kr"?><A>가</A>'.encode("cp949")).endswith("<A>가</A>"), "euc-kr XML 읽기")

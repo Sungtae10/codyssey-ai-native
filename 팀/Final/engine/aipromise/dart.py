@@ -286,7 +286,7 @@ def xml_to_text(xml):
 def fetch_company(key, company, out_dir, corps_loader, log=print, today=None):
     """기업 1곳의 보고서를 모두 받아 .txt로 저장하고 manifest 항목을 돌려줍니다.
     corps_loader: 기업 목록이 필요할 때만 부르는 함수 (config에 corp_code가 있으면 부르지 않음)."""
-    from .collect import locate_sections, SECTIONS
+    from .collect import locate_sections, span_chars, SECTIONS
     from .textutil import clean_page_text
 
     reports = list(company.get("promise_reports") or []) + list(company.get("evidence_reports") or [])
@@ -337,9 +337,9 @@ def fetch_company(key, company, out_dir, corps_loader, log=print, today=None):
         with open(os.path.join(out_dir, fname), "w", encoding="utf-8") as g:
             g.write(text)
         pages = [clean_page_text(p) for p in text.split("\f")]
-        loc = locate_sections(pages, ["I5", "II", "IV"])
+        loc = locate_sections(pages, ["I5", "II", "IV"], dart=True)
         sections = {k: bool(loc.get(k)) for k in ("I5", "II", "IV")}
-        sizes = {k: _section_chars(pages, loc.get(k)) for k in ("I5", "II", "IV")}
+        sizes = {k: (span_chars(pages, loc[k]["start"], loc[k]["end"]) if loc.get(k) else 0) for k in ("I5", "II", "IV")}
         tags = {t: len(re.findall(rf"<\s*{t}\b", xml, re.I)) for t in ("SECTION-1", "TABLE", "IMAGE", "IMG", "TOC", "LIBRARY")}
         entry["reports"][r["key"]] = {
             "title": r["title"], "found": True, "report_nm": f["report_nm"].strip(), "rcept_no": f["rcept_no"],
@@ -355,20 +355,6 @@ def fetch_company(key, company, out_dir, corps_loader, log=print, today=None):
             log(f"  (주의) {r['title']}의 II. 사업의 내용이 {sizes['II']:,}자로 너무 짧습니다. 장 찾기나 글 바꾸기를 확인하세요.")
         time.sleep(0.5)  # 요청 간격 (요청 제한 배려)
     return entry
-
-
-def _section_chars(pages, info):
-    """locate_sections 결과 1개 → 그 장의 글자 수 (대략, 공백 포함)."""
-    if not info:
-        return 0
-    (sp, spos), end = info["start"], info["end"]
-    ep, epos = end if end else (len(pages) - 1, None)
-    total = 0
-    for i in range(sp, min(ep, len(pages) - 1) + 1):
-        a = spos if i == sp else 0
-        b = epos if (i == ep and epos is not None) else len(pages[i])
-        total += max(0, b - a)
-    return total
 
 
 def manifest_path(cfg):

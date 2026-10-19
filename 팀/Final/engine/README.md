@@ -7,7 +7,8 @@
 
 | 단계 | 명령 | 하는 일 | 만드는 파일 |
 | --- | --- | --- | --- |
-| 0 점검 | `doctor` | 설치, 키, PDF, 원문 링크, 실제 API 1번 호출 확인 | 없음 |
+| 0 자동 수집 (10/19) | `fetch_dart.py` | OpenDART에서 보고서 3개를 찾아 받고 글로 바꿈, DART 원문 주소 기록 (PDF 대신) | `data/dart/<기업>_<보고서>.txt`, `data/dart/manifest.json` |
+| 0 점검 | `doctor` | 설치, 키, PDF(또는 자동 수집 글), 원문 링크, 실제 API 1번 호출 확인 | 없음 |
 | 1 수집 | `collect` | PDF에서 읽는 장 3곳을 문장으로 저장 | `data/work/<기업>/collected_*.json` |
 | 2~3 추출·분류 | `extract` | AI 약속 문장 고르기, 구체적/방향성 나누기 | `promises.json`, `eval/gold/<기업>_정답매길목록.csv` |
 | 4~6 검색·판정·인용 검사 | `judge` | 근거 찾기(최대 3번), 4가지 판정, 원문 대조 | `judged.json` |
@@ -15,6 +16,23 @@
 | 내보내기 | `export` | 화면용 결과 파일 만들기, 화면 규칙 점검 | `data/results/ai_promise_data.json` |
 | 평가 | `eval/evaluate.py` | 사람이 만든 정답과 비교, 약속 찾기는 키워드 규칙과도 비교 | `eval/results/results.md` |
 | 후보 미리 보기 | `scan` | 후보 기업의 2024 사업보고서 PDF 1개로 수집과 약속 추출만 하고, 구체적 약속이 기준(기본 3개) 이상인지 알려 줌 | `promises.json` |
+| 여러 기업 한 번에 (10/19) | `analyze_companies.py` | 자동 수집 → 1~7단계 → 결과 파일 → 화면 미리 보기. 핵심 기업은 화면에 넣지 않고 사람 정답과 비교 | 위 파일 모두, `eval/results/` |
+
+### OpenDART 자동 수집 (10/19 추가, 사람이 PDF를 받는 단계를 대신)
+
+| 누가 | 언제 | 무엇을 | 어떻게 |
+| --- | --- | --- | --- |
+| 저장소 관리자(김성태) | 처음 한 번 | 키 2개 등록 | GitHub 저장소 Settings > Secrets and variables > Actions에 `OPENDART_API_KEY`(opendart.fss.or.kr에서 개인 즉시 발급, 40자), `OPENAI_API_KEY`. 내 컴퓨터에서 돌릴 때는 `engine/.env`에 같은 이름으로 적습니다. 채팅, 단톡, 드라이브에는 붙이지 않습니다 |
+| 팀원 누구나 | 기업을 새로 분석할 때 | GitHub에서 자동 실행 | Actions 탭 > `Engine run` > Run workflow (기업 목록 예: `["kakao","naver"]`). 기업별로 따로 돌고, 결과는 `engine-results/<실행번호>-<기업>` 브랜치에 올라갑니다 (main은 그대로) |
+| 팀원 누구나 | 내 컴퓨터에서 | 같은 일을 명령 1줄로 | `python analyze_companies.py kakao naver` (`engine` 폴더에서) |
+| 김성태 | 결과 확인 뒤 | 화면에 더하기 | 결과 브랜치의 `data/work/<기업>`과 `data/dart/manifest.json`을 가져와 `python run.py export --companies ...` → `python merge_screen.py ... --write` → Pull Request |
+
+하는 일 (`engine/aipromise/dart.py`)
+1. 기업 고유번호: `config.yaml`의 `stock_code`(KRX 목록과 같은 종목코드)로 찾고, 종목코드가 없으면 이름이 정확히 같은 법인만 씁니다. 같은 이름 법인이 여럿이면 필요한 보고서를 실제로 낸 법인만 남기고, 그래도 여럿이면 멈춥니다 (예: 신한은행과 신한지주는 다른 법인).
+2. 보고서 고르기: 정기공시 목록에서 `y2024` → `사업보고서 (2024.12)`, `y2025` → `사업보고서 (2025.12)`, `h2026` → `반기보고서 (2026.06)`. 정정 보고서가 있으면 가장 늦게 낸 본문 정정을 쓰고, 첨부서류만 고친 정정은 뒤로 미룹니다.
+3. 원문 받기: `document.xml`(ZIP) 안의 본문 XML(`접수번호.xml`)을 글로 바꿉니다. 장 제목은 한 줄로, 큰 장마다 쪽 구분을 넣어 1단계가 PDF와 같은 방법으로 장을 찾습니다. 화면의 원문 링크는 `https://dart.fss.or.kr/dsaf001/main.do?rcpNo=<접수번호>`로 자동으로 채웁니다.
+4. 쪽 번호: DART 글의 쪽은 PDF 쪽과 다르므로 결과에 쪽 번호를 남기지 않습니다 (화면에 `p.` 표시 없음).
+5. 기록: 수집 기록에 장별 글자 수와 XML 태그 수를 남기고, II장이 3,000자보다 짧으면 (주의)를 찍습니다.
 
 읽는 장 3곳: I. 회사의 개요 > 5. 정관에 관한 사항 / II. 사업의 내용 / IV. 이사의 경영진단 및 분석의견
 

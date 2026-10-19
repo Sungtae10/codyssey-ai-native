@@ -42,10 +42,27 @@ companies:
 # check_note (선택): 기업 카드와 약속 목록 위에 작게 보이는 검증 안내. 비워 두면 보이지 않습니다.
 #   예) check_note: "사람 2명이 따로 매긴 정답과 AI 판정을 비교한 기업이에요."
 
-# 후보 기업: scan(미리 보기)만 하는 자리입니다. doctor, export를 그냥 돌릴 때는 들어가지 않습니다.
-# scan을 통과하고 화면에 넣기로 정하면 위 companies로 옮기고 check_note를 확인합니다.
+# 후보 기업(시연용): doctor, export를 그냥 돌릴 때는 들어가지 않고, --company나 --companies에 이름을 적을 때만 씁니다.
+# 10/19 결정: 시연용 3곳은 카카오(IT 플랫폼), 신한은행(금융), 현대자동차(자동차). NAVER, LG전자는 예비입니다.
 # 업종이 다른 기업일수록 "반도체·전자에서만 되나?"라는 질문에 답이 됩니다 (LG전자는 삼성전자 DX와 같은 전자 업종).
+# 실행 예) python run.py all --company kakao   /   python run.py export --companies samsung skhynix kakao shinhanbank hyundai --copy-to ../app/data/results.json
 candidates:
+  kakao:
+    name: 카카오
+    check_note: "시연용 기업이에요. 화면의 약속은 팀이 원문과 대조해 확인했고, 사람 정답과 비교한 정확도는 없어요."
+    promise_reports:
+      - {key: y2024, title: "2024 사업보고서", pdf: kakao_2024.pdf, url: ""}
+    evidence_reports:
+      - {key: y2025, title: "2025 사업보고서", pdf: kakao_2025.pdf, url: ""}
+      - {key: h2026, title: "2026 반기보고서", pdf: kakao_2026h1.pdf, url: ""}
+  shinhanbank:
+    name: 신한은행
+    check_note: "시연용 기업이에요. 화면의 약속은 팀이 원문과 대조해 확인했고, 사람 정답과 비교한 정확도는 없어요."
+    promise_reports:
+      - {key: y2024, title: "2024 사업보고서", pdf: shinhanbank_2024.pdf, url: ""}
+    evidence_reports:
+      - {key: y2025, title: "2025 사업보고서", pdf: shinhanbank_2025.pdf, url: ""}
+      - {key: h2026, title: "2026 반기보고서", pdf: shinhanbank_2026h1.pdf, url: ""}
   hyundai:
     name: 현대자동차
     check_note: "시연용 기업이에요. 화면의 약속은 팀이 원문과 대조해 확인했고, 사람 정답과 비교한 정확도는 없어요."

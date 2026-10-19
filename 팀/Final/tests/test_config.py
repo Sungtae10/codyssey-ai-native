@@ -13,6 +13,7 @@ sys.path.insert(0, os.path.join(ROOT, "engine"))
 from aipromise.config import company_cfg, load_config  # noqa: E402
 
 CORE = ["samsung", "skhynix"]
+DEMO = ["kakao", "shinhanbank", "naver"]   # 10/19 결정. 시연용 기업을 바꾸면 여기도 같이 바꿉니다
 REPORT_KEYS = ["y2024", "y2025", "h2026"]
 
 
@@ -22,7 +23,7 @@ def main():
 
     r = cfg.get("retrieval") or {}
     for key in ["top_windows", "max_candidates", "max_attempts"]:
-        if not isinstance(r.get(key), int) or r.get(key) < 1:
+        if type(r.get(key)) is not int or r.get(key) < 1:   # true/false는 숫자로 치지 않음
             problems.append(f"retrieval.{key} 값이 1 이상의 숫자가 아닙니다: {r.get(key)!r}")
     for key in r:
         if isinstance(r[key], dict):
@@ -34,12 +35,20 @@ def main():
         if key not in companies:
             problems.append(f"companies에서 핵심 기업이 빠졌습니다: {key}")
 
+    for key in DEMO:
+        if key not in candidates:
+            problems.append(f"candidates에서 시연용 기업이 빠졌습니다: {key}")
+    for key in set(companies) & set(candidates):
+        problems.append(f"'{key}'가 companies와 candidates에 둘 다 있습니다 (companies 쪽만 쓰임)")
+
     for key in list(companies) + list(candidates):
         try:
             c = company_cfg(cfg, key)
         except BaseException as e:  # SystemExit 포함
             problems.append(f"'{key}' 설정을 읽지 못했습니다: {e}")
             continue
+        if not str(c.get("name") or "").strip():
+            problems.append(f"'{key}'에 name(화면에 보일 기업 이름)이 없습니다")
         reports = (c.get("promise_reports") or []) + (c.get("evidence_reports") or [])
         if [x.get("key") for x in reports] != REPORT_KEYS:
             problems.append(f"'{key}' 보고서 key가 {REPORT_KEYS}가 아닙니다")

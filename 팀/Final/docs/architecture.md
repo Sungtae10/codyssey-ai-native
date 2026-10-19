@@ -49,9 +49,9 @@ flowchart LR
     D --> E[RAG Retrieval<br/>키워드 + 의미 검색]
     E --> H[LLM Judgment<br/>4개 판정]
     H --> F{공시에서<br/>확인 불가?}
-    F -- 예, 3번 전이면 --> G[AI가 새 검색어 제안]
+    F -- 예, 3번 전이고 새 검색어 있음 --> G[판정 응답의 새 검색어로]
     G --> E
-    F -- 아니오, 또는 3번째 --> I[Citation Verification<br/>원문 exact-match]
+    F -- 아니오, 3번째, 또는 새 검색어 없음 --> I[Citation Verification<br/>원문 exact-match]
     I --> J[Interview Card<br/>검증 근거 중심]
     J --> K[results.json]
     K --> L[Web UI<br/>약속→근거→원문→면접 카드]
@@ -66,6 +66,6 @@ flowchart LR
 PDF 입력부터 화면 JSON 출력까지 Collect → Extract → Retrieve → Judge → Verify → Card → Export가 하나의 Python pipeline으로 연결됩니다.
 
 ### 3. Agent-style retry (보조)
-근거가 충분하지 않으면 검색어를 바꿔 제한된 횟수만큼 재검색합니다. 완전 자율 Agent라고 과장하지 않고, 구현된 **상태 기반 재검색·도구 사용 흐름**만 설명합니다.
+AI 판정이 '공시에서 확인 불가'이면 새 검색어로 다시 찾습니다(처음 검색 포함 최대 3번, 쓸 새 검색어가 없으면 그 전에 멈춤). 완전 자율 Agent라고 과장하지 않고, 구현된 **상태 기반 재검색·도구 사용 흐름**만 설명합니다.
 
 심사 시 필수 기술요소는 **RAG + 자동화 워크플로우**를 주 근거로 제시하고, Agent-style retry는 추가 AI Native 설계로 설명합니다.

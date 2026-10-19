@@ -34,7 +34,7 @@
 
 ## 발표에서 강조
 - DART 기반 공식 데이터
-- RAG + Agent-style workflow
+- RAG + 자동화 워크플로우 (AI Agent는 처음 포함 최대 3번의 제한적 재검색으로 보조)
 - citation exact-match verification
 - AI가 '미이행'을 단정하지 않는 윤리 설계
 - 실제 사용자 5명+ 피드백 반영

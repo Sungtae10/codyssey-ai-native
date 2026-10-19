@@ -19,7 +19,7 @@ AI Promise는 공시에서:
 강조 순서:
 - RAG: 후속 정기공시 검색
 - 자동화 워크플로우: Collect → Extract → Retrieve → Judge → Verify → Card
-- Agent-style retry: 근거가 약하면 제한된 횟수로 검색어를 바꿔 재검색
+- Agent-style retry: AI 판정이 '공시에서 확인 불가'이면 새 검색어로 다시 찾습니다(처음 검색 포함 최대 3번, 쓸 새 검색어가 없으면 그 전에 멈춤)
 - Citation verification: AI가 고른 근거가 실제 원문에 존재하는지 코드로 확인
 
 주의:

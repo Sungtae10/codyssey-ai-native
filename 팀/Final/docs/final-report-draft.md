@@ -24,7 +24,7 @@ AI Promise는 기업이 정기공시에서 밝힌 AI 계획과 이후 정기공�
 DART PDF → Collect → Extract → Retrieve → Judge → Verify → Card → results.json → Web UI
 
 ### Agent-style retry
-근거가 부족하면 검색어를 재구성해 제한된 횟수만큼 재검색합니다.
+AI 판정이 '공시에서 확인 불가'이면 새 검색어로 다시 찾습니다(처음 검색 포함 최대 3번, 쓸 새 검색어가 없으면 그 전에 멈춤).
 
 ## 5. 아키텍처
 상세: docs/architecture.md

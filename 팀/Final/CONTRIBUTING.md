@@ -30,6 +30,7 @@ AI Promise는 코드와 평가 증빙을 함께 남기는 팀 프로젝트입니
 코드 변경은 최소한 아래를 통과해야 합니다.
 
 ```bash
+python tests/test_config.py
 python tests/test_mock.py
 node --check app/js/app.js
 ```

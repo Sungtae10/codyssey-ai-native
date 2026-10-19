@@ -88,6 +88,37 @@ candidates:
       - {key: y2025, title: "2025 사업보고서", pdf: naver_2025.pdf, url: ""}
       - {key: h2026, title: "2026 반기보고서", pdf: naver_2026h1.pdf, url: ""}
 
+  # 10/19 22시: 신한은행은 자동 분석에서 AI 약속 0개(2024 사업보고서의 AI 문장 3개가 모두 이미 한 일)라
+  # 김성태 결정으로 은행 시연 기업을 KB국민은행으로 바꿈. 우리은행, 하나은행은 같은 기준으로 함께 돌려 보는 예비 후보
+  # dart_names: OpenDART 기업 목록의 법인 이름 (화면 이름과 다를 때). 비상장 법인이라 종목코드 대신 이름이 정확히 같은 법인만 씀
+  kbbank:
+    name: KB국민은행
+    dart_names: [국민은행, KB국민은행]
+    check_note: "AI 엔진 결과예요(사람 검토 전). 근거 문장은 코드가 원문과 글자 그대로 대조했고, 사람 정답과 비교한 정확도는 없어요."
+    promise_reports:
+      - {key: y2024, title: "2024 사업보고서", pdf: kbbank_2024.pdf, url: ""}
+    evidence_reports:
+      - {key: y2025, title: "2025 사업보고서", pdf: kbbank_2025.pdf, url: ""}
+      - {key: h2026, title: "2026 반기보고서", pdf: kbbank_2026h1.pdf, url: ""}
+  wooribank:
+    name: 우리은행
+    dart_names: [우리은행]
+    check_note: "AI 엔진 결과예요(사람 검토 전). 근거 문장은 코드가 원문과 글자 그대로 대조했고, 사람 정답과 비교한 정확도는 없어요."
+    promise_reports:
+      - {key: y2024, title: "2024 사업보고서", pdf: wooribank_2024.pdf, url: ""}
+    evidence_reports:
+      - {key: y2025, title: "2025 사업보고서", pdf: wooribank_2025.pdf, url: ""}
+      - {key: h2026, title: "2026 반기보고서", pdf: wooribank_2026h1.pdf, url: ""}
+  hanabank:
+    name: 하나은행
+    dart_names: [하나은행]
+    check_note: "AI 엔진 결과예요(사람 검토 전). 근거 문장은 코드가 원문과 글자 그대로 대조했고, 사람 정답과 비교한 정확도는 없어요."
+    promise_reports:
+      - {key: y2024, title: "2024 사업보고서", pdf: hanabank_2024.pdf, url: ""}
+    evidence_reports:
+      - {key: y2025, title: "2025 사업보고서", pdf: hanabank_2025.pdf, url: ""}
+      - {key: h2026, title: "2026 반기보고서", pdf: hanabank_2026h1.pdf, url: ""}
+
 # 장을 자동으로 못 찾을 때만 적습니다. 쪽 번호는 PDF 뷰어 기준(1부터, 양끝 포함).
 section_pages: {}
 # 예)

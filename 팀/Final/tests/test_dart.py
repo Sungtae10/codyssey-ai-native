@@ -232,6 +232,11 @@ def main():
         lists = [c for c in calls if c[0] == "list.json"]
         check(len(lists) == 1 and lists[0][1]["bgn_de"] == "20250101", f"목록은 한 번에, 가장 이른 시작일부터: {lists}")
         check(lists[0][1]["last_reprt_at"] == "N" and lists[0][1]["pblntf_ty"] == "A", "정정 전 보고서까지, 정기공시만")
+        # 화면 이름과 법인 이름이 다르면 dart_names로 찾음 (예: 화면 'KB국민은행', 법인 '국민은행')
+        alias = dict(comp, key="alias", name="테스트전자 브랜드", stock_code=None, dart_names=["없는이름", "테스트전자"])
+        e3 = dart.fetch_company("TESTKEY", alias, os.path.join(TMP, "dart"),
+                                lambda: dart.parse_corp_codes(fake_get("corpCode.xml", {}, "k")), log=logs.append)
+        check(e3["corp_code"] == "00999999", f"dart_names로 법인 찾기: {e3['corp_code']}")
         # 이름이 같은 법인이 여럿이면 보고서를 낸 법인만
         dup = dict(comp, key="dup", name="중복은행", stock_code=None)
         e2 = dart.fetch_company("TESTKEY", dup, os.path.join(TMP, "dart"),

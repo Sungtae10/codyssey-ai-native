@@ -77,29 +77,31 @@ def run_doctor(cfg, keys, api=True):
     if not key:
         problems.append("engine/.env 파일에 OPENAI_API_KEY=키 한 줄을 적으세요 (.env.example 참고).")
 
-    print("4. PDF와 원문 링크")
+    print("4. 보고서 파일(PDF 또는 DART 자동 수집 글)과 원문 링크")
+    from .collect import report_path
     for k in keys:
         c = company_cfg(cfg, k)
         for r in c["promise_reports"] + c["evidence_reports"]:
-            path = os.path.join(cfg["paths"]["pdf_dir"], r["pdf"])
-            label = f"   {c['name']} {r['title']} ({r['pdf']})"
+            path, fname = report_path(cfg, r)
+            label = f"   {c['name']} {r['title']} ({fname}{', DART 자동 수집' if r.get('text') else ''})"
             if not os.path.exists(path):
                 print(label + ": 파일 없음")
-                problems.append(f"{r['pdf']} 를 {cfg['paths']['pdf_dir']} 에 넣으세요.")
+                problems.append(f"{r['pdf']} 를 {cfg['paths']['pdf_dir']} 에 넣거나, "
+                                f"python fetch_dart.py --companies {k} 로 DART에서 자동으로 받으세요.")
                 continue
             try:
                 n, chars, ko = _text_sample(path)
             except Exception as e:
                 print(label + f": 열지 못함 ({type(e).__name__})")
-                problems.append(f"{r['pdf']} 가 깨졌을 수 있습니다. DART에서 다시 받으세요.")
+                problems.append(f"{fname} 가 깨졌을 수 있습니다. DART에서 다시 받으세요.")
                 continue
             if chars < 200:
                 print(label + f": {n}쪽, 앞쪽 글자가 거의 없음")
-                problems.append(f"{r['pdf']} 에서 글자를 읽지 못했습니다. 스캔본이면 DART 화면 글을 .txt로 저장해 쓰세요 (README 7장).")
+                problems.append(f"{fname} 에서 글자를 읽지 못했습니다. 스캔본이면 DART 화면 글을 .txt로 저장해 쓰세요 (README 7장).")
                 continue
             if ko < 0.2:
                 print(label + f": {n}쪽, 글자가 깨져 보임 (한글 비율 {ko:.0%})")
-                problems.append(f"{r['pdf']} 의 글자가 깨져 읽힙니다. DART 화면에서 장별 글을 복사해 .txt로 저장해 쓰세요 (README 7장).")
+                problems.append(f"{fname} 의 글자가 깨져 읽힙니다. DART 화면에서 장별 글을 복사해 .txt로 저장해 쓰세요 (README 7장).")
                 continue
             print(label + f": {n}쪽 OK")
             try:

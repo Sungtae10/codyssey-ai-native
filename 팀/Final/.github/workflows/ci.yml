@@ -34,6 +34,9 @@ jobs:
       - name: Check merging engine companies into screen data
         run: python tests/test_merge_screen.py
 
+      - name: Check OpenDART auto collect (fake responses, no key)
+        run: python tests/test_dart.py
+
       - name: Validate sample JSON
         run: python -m json.tool tests/sample_data.json > /dev/null
 

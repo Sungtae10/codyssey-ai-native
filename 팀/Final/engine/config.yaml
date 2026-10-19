@@ -15,6 +15,7 @@ llm:
 
 paths:
   pdf_dir: ../data/pdf                          # DART에서 받은 PDF를 여기에 (핵심 2곳 6개 + 시연 3곳 9개)
+  dart_dir: ../data/dart                        # fetch_dart.py가 OpenDART에서 자동으로 받은 글(.txt)과 manifest.json. 있으면 PDF 대신 씁니다
   work_dir: ../data/work                        # 단계별 중간 결과 (저장소에 올려도 됨, chroma_db는 제외)
   results_file: ../data/results/ai_promise_data.json   # 화면에 넣을 결과 파일
   labels_file: labels.json                      # 화면 문구 (sample_data.json의 labels와 같음)
@@ -30,9 +31,13 @@ retrieval:
   max_attempts: 3       # 근거를 못 찾으면 검색어를 바꿔 다시 찾는 횟수 (처음 포함)
 
 # 핵심 기업 2곳. url: DART에서 그 보고서를 열었을 때 주소창의 주소를 그대로 붙여 넣으세요. 화면의 "원문 링크"가 됩니다.
+#   fetch_dart.py로 자동으로 받으면 url이 비어 있는 칸은 DART 원문 주소(접수번호)로 자동으로 채워집니다.
+# stock_code: OpenDART 자동 수집에서 법인을 종목코드로 정확히 찾습니다 (app/data/listed-companies.json의 KRX 목록과 같음).
+# corp_code: OpenDART 고유번호(8자리). 적으면 기업 목록을 받지 않고 바로 씁니다.
 companies:
   samsung:
     name: 삼성전자
+    stock_code: "005930"
     promise_reports:
       - {key: y2024, title: "2024 사업보고서", pdf: samsung_2024.pdf, url: ""}
     evidence_reports:
@@ -40,6 +45,7 @@ companies:
       - {key: h2026, title: "2026 반기보고서", pdf: samsung_2026h1.pdf, url: ""}
   skhynix:
     name: SK하이닉스
+    stock_code: "000660"
     promise_reports:
       - {key: y2024, title: "2024 사업보고서", pdf: skhynix_2024.pdf, url: ""}
     evidence_reports:
@@ -57,6 +63,7 @@ companies:
 candidates:
   kakao:
     name: 카카오
+    stock_code: "035720"
     check_note: "AI 엔진 결과예요(사람 검토 전). 근거 문장은 코드가 원문과 글자 그대로 대조했고, 사람 정답과 비교한 정확도는 없어요."
     promise_reports:
       - {key: y2024, title: "2024 사업보고서", pdf: kakao_2024.pdf, url: ""}
@@ -64,7 +71,7 @@ candidates:
       - {key: y2025, title: "2025 사업보고서", pdf: kakao_2025.pdf, url: ""}
       - {key: h2026, title: "2026 반기보고서", pdf: kakao_2026h1.pdf, url: ""}
   shinhanbank:
-    name: 신한은행
+    name: 신한은행   # 비상장 법인(신한지주 055550과 다른 법인). 자동 수집은 이름이 정확히 '신한은행'인 법인만 씁니다
     check_note: "AI 엔진 결과예요(사람 검토 전). 근거 문장은 코드가 원문과 글자 그대로 대조했고, 사람 정답과 비교한 정확도는 없어요."
     promise_reports:
       - {key: y2024, title: "2024 사업보고서", pdf: shinhan_2024.pdf, url: ""}
@@ -73,6 +80,7 @@ candidates:
       - {key: h2026, title: "2026 반기보고서", pdf: shinhan_2026h1.pdf, url: ""}
   naver:
     name: NAVER
+    stock_code: "035420"
     check_note: "AI 엔진 결과예요(사람 검토 전). 근거 문장은 코드가 원문과 글자 그대로 대조했고, 사람 정답과 비교한 정확도는 없어요."
     promise_reports:
       - {key: y2024, title: "2024 사업보고서", pdf: naver_2024.pdf, url: ""}

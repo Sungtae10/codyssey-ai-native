@@ -164,19 +164,30 @@ def section_sentences(page_slices, min_len=12, max_len=500):
     return out
 
 
+def report_path(cfg, report):
+    """읽을 파일: OpenDART에서 자동으로 받은 글(report['text'], data/dart)이 있으면 그것, 없으면 PDF(data/pdf)."""
+    if report.get("text"):
+        from .dart import dart_dir
+        return os.path.join(dart_dir(cfg), report["text"]), report["text"]
+    return os.path.join(cfg["paths"]["pdf_dir"], report["pdf"]), report["pdf"]
+
+
 def collect_report(cfg, company, report, role):
-    pdf_path = os.path.join(cfg["paths"]["pdf_dir"], report["pdf"])
+    pdf_path, source_file = report_path(cfg, report)
     if not os.path.exists(pdf_path):
-        raise SystemExit(f"파일이 없습니다: {pdf_path}\n→ DART에서 받은 PDF를 이 이름으로 data/pdf 폴더에 넣어 주세요.")
+        raise SystemExit(f"파일이 없습니다: {pdf_path}\n→ DART에서 받은 PDF를 이 이름으로 data/pdf 폴더에 넣거나, "
+                         "python fetch_dart.py --companies <기업>으로 자동으로 받아 주세요.")
     pages = read_pages(pdf_path)
+    # DART 자동 수집 글은 쪽이 PDF 쪽과 다르므로 쪽 번호를 남기지 않습니다 (화면에 'p.' 표시 안 함)
+    no_pages = bool(report.get("no_pages"))
     overrides = (cfg.get("section_pages") or {}).get(company["key"], {}).get(report["key"], {})
     loc = locate_sections(pages, cfg["sections"], overrides)
     kw = keyword_regex(cfg.get("keywords") or DEFAULT_KEYWORDS)
 
     result = {
         "company": company["key"], "report_key": report["key"], "title": report["title"],
-        "url": report.get("url", ""), "role": role, "source_file": report["pdf"],
-        "num_pages": len(pages), "sections": {},
+        "url": report.get("url", ""), "role": role, "source_file": source_file,
+        "source": "dart" if no_pages else "pdf", "num_pages": None if no_pages else len(pages), "sections": {},
     }
     for key in cfg["sections"]:
         spec = SECTIONS[key]
@@ -200,9 +211,10 @@ def collect_report(cfg, company, report, role):
         sents = section_sentences(slices)
         result["sections"][key] = {
             "name": spec["name"], "found": True, "how": info["how"],
-            "start_page": sp + 1, "end_page": ep + 1, "end_found": end is not None,
+            "start_page": None if no_pages else sp + 1, "end_page": None if no_pages else ep + 1,
+            "end_found": end is not None,
             "sentences": [
-                {"id": f"{report['key']}-{key}-{n:04d}", "text": s, "page": pg,
+                {"id": f"{report['key']}-{key}-{n:04d}", "text": s, "page": None if no_pages else pg,
                  "has_keyword": bool(kw.search(s))}
                 for n, (pg, s) in enumerate(sents, 1)
             ],
@@ -231,6 +243,6 @@ def run_collect(cfg, company, roles=("promise", "evidence")):
     for t, n, s, e, ns, nk, ok, eok in summary:
         flag = "OK" if ok and eok else ("끝 제목 못 찾음, 문서 끝까지 읽음 → 끝 쪽 확인 필요" if ok else
                                         "장을 못 찾음 (보고서에 원래 없는 장이면 그대로 두고, 있는데 못 찾았으면 config.yaml section_pages에 쪽 번호를 적기)")
-        print(f"{t} | {n} | {s} | {e} | {ns} | {nk} | {flag}")
+        print(f"{t} | {n} | {'-' if s is None else s} | {'-' if e is None else e} | {ns} | {nk} | {flag}")
     print("→ 시작 쪽과 끝 쪽이 PDF 목차와 맞는지 꼭 한 번 확인해 주세요.")
     return summary

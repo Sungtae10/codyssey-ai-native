@@ -1,0 +1,354 @@
+{
+  "meta": {
+    "is_sample": true,
+    "notice": "실제 기업 공시를 사람이 원문 대조한 검증용 시연 데이터입니다. 자동 엔진 결과와 정확도 평가는 별도로 구분합니다.",
+    "schema_version": "0.1",
+    "updated": "2026-10-19",
+    "data_mode": "human_reviewed_demo"
+  },
+  "labels": {
+    "service_name": "AI Promise",
+    "service_subtitle": "기업 AI 약속 검증",
+    "tagline": "면접 전 5분 기업 AI 체크",
+    "disclaimers": [
+      "공시 범위 안에서 확인한 결과입니다.",
+      "AI 기반 서비스의 검증용 시연 데이터이며 사람이 공시 원문을 대조했습니다."
+    ],
+    "verdicts": {
+      "evidence_found": {
+        "label": "근거 확인",
+        "short_label": "근거 확인",
+        "meaning": "약속과 같은 대상이 후속 공시에 실행한 것으로 적혀 있음"
+      },
+      "partial": {
+        "label": "일부 확인",
+        "short_label": "일부 확인",
+        "meaning": "관련 활동은 있으나 범위, 시점, 수치가 약속에 못 미치거나 불분명함"
+      },
+      "not_verifiable": {
+        "label": "공시에서 확인 불가",
+        "short_label": "확인 불가",
+        "meaning": "읽은 공시 범위에서 찾지 못함. 미이행이라는 뜻이 아님"
+      },
+      "company_reported_not_pursued": {
+        "label": "회사가 미추진으로 공시",
+        "short_label": "미추진 공시",
+        "meaning": "회사가 추진하지 않았다고 직접 적음"
+      }
+    },
+    "promise_types": {
+      "specific": {
+        "label": "구체적 약속",
+        "note": "판정하고 개수에 넣습니다."
+      },
+      "directional": {
+        "label": "방향성 약속",
+        "note": "방향이 넓어 판정하지 않고 관련 활동만 보여줍니다. 개수에는 넣지 않습니다."
+      }
+    },
+    "not_verifiable_message": "읽은 공시 범위에서 관련 내용을 찾지 못했습니다. 면접에서 추진 방향을 질문해 보세요.",
+    "no_related_activity_message": "읽은 공시 범위에서 관련 활동을 찾지 못했습니다.",
+    "citation_verified_label": "원문 대조됨",
+    "interview_card_notice": "완성된 답변이 아니라 근거가 붙은 소재입니다. 자신의 말로 바꿔 쓰세요."
+  },
+  "companies": [
+    {
+      "id": "samsung",
+      "name": "삼성전자",
+      "check_note": "사람이 실제 공시 원문을 대조한 검증용 시연 데이터입니다. 자동 엔진 결과 평가는 별도로 진행합니다.",
+      "reports": {
+        "promise": [
+          {
+            "title": "2024 사업보고서",
+            "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250311001085"
+          }
+        ],
+        "evidence": [
+          {
+            "title": "2025 사업보고서",
+            "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260310002820"
+          },
+          {
+            "title": "2026 반기보고서",
+            "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003699"
+          }
+        ]
+      },
+      "promises": [
+        {
+          "id": "samsung-d1",
+          "type": "directional",
+          "title": "AI 기능 고도화로 새로운 고객 경험 제공",
+          "sentence": "2025년에도 시장과 고객에 대한 연구를 강화하고 혁신 제품을 출시하여 시장을 선도하며 AI 기능 고도화를 통해 고객에게 새로운 경험을 제공하겠습니다.",
+          "source": {
+            "report": "2024 사업보고서",
+            "section": "IV. 이사의 경영진단 및 분석의견 > DX 부문 (전자공시 Page 295)",
+            "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250311001085"
+          },
+          "verdict": null,
+          "reason": null,
+          "evidence": [
+            {
+              "sentence": "사업 측면에서는 다양한 제품 라인업에 AI 기술을 접목하여 Galaxy S25 시리즈, Galaxy Z 폴드7와 Galaxy Z 플립7을 출시하였으며, '비전 AI'를 통해 개인화된 디스플레이 경험을 제공하며 업계 리더십을 더욱 강화하고 있습니다.",
+              "source": {
+                "report": "2025 사업보고서",
+                "section": "IV. 이사의 경영진단 및 분석의견 > 2. 개요 (전자공시 Page 319)",
+                "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260310002820"
+              },
+              "citation_verified": true
+            }
+          ]
+        },
+        {
+          "id": "samsung-p1",
+          "type": "specific",
+          "title": "Galaxy AI 확장·고도화 및 다양한 폼팩터 적용",
+          "sentence": "이러한 경험은 폴더블 기기를 포함한 다양한 폼팩터에도 적용될 계획이며, Galaxy AI의 확장과 고도화를 위해 연구개발 및 투자와 업계 최고의 R&D 역량을 바탕으로 고객에게 새로운 가치를 제공하겠습니다.",
+          "source": {
+            "report": "2024 사업보고서",
+            "section": "IV. 이사의 경영진단 및 분석의견 > DX 부문 > MX (전자공시 Page 296)",
+            "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250311001085"
+          },
+          "verdict": "evidence_found",
+          "reason": "후속 공시에서 Galaxy AI를 적용한 Galaxy S25 시리즈와 Galaxy Z 폴드7·플립7 등 다양한 폼팩터를 통해 AI 사용성을 제공했다고 적혀 있어 약속한 대상과 활동이 확인됩니다.",
+          "evidence": [
+            {
+              "sentence": "MX(Mobile eXperience) 사업은 Galaxy AI 도입을 통해 모바일 AI 분야의 리더십을 확보하고 플래그십 제품의 판매를 확대하며 전년 대비 매출 성장을 달성했습니다. Galaxy S25 시리즈와 Galaxy Z 폴드7 및 플립7 등 다양한 폼팩터를 통해 개인화된 AI 사용성과 멀티모달 인터랙션을 제공하며, 태블릿, 워치, 스마트링, 무선 이어폰 등 Galaxy Ecosystem 제품군을 통해 풍부한 모바일 경험을 선사하고 있습니다.",
+              "source": {
+                "report": "2025 사업보고서",
+                "section": "IV. 이사의 경영진단 및 분석의견 > 3. 재무상태 및 영업실적 > DX 부문 > MX (전자공시 Page 323~324)",
+                "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260310002820"
+              },
+              "citation_verified": true
+            }
+          ]
+        },
+        {
+          "id": "samsung-p2",
+          "type": "specific",
+          "title": "HBM4 개발·양산으로 AI 시장 경쟁력 강화",
+          "sentence": "DRAM의 경우 HBM3E 개선제품 판매를 확대하고 하반기 내 HBM4를 개발 및 양산하여 AI 시장 내 경쟁력을 강화할 계획입니다.",
+          "source": {
+            "report": "2024 사업보고서",
+            "section": "IV. 이사의 경영진단 및 분석의견 > DS 부문 (전자공시 Page 296)",
+            "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250311001085"
+          },
+          "verdict": "partial",
+          "reason": "후속 공시에서 HBM4 양산 출하는 확인되지만, 원래 문장에 함께 포함된 HBM3E 개선제품 판매 확대까지 같은 근거에서 모두 확인되지는 않아 일부 확인으로 봅니다.",
+          "evidence": [
+            {
+              "sentence": "최선단 공정 1c D램(10나노급 6세대) 및 4나노 베이스 다이 적용한 세계 최초 업계 최고 성능의 HBM4 양산 출하",
+              "source": {
+                "report": "2026 반기보고서",
+                "section": "II. 사업의 내용 > 6. 주요계약 및 연구개발활동 > 연구개발실적 (전자공시 Page 45)",
+                "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003699"
+              },
+              "citation_verified": true
+            }
+          ]
+        },
+        {
+          "id": "samsung-p3",
+          "type": "specific",
+          "title": "AI 서버용 고용량 DDR5·LPDDR5x 공급 확대",
+          "sentence": "또한 서버향 DDR5 공급 확대에 주력하면서 AI 서버에 필요한 128GB, 256GB 등 시장의 고용량화 추세를 주도할 것이며,1b나노 기반 LPDDR5x를 모바일뿐 아니라 PCㆍ서버향으로 확산하여 고부가가치 제품 비중을 적극적으로 늘려 나가겠습니다.",
+          "source": {
+            "report": "2024 사업보고서",
+            "section": "IV. 이사의 경영진단 및 분석의견 > DS 부문 (전자공시 Page 296)",
+            "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250311001085"
+          },
+          "verdict": "partial",
+          "reason": "후속 공시에서 고용량 DDR5와 LPDDR5x 및 서버 SSD 중심 판매는 확인되지만, 약속의 세부 용량과 1b나노 기반 확산 범위가 모두 명확하게 확인되지는 않아 일부 확인으로 봅니다.",
+          "evidence": [
+            {
+              "sentence": "메모리 사업의 4분기는 낮은 재고 수준 및 제한된 공급 가용량 내에서 HBM 판매를 확대하는 한편, 서버향 고부가 제품인 고용량 DDR5, LPDDR5x 및 서버 SSD 중심으로 판매하며 수익성 개선에 집중했습니다.",
+              "source": {
+                "report": "2025 사업보고서",
+                "section": "II. 사업의 내용 > 7. 기타 참고사항 > DS 부문 > 영업의 개황 등 (전자공시 Page 69)",
+                "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260310002820"
+              },
+              "citation_verified": true
+            }
+          ]
+        }
+      ],
+      "interview_card": {
+        "issues": [
+          {
+            "text": "Galaxy AI를 S25와 Z 폴드7·플립7 등 다양한 폼팩터에 적용한 내용이 후속 공시에서 확인됩니다.",
+            "promise_id": "samsung-p1"
+          },
+          {
+            "text": "HBM4 양산 출하는 확인되지만 HBM3E 개선제품 판매 확대까지 한 근거에서 모두 확인되지는 않습니다.",
+            "promise_id": "samsung-p2"
+          },
+          {
+            "text": "고용량 DDR5·LPDDR5x 중심 판매는 확인되지만 원래 약속의 세부 범위 전체는 명확하지 않습니다.",
+            "promise_id": "samsung-p3"
+          }
+        ],
+        "talking_points": [
+          {
+            "text": "Galaxy AI가 폴더블을 포함한 다양한 폼팩터로 확장된 공시 내용을 확인했습니다. 제품 경험과 AI 기능을 함께 확장하는 전략에 관심이 있습니다.",
+            "promise_id": "samsung-p1",
+            "evidence_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260310002820"
+          },
+          {
+            "text": "HBM4 양산 출하가 후속 공시에 나타난 점에서 AI 인프라 수요 대응이 실제 제품 단계로 이어진 부분에 주목했습니다.",
+            "promise_id": "samsung-p2",
+            "evidence_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003699"
+          },
+          {
+            "text": "서버향 고용량 DDR5와 LPDDR5x 중심 판매가 공시에 나타난 점을 바탕으로 AI 서버 메모리 포트폴리오의 확장 방향을 더 이해하고 싶습니다.",
+            "promise_id": "samsung-p3",
+            "evidence_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260310002820"
+          }
+        ],
+        "questions": [
+          {
+            "text": "Galaxy AI를 다양한 폼팩터로 확장한 다음 단계에서 가장 중요하게 보는 사용자 경험 지표가 무엇인지 궁금합니다.",
+            "promise_id": "samsung-p1"
+          },
+          {
+            "text": "HBM4 양산 이후 HBM3E 개선제품과 고용량 서버 메모리를 함께 운영하는 제품 전략이 어떻게 달라지는지 궁금합니다.",
+            "promise_id": "samsung-p2"
+          }
+        ]
+      }
+    },
+    {
+      "id": "skhynix",
+      "name": "SK하이닉스",
+      "check_note": "김서원 독립 Human Review를 반영한 검증용 시연 데이터입니다. 자동 엔진 결과와 Human Gold 합의 평가는 별도로 구분합니다.",
+      "reports": {
+        "promise": [
+          {
+            "title": "2024 사업보고서",
+            "url": "https://dart.fss.or.kr/navi/searchNavi.do?naviCode=A002&naviCrpCik=00164779&naviCrpNm=SK하이닉스"
+          }
+        ],
+        "evidence": [
+          {
+            "title": "2025 사업보고서",
+            "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260317000635"
+          },
+          {
+            "title": "2026 반기보고서",
+            "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003509"
+          }
+        ]
+      },
+      "promises": [
+        {
+          "id": "skhynix-p1",
+          "type": "specific",
+          "title": "SOCAMM·LPCAMM으로 AI 서버·PC 시장 대응",
+          "sentence": "Module 형태의 새로운 Form Factor인 SOCAMM** 및 LPCAMM*** 형태로 AI向 Server 및 PC 시장 대응 예정",
+          "source": {
+            "report": "2024 사업보고서",
+            "section": "II. 사업의 내용 / DART Page 29",
+            "url": "https://dart.fss.or.kr/navi/searchNavi.do?naviCode=A002&naviCrpCik=00164779&naviCrpNm=SK하이닉스"
+          },
+          "verdict": "not_verifiable",
+          "reason": "사람이 확인한 2025 사업보고서와 2026 반기보고서 범위에서는 이 약속과 직접 연결되는 실행 근거 문장을 찾지 못했습니다. 실제 미이행이라는 뜻은 아닙니다.",
+          "evidence": []
+        },
+        {
+          "id": "skhynix-p2",
+          "type": "specific",
+          "title": "ZUFS 4.0 양산 및 온디바이스 AI 스마트폰 탑재",
+          "sentence": "ZUFS 4.0 제품 양산에 들어갈 계획이며, 양산 제품은 향후 글로벌 기업들이 내놓을 온디바이스(On- Device) AI 스마트폰들에 탑재될 예정",
+          "source": {
+            "report": "2024 사업보고서",
+            "section": "II. 사업의 내용 / DART Page 29",
+            "url": "https://dart.fss.or.kr/navi/searchNavi.do?naviCode=A002&naviCrpCik=00164779&naviCrpNm=SK하이닉스"
+          },
+          "verdict": "not_verifiable",
+          "reason": "사람이 확인한 후속 정기공시 범위에서는 ZUFS 4.0 양산과 온디바이스 AI 스마트폰 탑재를 직접 확인할 수 있는 근거 문장을 찾지 못했습니다. 실제 미이행이라는 뜻은 아닙니다.",
+          "evidence": []
+        },
+        {
+          "id": "skhynix-p3",
+          "type": "specific",
+          "title": "AI 데이터센터용 QLC 61TB Gen5 기술력 확보",
+          "sentence": "최근 AI 서버 확대로 부상하고 있는 고용량 QLC 엔터프라이즈 SSD 시장 적기 대응을 위해 Solidigm과의 통합 시너지를 강화하고, AI 데이터센터용 QLC 기반 61TB Gen5 제품 기술력 확보하는 등 기술 경쟁력 우위를 지속 유지해 나가겠습니다.",
+          "source": {
+            "report": "2024 사업보고서",
+            "section": "II. 사업의 내용 / DART Page 40",
+            "url": "https://dart.fss.or.kr/navi/searchNavi.do?naviCode=A002&naviCrpCik=00164779&naviCrpNm=SK하이닉스"
+          },
+          "verdict": "partial",
+          "reason": "후속 공시에서 321단 QLC 개발과 고객 인증 진행은 확인되지만, 약속한 61TB Gen5 제품 자체가 동일 범위에서 직접 확인되지는 않아 일부 확인으로 봅니다.",
+          "evidence": [
+            {
+              "sentence": "세계 최초로 321단 QLC를 개발하여 고객 인증을 거치는 등 기술 초격차를 확보하였습니다.",
+              "source": {
+                "report": "2026 반기보고서",
+                "section": "II. 사업의 내용 > 7. 기타 참고사항 / DART Page 35",
+                "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003509"
+              },
+              "citation_verified": true
+            }
+          ]
+        },
+        {
+          "id": "skhynix-d1",
+          "type": "directional",
+          "title": "온디바이스 AI 수요 대응 제품군 준비",
+          "sentence": "앞으로 다가올 온디바이스 AI 수요에 대비하여 데이터 처리 속도와 전력 효율을 개선한 다양한 제품군도 준비 중이며, 고객 수요가 확대되는 시기에 맞춰 적기 공급함으로써 HBM 시장에서 리더십을 계속 이어 나갈 계획입니다.",
+          "source": {
+            "report": "2024 사업보고서",
+            "section": "IV. 이사의 경영진단 및 분석의견 / DART Page 293",
+            "url": "https://dart.fss.or.kr/navi/searchNavi.do?naviCode=A002&naviCrpCik=00164779&naviCrpNm=SK하이닉스"
+          },
+          "verdict": null,
+          "reason": null,
+          "evidence": []
+        }
+      ],
+      "interview_card": {
+        "issues": [
+          {
+            "text": "SOCAMM·LPCAMM 시장 대응 계획은 검토한 후속 공시 범위에서 직접 실행 근거를 확인하지 못했습니다.",
+            "promise_id": "skhynix-p1"
+          },
+          {
+            "text": "ZUFS 4.0 양산·온디바이스 AI 스마트폰 탑재 계획도 검토한 후속 공시 범위에서는 직접 근거가 확인되지 않았습니다.",
+            "promise_id": "skhynix-p2"
+          },
+          {
+            "text": "QLC 분야에서는 321단 QLC 개발과 고객 인증 진행이 확인되지만 61TB Gen5 약속 전체와 동일하지 않아 일부 확인입니다.",
+            "promise_id": "skhynix-p3"
+          }
+        ],
+        "talking_points": [
+          {
+            "text": "후속 공시에서 321단 QLC 개발과 고객 인증 진행을 확인했습니다. AI 데이터센터용 고용량 SSD 전략이 어떤 제품 단계로 이어지는지 관심 있게 보고 있습니다.",
+            "promise_id": "skhynix-p3",
+            "evidence_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003509"
+          },
+          {
+            "text": "QLC 기술에서 개발뿐 아니라 고객 인증 단계까지 공시에 나타난 점이 인상적이었습니다. 실제 고객 요구가 제품 사양에 어떻게 반영되는지 궁금합니다.",
+            "promise_id": "skhynix-p3",
+            "evidence_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003509"
+          },
+          {
+            "text": "61TB Gen5 약속 전체를 같은 공시 범위에서 직접 확인하지 못했기 때문에, 확인된 321단 QLC 개발과 약속 사이의 차이를 면접에서 질문 소재로 활용할 수 있습니다.",
+            "promise_id": "skhynix-p3",
+            "evidence_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003509"
+          }
+        ],
+        "questions": [
+          {
+            "text": "SOCAMM·LPCAMM 기반 AI 서버·PC 시장 대응 계획은 현재 어느 단계까지 진행되고 있는지 궁금합니다.",
+            "promise_id": "skhynix-p1"
+          },
+          {
+            "text": "ZUFS 4.0 양산과 온디바이스 AI 스마트폰 탑재 계획의 현재 진행 상황을 설명해 주실 수 있을까요?",
+            "promise_id": "skhynix-p2"
+          }
+        ]
+      }
+    }
+  ]
+}

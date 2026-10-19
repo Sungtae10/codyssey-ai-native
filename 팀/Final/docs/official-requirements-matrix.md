@@ -14,14 +14,14 @@
 | 팀 역할 분담 | PM·AI·Frontend·Validation·UX | README 8장 | 완료 |
 | AI 윤리 | 비단정 표현, AI 고지, citation verification | docs/ai-ethics.md | 완료 |
 | 개인정보 보호 | 사용자 테스트 실명·연락처 비수집 | docs/ai-ethics.md, 설문 | 완료 |
-| 외부 배포 | 공개 URL https://ai-promise-six.vercel.app | README 14장 제출 링크 | 완료 (10/19 접속 확인). 실제 기업 데이터는 결과 파일을 올린 뒤 |
+| 외부 배포 | 공개 URL https://ai-promise-six.vercel.app | README 14장 제출 링크 | 완료 (10/19 접속 확인). 지금 화면은 사람이 원문 대조한 검증용 시연 데이터(PR #19) |
 | 실제 사용자 5명+ | 같은 Google Form에 작은 과제를 더해 혼자 써 보는 방식으로 최소 5명 (여유가 있으면 6~10명) | docs/user-test-quick.md | **필수 미완료** |
 | 사용자 피드백 반영 | 반복 피드백 1~2건 → commit/PR | docs/feedback-log.md | **필수 미완료** |
 | README 결과 정리 | 배포 URL·사용자 수·피드백·결과 | README | 테스트 후 업데이트 |
 | 발표자료 | 문제→AI→데모→검증→피드백→한계 | docs/presentation-outline.md | 초안 완료 |
 
 ## 제출 직전 반드시 채울 3개
-1. 공개 서비스 URL에 실제 기업 데이터 올리기 (주소는 있음)
+1. 공개 서비스 URL 최종 확인 (주소와 검증용 시연 데이터는 있음)
 2. 실제 사용자 수 및 설문 집계
 3. 실제 피드백 반영 commit/PR
 

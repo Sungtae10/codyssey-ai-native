@@ -61,7 +61,7 @@ python run.py export --companies samsung --copy-to ../app/data/results.json
 python run.py check --file ../app/data/results.json
 ```
 
-SK하이닉스(`skhynix`)는 평가용이라 사람 정답 합의가 끝난 뒤에 `export` 목록에 넣고, 시연용 3곳(`kakao shinhanbank naver`)은 핵심 2곳과 사용자 테스트가 끝난 뒤 시간이 남으면 넣습니다. PDF는 `data/pdf/`에 둡니다 (핵심 2곳 6개, 시연용 3곳 9개. 저장소에 올리지 않습니다).
+사용자 테스트 중에는 `--copy-to`를 빼고 돌립니다. 붙이면 지금 화면의 검증용 시연 데이터(`app/data/results.json`)를 덮어씁니다. 빼면 엔진 결과는 `data/results/ai_promise_data.json`에만 남습니다. SK하이닉스(`skhynix`)는 평가용이라 사람 정답 합의가 끝난 뒤에 `export` 목록에 넣고, 시연용 3곳(`kakao shinhanbank naver`)은 핵심 2곳과 사용자 테스트가 끝난 뒤 시간이 남으면 넣습니다. PDF는 `data/pdf/`에 둡니다 (핵심 2곳 6개, 시연용 3곳 9개. 저장소에 올리지 않습니다).
 
 **코드 점검** (키 없이 가상 회사로 시험)
 
@@ -87,9 +87,20 @@ python tests/ui_check.py         # 화면: 모든 화면(예시 데이터 18개)
 
 ## 5. 화면
 
-- `app/index.html`은 `app/data/results.json`(엔진 결과)을 먼저 읽고, 없으면 `app/data/sample-data.js`(가상 회사 2곳 예시 데이터)를 보여줍니다. 예시 데이터일 때는 화면 위에 "예시 데이터입니다" 띠가 나옵니다.
-- 모든 화면에 "공시 범위 안에서 확인한 결과입니다.", "AI가 생성한 분석입니다." 두 문구가 항상 보입니다.
+- `app/index.html`은 `app/data/results.json`을 먼저 읽고, 없으면 `app/data/sample-data.js`(가상 회사 2곳 예시 데이터)를 보여줍니다. 결과 파일의 `meta.is_sample`이 true이면 화면 맨 위에 안내 띠(`meta.notice`)가 나옵니다.
+- 모든 화면에 안내 문구 2개가 항상 보입니다. 엔진 결과일 때는 "공시 범위 안에서 확인한 결과입니다.", "AI가 생성한 분석입니다."이고, 지금의 검증용 시연 데이터에서는 두 번째 문구가 "AI 기반 서비스의 검증용 시연 데이터이며 사람이 공시 원문을 대조했습니다."입니다 (결과 파일의 `labels.disclaimers`).
 - 화면 고치는 규칙은 `app/README.md`에 있습니다. 디자인 변경은 CSS에서 합니다.
+
+### Final Sprint 데이터 모드 (10/19, PR #19)
+
+현재 `app/data/results.json`에는 **삼성전자·SK하이닉스 실제 공시 문장을 사람이 원문 대조한 검증용 시연 데이터**가 들어 있습니다. 이는 fake sample이 아니지만, 자동 엔진의 최종 accuracy 결과로 주장하지 않습니다.
+
+- 삼성전자: 김서원 연습 Human Review를 v2 기준에 맞춰 정리
+- SK하이닉스: 김서원 독립 Human Review 1차를 반영
+- 화면 상단에 검증용 시연 데이터임을 명시
+- 자동 엔진 결과와 Human Gold 합의 평가는 별도 증빙으로 구분
+
+이 임시 모드는 사용자 테스트에서 **UI/이해도/신뢰도/활용 의향**을 확인하기 위한 것입니다. 실제 AI 정확도 수치가 없으면 만들어 쓰지 않습니다.
 
 ## 6. 작업 규칙
 
@@ -130,6 +141,8 @@ python tests/ui_check.py         # 화면: 모든 화면(예시 데이터 18개)
 
 ## 11. 프로젝트 문서
 
+- [심사용 요약 (Executive Summary)](docs/executive-summary.md)
+- [프로젝트 기획서](docs/project-plan.md)
 - [기능 요구 명세서 (기능·비기능 요구사항)](docs/requirements.md)
 - [공식 요구사항 ↔ 증빙 매트릭스](docs/official-requirements-matrix.md)
 - [제출 증빙 체크리스트 (공식 미션 19개 항목)](docs/submission-evidence-checklist.md)
@@ -142,6 +155,10 @@ python tests/ui_check.py         # 화면: 모든 화면(예시 데이터 18개)
 - [10분 비대면 사용자 테스트 (화면공유)](docs/user-test-protocol.md)
 - [사용자 피드백 반영 로그](docs/feedback-log.md)
 - [최종 발표 구성안](docs/presentation-outline.md)
+- [3분 시연 대본](docs/demo-script-3min.md)
+- [예상 심사 질문과 답](docs/judge-qa.md)
+- [Final Project 결과보고서 초안](docs/final-report-draft.md)
+- [팀 기여 내역](docs/team-contributions.md)
 - [시연용 기업 확장 계획](docs/company-expansion-plan.md)
 - [AI 윤리·신뢰성](docs/ai-ethics.md)
 - [Vercel 배포](docs/deploy.md)
@@ -177,7 +194,8 @@ python tests/ui_check.py         # 화면: 모든 화면(예시 데이터 18개)
 5. **실사용 검증**: 최소 5명 테스트 및 실제 피드백 반영을 제출 증빙으로 남김
 
 ### 제출 링크
-- 서비스 URL: https://ai-promise-six.vercel.app (10/19 접속 확인. 실제 기업 데이터는 엔진 결과 파일을 올린 뒤 보입니다)
+- 서비스 URL: https://ai-promise-six.vercel.app (10/19 접속 확인. 지금은 사람이 원문 대조한 검증용 시연 데이터, 5장)
+- 서비스 URL 최종 검증: **제출 전 시크릿 창/모바일에서 직접 확인 필요**
 - 사용자 테스트: **[실제 인원 입력]명**
 - 피드백 반영: [docs/feedback-log.md](docs/feedback-log.md)
 - 발표자료: **[완성 후 링크 입력]**

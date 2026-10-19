@@ -6,6 +6,7 @@
 두 결과를 순위 합치기(RRF)로 섞습니다. DART-Foresight AI 평가에서 검색이 약점(Hit@4 14/20)이었기 때문에
 의미 검색만 쓰지 않고 키워드 검색을 더했습니다.
 """
+import re
 import math
 import os
 from collections import Counter
@@ -79,7 +80,9 @@ class VectorIndex:
         from langchain_chroma import Chroma
         from .llm import get_embeddings
         emb = get_embeddings(cfg)
-        name = f"aip_{company_key}_evidence"
+        # 임베딩 모델마다 벡터 크기가 달라서(small 1536, large 3072) 모델 이름을 DB 이름에 넣습니다
+        model_tag = re.sub(r"[^a-z0-9]+", "-", str(cfg["llm"]["embed_model"]).lower()).strip("-")
+        name = f"aip_{company_key}_{model_tag}"[:60].rstrip("-_")
         self.db = Chroma(collection_name=name, embedding_function=emb, persist_directory=persist_dir)
         if self.db._collection.count() != len(corpus.sents):
             if self.db._collection.count() > 0:

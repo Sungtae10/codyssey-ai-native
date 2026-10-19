@@ -25,9 +25,9 @@ AI가 고른 근거는 원문에 그대로 있는지 코드로 다시 검사합�
 | 영역 | 쓰는 것 | 고른 이유 |
 | --- | --- | --- |
 | 엔진 언어 | Python (CI는 3.11) | 팀에서 RAG를 만들어 본 사람이 김성태뿐이고, 그 경험(DART-Foresight AI)이 Python이라 그대로 이어 씁니다 |
-| LLM | OpenAI gpt-4o-mini, temperature 0 | DART-Foresight AI와 같은 구성입니다. 같은 입력에 최대한 같은 답이 나오도록 temperature를 0으로 둡니다. 판정 정확도가 낮으면 `engine/config.yaml`의 `judge_model` 한 줄만 바꿔 다시 잴 수 있게 나눠 두었습니다 |
+| LLM | OpenAI: 약속 추출 gpt-6-luna, 판정·면접 카드 gpt-6.1-sol, "일부 확인" 판정만 gpt-6-astra로 두 번째 판정 (10/19 올림, 처음 구성은 gpt-4o-mini) | 작업마다 모델을 나눴습니다. 약속 추출은 구조화 작업이라 가벼운 모델, 판정은 약속과 근거의 차이를 보는 핵심 단계라 더 강한 모델을 씁니다. 상위 모델은 경계가 애매한 판정에만 써서 비용을 줄입니다. 설정한 모델을 부를 수 없으면 gpt-4o-mini로 바꿔 계속하고, 실제로 답한 모델을 결과 파일(`models_used`, `judge_model_used`)과 기록에 남깁니다. 모델을 바꾼 효과는 엔진 결과를 같은 사람 정답과 비교해서만 말합니다 |
 | AI 연결 | LangChain (langchain-openai, langchain-chroma) | DART-Foresight AI의 검색 구성을 출처를 밝히고 다시 씁니다 |
-| 근거 검색 | BM25(직접 구현) + text-embedding-3-small + ChromaDB, RRF로 순위 합치기 | DART-Foresight AI 평가에서 의미 검색만으로는 Hit@4가 14/20으로 약했습니다(`engine/README.md` 9장). 제품명, 공장명처럼 글자가 같은 문장을 잘 찾는 키워드 검색을 더했습니다 |
+| 근거 검색 | BM25(직접 구현) + text-embedding-3-large(10/19 올림, 처음은 small) + ChromaDB, RRF로 순위 합치기 | DART-Foresight AI 평가에서 의미 검색만으로는 Hit@4가 14/20으로 약했습니다(`engine/README.md` 9장). 제품명, 공장명처럼 글자가 같은 문장을 잘 찾는 키워드 검색을 더했습니다 |
 | PDF 읽기 | pypdf | DART에서 받은 정기보고서 PDF를 장별 문장으로 나눕니다 |
 | 화면 | HTML, CSS, JavaScript (빌드 없음) | 화면 담당이 React·Streamlit 경험이 없고 AI 도구로 Vercel에 배포해 본 경험이 있어 가장 단순한 정적 웹을 골랐습니다. 화면은 결과 파일 하나만 읽어 엔진과 따로 만들 수 있습니다 |
 | 배포 | Vercel (Root Directory: `app`) | 빌드 없이 `app/` 폴더를 바로 배포하고, main에 올리면 자동으로 다시 배포됩니다. 저장소와 배포를 김성태 계정 하나로 모았습니다 (10/8 결정) |

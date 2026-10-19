@@ -37,7 +37,7 @@ class FakeLLM:
                     out.append({"id": m.group(1), "type": "specific" if SPECIFIC.search(t) else "directional",
                                 "title": t[:22]})
             return json.dumps({"promises": out}, ensure_ascii=False)
-        if task in ("judge", "related"):
+        if task in ("judge", "related", "judge_escalation"):
             m = re.search(r"(?:약속 문장|방향성 약속): (.*)", user)
             promise = m.group(1) if m else ""
             scored = sorted(((_sim(promise, t), sid, t) for sid, t in _cands(user)), reverse=True)

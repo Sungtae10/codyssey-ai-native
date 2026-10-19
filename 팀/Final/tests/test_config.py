@@ -21,6 +21,16 @@ def main():
     cfg = load_config()
     problems = []
 
+    llm = cfg.get("llm") or {}
+    for key in ["extract_model", "judge_model", "card_model", "embed_model"]:
+        if not str(llm.get(key) or "").strip():
+            problems.append(f"llm.{key}가 비어 있습니다")
+    verdicts = {"evidence_found", "partial", "not_verifiable", "company_reported_not_pursued"}
+    if llm.get("escalation_model") and not set(llm.get("escalate_verdicts") or []) <= verdicts:
+        problems.append(f"llm.escalate_verdicts에 판정 값이 아닌 것이 있습니다: {llm.get('escalate_verdicts')!r}")
+    if llm.get("temperature") is not None and type(llm.get("temperature")) not in (int, float):
+        problems.append(f"llm.temperature는 숫자 또는 null이어야 합니다: {llm.get('temperature')!r}")
+
     r = cfg.get("retrieval") or {}
     for key in ["top_windows", "max_candidates", "max_attempts"]:
         if type(r.get(key)) is not int or r.get(key) < 1:   # true/false는 숫자로 치지 않음

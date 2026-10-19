@@ -3,6 +3,8 @@
 Agent처럼 움직이는 부분: 근거를 못 찾으면 AI가 새 검색어를 정해 최대 2번 더 찾습니다(총 3번).
 인용 검사: AI가 고른 근거 문장이 읽은 장의 원문에 그대로 있는지 코드로 확인합니다.
 근거가 필요한 판정인데 통과한 근거가 없으면 '공시에서 확인 불가'로 낮추고 기록을 남깁니다.
+10/19 두 번째 판정: 설정(llm.escalate_verdicts, 기본 '일부 확인')에 해당하는 판정은 llm.escalation_model로
+같은 후보를 한 번 더 판정합니다. 두 판정과 실제로 답한 모델을 결과(escalation, judge_model_used)에 남깁니다.
 """
 import json
 import os
@@ -75,6 +77,23 @@ def judge_one(p, corpus, retriever, norm_by_sec, llm, max_attempts, evid_titles)
         if not nq:
             break
         queries.append(nq)
+    judge_model_used = llm.last_model
+
+    # 두 번째 판정: 경계가 애매한 판정만 상위 모델로 다시 봅니다 (비용을 아끼려고 전부 하지 않음)
+    escalation = None
+    llm_cfg = llm.cfg.get("llm", {})
+    if llm_cfg.get("escalation_model") and verdict in (llm_cfg.get("escalate_verdicts") or []):
+        data2 = llm.json("judge_escalation", JUDGE_SYSTEM, JUDGE_USER.format(
+            sentence=p["sentence"], title=p["title"], report=p["source"]["report"],
+            section=p["source"]["section"], queries=" / ".join(queries), candidates=_cand_text(corpus, cand)),
+            "escalation_model")
+        v2 = data2.get("verdict") if data2.get("verdict") in VERDICTS else None
+        ids2 = [x for x in (data2.get("evidence_ids") or []) if x in cand][:3]
+        # 근거가 필요한 판정인데 근거 번호를 안 줬으면 첫 판정을 그대로 둡니다 (인용 검사에서 억지로 낮아지지 않게)
+        adopted = bool(v2) and (v2 == "not_verifiable" or bool(ids2))
+        escalation = {"model": llm.last_model, "first_verdict": verdict, "second_verdict": v2, "adopted": adopted}
+        if adopted:
+            verdict, data, ev_ids = v2, data2, ids2
 
     attempts = len(log)
     flags = []
@@ -95,8 +114,11 @@ def judge_one(p, corpus, retriever, norm_by_sec, llm, max_attempts, evid_titles)
         if bad or not reason:
             flags.append(f"판정 이유 교체({', '.join(bad) or '비어 있음'})")
             reason = SAFE_REASON[verdict]
-    return {**p, "verdict": verdict, "reason": reason, "evidence": evidence,
-            "search_attempts": attempts, "search_log": log, "flags": flags}
+    out = {**p, "verdict": verdict, "reason": reason, "evidence": evidence,
+           "search_attempts": attempts, "search_log": log, "flags": flags, "judge_model_used": judge_model_used}
+    if escalation:
+        out["escalation"] = escalation
+    return out
 
 
 def related_one(p, corpus, retriever, norm_by_sec, llm):
@@ -129,8 +151,9 @@ def run_judge(cfg, company, llm, work, mock=False, limit=None):
             judged.append(judge_one(p, corpus, retriever, norm_by_sec, llm, max_attempts, evid_titles))
         else:
             judged.append(related_one(p, corpus, retriever, norm_by_sec, llm))
+    used = {k: sorted(v) for k, v in llm.used_models.items()}
     with open(os.path.join(work, "judged.json"), "w", encoding="utf-8") as f:
-        json.dump({"retrieval_mode": retriever.mode, "promises": judged}, f, ensure_ascii=False, indent=1)
+        json.dump({"retrieval_mode": retriever.mode, "models_used": used, "promises": judged}, f, ensure_ascii=False, indent=1)
 
     spec = [j for j in judged if j["type"] == "specific"]
     counts = {v: sum(1 for j in spec if j["verdict"] == v) for v in VERDICTS}
@@ -139,5 +162,10 @@ def run_judge(cfg, company, llm, work, mock=False, limit=None):
     for j in judged:
         tag = VERDICT_KO.get(j["verdict"], "방향성") if j["verdict"] else "방향성"
         extra = f"  ※ {'; '.join(j['flags'])}" if j["flags"] else ""
+        esc = j.get("escalation")
+        if esc:
+            v1, v2 = VERDICT_KO.get(esc["first_verdict"], esc["first_verdict"]), VERDICT_KO.get(esc["second_verdict"], esc["second_verdict"])
+            extra += f"  ※ 두 번째 판정({esc['model']}): {v1} → {v2}{'' if esc['adopted'] else ' (근거 번호가 없어 첫 판정 유지)'}"
         print(f"  {j['id']} [{tag}] 검색 {j['search_attempts']}번, 근거 {len(j['evidence'])}개{extra}")
+    print("실제로 답한 모델: " + ", ".join(f"{k} {'/'.join(v)}" for k, v in used.items()))
     return judged

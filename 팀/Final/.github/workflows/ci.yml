@@ -28,6 +28,9 @@ jobs:
       - name: Run offline mock end-to-end test
         run: python tests/test_mock.py
 
+      - name: Check second-opinion judging and fallback model (no API)
+        run: python tests/test_escalation.py
+
       - name: Validate sample JSON
         run: python -m json.tool tests/sample_data.json > /dev/null
 

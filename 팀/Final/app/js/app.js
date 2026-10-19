@@ -71,7 +71,13 @@
     skhynix: ['skhynix', 'hynix'],
     kakao: ['kakao'],
     shinhanbank: ['shinhan', 'shinhanbank'],
-    naver: ['네이버']
+    naver: ['네이버'],
+    kbbank: ['국민은행', 'kb', 'kb은행', 'kookmin', 'kbbank'],
+    wooribank: ['woori', 'wooribank'],
+    hanabank: ['hana', 'hanabank'],
+    kbfg: ['kb', 'kb금융지주', 'kbfinancial'],
+    hyundai: ['현대차', 'hyundai', 'hyundaimotor'],
+    skt: ['skt', 'sktelecom', '에스케이텔레콤']
   };
   // 상장 종목 이름이 흔히 부르는 이름과 다른 경우 (예: 현대자동차는 상장 종목 이름이 '현대차')
   var QUERY_ALIASES = {
@@ -219,6 +225,11 @@
       })
       .catch(function () { LISTED_STATE = 'failed'; refreshSearch(); });
   }
+  // 첫 화면 숫자 1번: 검색할 수 있는 상장 기업 수 (listed-companies.json의 count, 불러오기 전에는 …)
+  function listedCountText() {
+    if (LISTED_STATE === 'ready') return Number(LISTED.count || LISTED.companies.length).toLocaleString('ko-KR');
+    return LISTED_STATE === 'failed' ? '-' : '…';
+  }
   function searchHelpText() {
     var ready = (DATA.companies || []).filter(isReady).length;
     var base = '분석 완료 ' + ready + '곳';
@@ -264,7 +275,7 @@
           '<span>회사 이름을 다시 확인해 주세요. 상장하지 않은 회사는 사업보고서가 없을 수 있어요.</span></div>';
       }
       if (listed.length) {
-        note = '<p class="search-note">상장 기업은 DART에 사업보고서를 내요. 엔진에 이 회사의 보고서 3개(약속 1, 근거 2)를 넣어 돌리면 같은 4단계로 분석해요. 지금은 분석을 마친 기업만 결과가 열려요.</p>';
+        note = '<p class="search-note">상장 기업은 DART에 사업보고서를 내요. 엔진이 OpenDART에서 이 회사의 보고서 3개(약속 1, 근거 2)를 자동으로 받아 같은 4단계로 분석해요. 지금은 분석을 마친 기업만 결과가 열려요.</p>';
       }
     } else if (LISTED_STATE === 'failed') {
       note = '<p class="search-note">상장 기업 목록을 불러오지 못해서, 이 서비스에 있는 기업만 찾았어요.</p>';
@@ -279,6 +290,8 @@
     var box = document.getElementById('search-results');
     var help = document.getElementById('search-help');
     if (help) help.textContent = searchHelpText();
+    var stat = document.getElementById('stat-listed');
+    if (stat) stat.textContent = listedCountText();
     if (input && box) box.innerHTML = searchResults(input.value);
   }
 
@@ -319,6 +332,9 @@
 
     var humanNames = readyList.filter(function (c) { return dataMode(c) === 'human'; }).map(function (c) { return c.name; });
     var engineNames = readyList.filter(function (c) { return dataMode(c) === 'engine'; }).map(function (c) { return c.name; });
+    var readyStatLabel = humanNames.length && engineNames.length
+      ? '분석 완료 기업 (사람 대조 ' + humanNames.length + ', AI 엔진 ' + engineNames.length + ')'
+      : '분석 완료 기업';
     var modeNote;
     if (dataMode() === 'sample' && !humanNames.length && !engineNames.length) {
       modeNote = '지금 보이는 기업과 판정은 화면 형식을 보여 주는 가상 예시예요.';
@@ -347,8 +363,10 @@
           '<div class="tech-strip" aria-label="서비스 핵심 기술">' +
             '<span>DART 공시</span><span>하이브리드 RAG (키워드 + 의미 검색)</span><span>LLM 판정</span><span>원문 인용 검사</span>' +
           '</div>' +
+          // 10/19: 검색 범위(상장 기업 전체)를 먼저, 깊이 분석한 기업 수는 그다음 (숫자는 모두 데이터에서 셈)
           '<div class="hero-stats" aria-label="현재 분석 범위">' +
-            '<div><strong>' + readyCompanies.length + '</strong><span>분석 완료 기업</span></div>' +
+            '<div><strong id="stat-listed">' + esc(listedCountText()) + '</strong><span>상장 기업 검색</span></div>' +
+            '<div><strong>' + readyCompanies.length + '</strong><span>' + esc(readyStatLabel) + '</span></div>' +
             '<div><strong>' + totalSpecific + '</strong><span>구체적 AI 약속</span></div>' +
             '<div><strong>' + verifiedCitations + '</strong><span>원문 대조 근거</span></div>' +
           '</div>' +
@@ -366,7 +384,7 @@
             '<li><span class="step-num">3</span>판정: 판정기준 v2로 4가지 중 하나로 정해요</li>' +
             '<li><span class="step-num">4</span>원문 인용 검사: 근거 문장이 원문에 그대로 있는지 다시 확인해요</li>' +
           '</ol>' +
-          '<p class="note">' + esc(modeNote) + ' 새 기업은 사업보고서 3개(약속 1, 근거 2)를 엔진에 넣으면 같은 순서로 분석해요.</p>' +
+          '<p class="note">' + esc(modeNote) + ' 새 기업은 엔진이 OpenDART에서 보고서 3개(약속 1, 근거 2)를 자동으로 받아 같은 순서로 분석해요.</p>' +
         '</section>' +
       '</main>' +
       '<footer class="bottombar"><p class="note">자료: 금융감독원 전자공시(DART)' + (allReports.length ? ' · ' + esc(allReports.join(', ')) : '') + ' · 상장 기업 목록: 한국거래소(KRX)</p></footer>';
@@ -417,6 +435,13 @@
         '</section>' +
         '<ul class="promise-list">' + items + '</ul>' +
         dirBlock +
+        // 10/19: 내 경험 연결을 면접 카드 뒤에만 두지 않고 기업 화면에서도 바로 열 수 있게
+        (isReady(company) && spec.length
+          ? '<a class="fit-entry" href="#/c/' + encodeURIComponent(company.id) + '/fit">' +
+              '<span class="fit-entry-main"><span class="fit-entry-title">내 이력서로 맞춤 포인트 만들기</span>' +
+              '<span class="fit-entry-desc">이력서 경험과 ' + esc(company.name) + ' AI 약속이 만나는 지점을 AI가 찾아요. 이력서는 저장하지 않아요.</span></span>' + ICON.chevron +
+            '</a>'
+          : '') +
         '<p class="note">' + esc(nv.label || '') + ': ' + esc(nv.meaning || '') + '</p>' +
       '</main>' +
       '<footer class="bottombar"><a class="btn btn-primary" href="#/c/' + encodeURIComponent(company.id) + '/card">면접 카드 보기</a></footer>';
@@ -788,11 +813,20 @@
   }
 
   /* ---------- 주소(#)에 맞는 화면 그리기 ---------- */
+  function viewPending(company) {
+    return topbar(backLink('#/', '기업 선택'), company) +
+      '<main class="content">' + disclaimers(company) +
+        '<section class="card"><p class="eyebrow">' + esc(company.name) + '</p>' +
+        '<h1 class="headline">아직 분석 결과가 없어요</h1>' +
+        '<p class="note">' + esc(company.check_note || '공시 수집과 분석을 준비하고 있어요') + '</p></section>' +
+      '</main>';
+  }
   function notFound() {
     return topbar(backLink('#/', '처음으로')) + '<main class="content">' + disclaimers() + '<p class="empty">찾는 화면이 없어요.</p></main>';
   }
 
   // 그리는 중 오류가 나면 빈 화면 대신 안내를 보여주고, 오류는 그대로 던져서 검사(ui_check)에 잡히게 해요
+  var SCROLL = {}, LAST_Y = 0;   // 화면 주소별로 마지막에 보던 위치
   function render() {
     try { draw(); } catch (e) {
       appEl.innerHTML = '<main class="content"><p class="empty">화면을 그리지 못했어요. 새로고침해 주세요.</p></main>';
@@ -807,6 +841,8 @@
 
     if (parts.length === 0) {
       html = viewHome();
+    } else if (company && !isReady(company)) {
+      html = viewPending(company); title = company.name;
     } else if (company && parts.length === 2) {
       html = viewList(company); title = company.name + ' 약속 목록';
     } else if (company && parts[2] === 'p' && findPromise(company, parts[3])) {
@@ -822,7 +858,9 @@
 
     appEl.innerHTML = html;
     document.title = title === L.service_name ? L.service_name + ' | ' + L.service_subtitle : title + ' | ' + L.service_name;
-    window.scrollTo(0, 0);
+    // 첫 화면과 약속 목록으로 돌아올 때는 보던 위치로, 다른 화면은 맨 위에서 시작해요
+    var keep = parts.length <= 2 ? SCROLL[location.hash || '#/'] : 0;
+    window.scrollTo(0, keep || 0);
 
     var themeBtn = document.getElementById('theme-btn');
     if (themeBtn) themeBtn.addEventListener('click', toggleTheme);
@@ -858,7 +896,12 @@
     L = {};
     Object.keys(DEFAULT_LABELS).forEach(function (k) { L[k] = labels[k] != null ? labels[k] : DEFAULT_LABELS[k]; });
     if (!L.promise_types.directional) L.promise_types = DEFAULT_LABELS.promise_types;
-    window.addEventListener('hashchange', render);
+    window.addEventListener('scroll', function () { LAST_Y = window.scrollY; }, { passive: true });
+    window.addEventListener('hashchange', function (e) {
+      var from = (e.oldURL || '').split('#')[1];
+      SCROLL['#' + (from || '/')] = LAST_Y;
+      render();
+    });
     render();
   }
 

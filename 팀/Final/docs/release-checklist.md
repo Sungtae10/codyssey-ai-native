@@ -2,27 +2,27 @@
 
 ## P0: 제출 불가를 막는 항목
 - [ ] 공개 URL이 외부 브라우저에서 열린다
-- [ ] 실제 사용자 5명 이상 설문 응답이 있다
-- [ ] 실제 피드백 1건 이상 제품에 반영했다
-- [ ] README에 공개 URL·사용자 수·반영 내용을 적었다
-- [ ] AI 생성 분석 고지가 화면에 보인다
+- [x] 실제 사용자 5명 이상 설문 응답이 있다 (12명)
+- [x] 실제 피드백 1건 이상 제품에 반영했다 (5건, PR #41)
+- [x] README에 공개 URL·사용자 수·반영 내용을 적었다
+- [x] AI 생성 분석 고지가 화면에 보인다 (`tests/ui_check.py`가 모든 화면에서 확인)
 
 ## P1: 서비스 품질
-- [ ] Core 2 실제 데이터가 화면에 나온다
+- [x] Core 2 실제 데이터가 화면에 나온다 (운영 사이트 results.json 5개 기업, 10/19 23:40 확인)
 - [ ] 약속 상세에서 DART 원문 링크가 열린다
 - [ ] citation_verified 표시가 실제 데이터와 일치한다
-- [ ] 면접 카드가 비어 있거나 깨지지 않는다
-- [ ] 모바일 390px에서 가로 스크롤이 없다
-- [ ] 다크/라이트 모드 주요 텍스트 대비 이상 없음
+- [x] 면접 카드가 비어 있거나 깨지지 않는다 (`tests/ui_check.py`: 기업 5곳 카드 화면)
+- [x] 모바일 390px에서 가로 스크롤이 없다 (`tests/ui_check.py`: 390·320·1280px)
+- [x] 다크/라이트 모드 주요 텍스트 대비 이상 없음 (`tests/ui_check.py`)
 
 ## P1: 코드·문서
-- [ ] python tests/test_config.py
-- [ ] python tests/test_mock.py
-- [ ] python tests/test_ui_static.py
-- [ ] python tests/ui_check.py
-- [ ] docs/requirements.md 존재
-- [ ] docs/official-requirements-matrix.md 최신화
-- [ ] docs/feedback-log.md 실제 값 기입
+- [x] python tests/test_config.py (CI)
+- [x] python tests/test_mock.py (CI)
+- [x] python tests/test_ui_static.py (CI)
+- [x] python tests/ui_check.py (CI)
+- [x] docs/requirements.md 존재
+- [x] docs/official-requirements-matrix.md 최신화 (10/20)
+- [x] docs/feedback-log.md 실제 값 기입
 - [x] 발표자료/영상 링크 또는 파일 경로 README에 추가 (드라이브 폴더 `1020_발표자료_영상`, 10/19)
 
 ## P2: 시간이 남으면

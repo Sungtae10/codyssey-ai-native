@@ -197,6 +197,16 @@ def main():
     check(dart.decode_xml('<?xml version="1.0" encoding="euc-kr"?><A>가</A>'.encode("cp949")).endswith("<A>가</A>"), "euc-kr XML 읽기")
     check(dart.main_xml_name(["1.xml", "20250402000002_00760.xml", "20250402000002.xml"], "20250402000002") == "20250402000002.xml", "본문 XML 고르기")
 
+    # 3-2) 문장 나누기: 번호 목록·줄표 목록·각주가 한 줄로 붙은 공시 글 (10/19 보강)
+    from aipromise.collect import section_sentences
+    glued = ("운영은 수탁사가 담당합니다.(5) 기존 사업과의 연관성- 해당 사항이 없습니다.(7) 향후 추진계획- 시간을 거듭하면서 "
+             "AI 캠퍼스의 활용이 증가되는 것이 목표입니다. 6월 개발 완료 후 10월 양산 시작됨- 이전 세대보다 약 10% 향상된 "
+             "동작속도 구현됨- Module 형태의 새로운 Form Factor로 AI 서버 시장 대응 예정 (*) GDDR: 그래픽 처리용 메모리")
+    parts = [t for _, t in section_sentences([(1, glued)])]
+    check("(7) 향후 추진계획- 시간을 거듭하면서 AI 캠퍼스의 활용이 증가되는 것이 목표입니다." in parts, f"번호 목록 나누기: {parts}")
+    check("Module 형태의 새로운 Form Factor로 AI 서버 시장 대응 예정" in parts, f"줄표 목록·각주 나누기: {parts}")
+    check(not any("수탁사" in t and "AI 캠퍼스" in t for t in parts), f"다른 항목이 한 문장에 섞임: {parts}")
+
     # 4) 가짜 OpenDART로 기업 1곳 전체
     real_get, real_sleep = dart._get, dart.time.sleep
     dart._get, dart.time.sleep = fake_get, (lambda s: None)

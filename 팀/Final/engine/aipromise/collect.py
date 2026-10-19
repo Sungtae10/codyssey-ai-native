@@ -172,6 +172,18 @@ def _glue(prev, nxt):
     return False
 
 
+# 문장 나누기 (10/19 보강). 공시 글은 번호 목록과 줄표 목록이 한 줄로 붙어 있는 일이 많아, 아래 자리에서도 나눕니다.
+# 1) 문장 끝 + 띄어쓰기  2) "~니다.(5) 기존 사업" 처럼 띄어쓰기 없이 번호가 붙은 곳
+# 3) "~양산 시작됨- 이전 세대" 처럼 '됨/함/음/임' 뒤 줄표 목록  4) "~대응 예정 (*) GDDR" 처럼 각주 표시 앞
+# (예: 카카오 2024 정관 장의 "...담당합니다.(5) ...(7) 향후 추진계획- AI 캠퍼스..."가 한 문장으로 붙어 화면에 그대로 보였음)
+_SPLIT = re.compile(
+    r"(?<=[.?!])\s+(?=\S)"
+    r"|(?<=[다요음함임됨]\.)(?=\(\d{1,2}\)|[①-⑳])"
+    r"|(?<=[됨함음임])\s*-\s+(?=\S)"
+    r"|\s+(?=\(\*{1,4}\)\s)"
+)
+
+
 def section_sentences(page_slices, min_len=12, max_len=500):
     """[(쪽 번호, 글)] → [(쪽 번호, 문장)]. 쪽을 넘어가는 문장도 이어 붙입니다.
     제목 줄과, 문장 밖의 짧은 조각(표 칸 등)은 문장에 섞이지 않게 뺍니다."""
@@ -202,7 +214,7 @@ def section_sentences(page_slices, min_len=12, max_len=500):
     out = []
     for text, mk in blocks:
         pos = 0
-        for part in re.split(r"(?<=[.?!])\s+(?=\S)", text):
+        for part in _SPLIT.split(text):
             start = text.find(part, pos)
             pos = start + len(part)
             page = mk[0][1]

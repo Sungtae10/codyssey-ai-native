@@ -84,7 +84,7 @@ AI 판정이 '공시에서 확인 불가'이면 새 검색어로 다시 찾습�
 `app/api/resume-fit.js` (Vercel Node.js 함수, 주소 `/api/resume-fit`)
 
 1. 화면이 이력서 글(80~6,000자)과 기업 id를 보냅니다. PDF는 브라우저에서 pdf.js로 글자만 뽑아 보냅니다.
-2. 함수가 결과 파일(`data/results.json`)에서 그 기업의 약속, 판정, 인용 검사를 통과한 근거만 골라 이력서와 함께 OpenAI Responses API에 보냅니다(gpt-6.1-sol, JSON 형식 지정. 실패하면 형식 없이, 그다음 gpt-4o-mini).
+2. 함수가 결과 파일(`app/data/results.json`)에서 그 기업의 약속, 판정, 인용 검사를 통과한 근거만 골라 이력서와 함께 OpenAI Responses API에 보냅니다(gpt-6.1-sol, JSON 형식 지정. 실패하면 형식 없이, 그다음 gpt-4o-mini).
 3. 근거 검사: 결과 파일에 없는 약속 번호, 보낸 이력서에 없는 인용, 점수·합격 가능성·단정 표현이 든 항목을 빼고 뺀 개수를 함께 돌려줍니다.
 4. 이력서는 저장하지 않고 로그에 남기지 않습니다. 같은 주소에서 10분에 6번까지만 받습니다(서버 한 대 기준).
 5. `GET /api/resume-fit`은 키가 들어 있는지만 알려 주고, `GET /api/resume-fit?check=1`은 짧은 시험 문장으로 모델 호출을 확인합니다(10분에 한 번만 실제 호출).

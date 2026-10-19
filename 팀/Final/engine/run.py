@@ -8,7 +8,7 @@
   python run.py all     --company samsung    1~7단계를 한 번에
   python run.py export  --companies samsung skhynix [--copy-to 화면의_데이터_파일_경로]
   python run.py check   --file ../data/results/ai_promise_data.json   화면 규칙 점검
-  python run.py scan    --company hyundai    후보 기업 미리 보기: 2024 사업보고서 PDF 1개로 수집 + 약속 추출만 하고
+  python run.py scan    --company kakao      후보 기업 미리 보기: 2024 사업보고서 PDF 1개로 수집 + 약속 추출만 하고
                                              구체적 약속이 기준(--min, 기본 3개) 이상인지 알려 줌
 
 공통 옵션: --mock (가짜 모델로 코드 점검), --config 다른 설정 파일

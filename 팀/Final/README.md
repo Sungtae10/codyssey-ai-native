@@ -2,11 +2,79 @@
 
 회사가 사업보고서에 "AI로 이것을 하겠다"고 쓴 약속을 찾고, 다음 보고서에 실행 근거가 있는지 찾아 4가지(근거 확인, 일부 확인, 공시에서 확인 불가, 회사가 미추진으로 공시)로 판정해 보여주는 웹 서비스입니다. Codyssey Final Project입니다.
 
+- 서비스 주소: https://ai-promise-six.vercel.app (Vercel, `app/` 폴더. main에 올리면 자동으로 다시 배포됩니다)
+- 사용자: 취업·이직 준비자 (면접 전 5분 안에 지원 회사의 AI 계획과 실행을 공시 원문으로 확인)
 - 핵심 기업: 삼성전자(개발·시연용), SK하이닉스(평가용)
 - 확장 데모 기업: 카카오, 신한은행, NAVER. 시간 부족 시 Core 2(삼성전자·SK하이닉스)를 먼저 완성하고, 확장 3곳은 시연용으로 표시해 Human blind evaluation 수치에는 포함하지 않습니다.
 - 약속을 찾는 보고서: 2024 사업보고서 / 근거를 찾는 보고서: 2025 사업보고서, 2026 반기보고서
 
-## 1. 폴더
+## 1. 핵심 AI 활용
+
+미션의 필수 기술 요소 5개(AI Agent, RAG, 멀티모달 AI, 자동화 워크플로우, Long-term Memory) 중 2개 이상이 필요합니다. AI Promise는 **RAG와 자동화 워크플로우를 주 근거**로 제시하고, **AI Agent는 제한적 재검색 형태로 보조**로 씁니다. 자세한 내용은 [기능 요구 명세서](docs/requirements.md) 4장에 있습니다.
+
+| 기술 요소 | AI Promise에서 하는 일 | 코드 |
+| --- | --- | --- |
+| RAG (주) | 후속 보고서에서 키워드 검색(BM25)과 의미 검색(OpenAI 임베딩 + ChromaDB)으로 근거 후보를 찾고, 그 후보 문장만 근거로 LLM이 판정합니다 | `engine/aipromise/retrieve.py`, `engine/aipromise/judge.py` |
+| 자동화 워크플로우 (주) | `run.py all` 한 번으로 7단계(수집, 약속 추출, 분류, 근거 검색, 판정, 인용 검사, 면접 카드)가 차례로 돌고, 결과 파일을 내보내 main에 올리면 GitHub Actions 검사와 Vercel 배포가 자동으로 이어집니다 | `engine/run.py`, `.github/workflows/ci.yml` |
+| AI Agent (보조: 제한적 재검색) | 근거를 못 찾으면 AI가 새 검색어를 정하고, 코드가 그 검색어로 다시 검색합니다. 근거를 찾거나, 처음 검색을 포함해 3번이 되거나, 더 쓸 검색어가 없으면 멈추고, 검색 기록을 남깁니다. 완전 자율 Agent라고 부르지 않습니다 | `engine/aipromise/judge.py` |
+
+AI가 고른 근거는 원문에 그대로 있는지 코드로 다시 검사합니다(인용 검사). 통과하지 못한 근거는 빼고, 근거가 필요한 판정인데 통과한 근거가 하나도 없으면 "공시에서 확인 불가"로 낮춥니다.
+
+## 2. 기술 스택과 선정 이유
+
+| 영역 | 쓰는 것 | 고른 이유 |
+| --- | --- | --- |
+| 엔진 언어 | Python (CI는 3.11) | 팀에서 RAG를 만들어 본 사람이 김성태뿐이고, 그 경험(DART-Foresight AI)이 Python이라 그대로 이어 씁니다 |
+| LLM | OpenAI gpt-4o-mini, temperature 0 | DART-Foresight AI와 같은 구성입니다. 같은 입력에 최대한 같은 답이 나오도록 temperature를 0으로 둡니다. 판정 정확도가 낮으면 `engine/config.yaml`의 `judge_model` 한 줄만 바꿔 다시 잴 수 있게 나눠 두었습니다 |
+| AI 연결 | LangChain (langchain-openai, langchain-chroma) | DART-Foresight AI의 검색 구성을 출처를 밝히고 다시 씁니다 |
+| 근거 검색 | BM25(직접 구현) + text-embedding-3-small + ChromaDB, RRF로 순위 합치기 | DART-Foresight AI 평가에서 의미 검색만으로는 Hit@4가 14/20으로 약했습니다(`engine/README.md` 9장). 제품명, 공장명처럼 글자가 같은 문장을 잘 찾는 키워드 검색을 더했습니다 |
+| PDF 읽기 | pypdf | DART에서 받은 정기보고서 PDF를 장별 문장으로 나눕니다 |
+| 화면 | HTML, CSS, JavaScript (빌드 없음) | 화면 담당이 React·Streamlit 경험이 없고 AI 도구로 Vercel에 배포해 본 경험이 있어 가장 단순한 정적 웹을 골랐습니다. 화면은 결과 파일 하나만 읽어 엔진과 따로 만들 수 있습니다 |
+| 배포 | Vercel (Root Directory: `app`) | 빌드 없이 `app/` 폴더를 바로 배포하고, main에 올리면 자동으로 다시 배포됩니다. 저장소와 배포를 김성태 계정 하나로 모았습니다 (10/8 결정) |
+| 자동 검사 | GitHub Actions, Playwright | Pull Request를 올리거나 main에 올릴 때마다 엔진 설정 검사, 엔진 시험, 화면 검사(글자 대비, 가로 넘침)를 자동으로 돌립니다 |
+| 사용자 테스트 설문 | Google Forms, Google Sheets (Apps Script로 생성) | 이름·연락처·이메일을 받지 않게 설정할 수 있고, 응답이 시트에 자동으로 쌓입니다 |
+| 협업 | GitHub Issues·Pull Request, Google Drive | 팀원은 드라이브에 파일을 올리고 김성태가 저장소에 반영합니다. 기록은 커밋, PR, 이슈에 남깁니다 |
+
+버전은 `engine/requirements.txt`에 고정했습니다.
+
+## 3. 실행 방법
+
+**화면만 내 컴퓨터에서 보기** (저장소 맨 위 폴더에서)
+
+```bash
+cd app
+python -m http.server 8000
+# 브라우저에서 http://localhost:8000 을 엽니다
+```
+
+`index.html`을 더블클릭해 열면(주소가 `file://`로 시작) 브라우저 보안 규칙 때문에 결과 파일을 읽지 못하고 예시 데이터가 보입니다. 위처럼 작은 서버로 여세요.
+
+**엔진 돌리기** (준비 약 30분, 자세한 순서는 [engine/README.md](engine/README.md))
+
+```bash
+cd engine
+pip install -r requirements.txt
+cp .env.example .env        # .env에 OPENAI_API_KEY를 적습니다. 이 파일은 저장소에 올리지 않습니다
+python run.py doctor --company samsung     # 설치, 키, PDF 점검 (판정 모델·임베딩 모델을 1번씩 실제 호출)
+python run.py all --company samsung        # 1~7단계 실행 (시연용 기업은 kakao, shinhanbank, naver)
+python run.py export --companies samsung --copy-to ../app/data/results.json
+python run.py check --file ../app/data/results.json
+```
+
+사용자 테스트 중에는 `--copy-to`를 빼고 돌립니다. 붙이면 지금 화면의 검증용 시연 데이터(`app/data/results.json`)를 덮어씁니다. 빼면 엔진 결과는 `data/results/ai_promise_data.json`에만 남습니다. SK하이닉스(`skhynix`)는 평가용이라 사람 정답 합의가 끝난 뒤에 `export` 목록에 넣고, 시연용 3곳(`kakao shinhanbank naver`)은 핵심 2곳과 사용자 테스트가 끝난 뒤 시간이 남으면 넣습니다. PDF는 `data/pdf/`에 둡니다 (핵심 2곳 6개, 시연용 3곳 9개. 저장소에 올리지 않습니다).
+
+**코드 점검** (키 없이 가상 회사로 시험)
+
+```bash
+python tests/test_config.py      # 엔진 설정: 핵심 2곳, 시연용 3곳, 검색 설정의 모양. 마지막 줄에 "설정 검사 통과"
+python tests/test_mock.py        # 엔진·평가: 마지막 줄에 "시험 통과"
+python tests/test_ui_static.py   # 화면: app.js가 쓰는 class가 CSS에 모두 있는지 (브라우저 없이)
+python tests/ui_check.py         # 화면: 모든 화면(예시 데이터 18개) x 다크/라이트의 글자 대비, 가로 넘침, 필수 부품 (Playwright 필요)
+```
+
+네 검사는 Pull Request를 올리거나 main에 올릴 때 CI에서도 자동으로 돌아갑니다.
+
+## 4. 폴더
 
 | 폴더 | 내용 | 만든 사람 |
 | --- | --- | --- |
@@ -15,8 +83,15 @@
 | `eval/` | 판정 기준(v1, v2)과 사람 정답으로 AI를 평가하는 코드 | 김성태 (정답: 김서원, 김성태) |
 | `tests/` | 인터넷과 API 키 없이 가상 회사로 끝까지 도는 시험 | 김성태 |
 | `data/` | 공시 PDF와 실행 결과 자리 (PDF는 저장소에 올리지 않습니다) | |
+| `docs/` | 기능 요구 명세서, 아키텍처, 평가 계획, 진행 기록 등 문서 | 김성태 |
 
-### Final Sprint 데이터 모드
+## 5. 화면
+
+- `app/index.html`은 `app/data/results.json`을 먼저 읽고, 없으면 `app/data/sample-data.js`(가상 회사 2곳 예시 데이터)를 보여줍니다. 결과 파일의 `meta.is_sample`이 true이면 화면 맨 위에 안내 띠(`meta.notice`)가 나옵니다.
+- 모든 화면에 안내 문구 2개가 항상 보입니다. 엔진 결과일 때는 "공시 범위 안에서 확인한 결과입니다.", "AI가 생성한 분석입니다."이고, 지금의 검증용 시연 데이터에서는 두 번째 문구가 "AI 기반 서비스의 검증용 시연 데이터이며 사람이 공시 원문을 대조했습니다."입니다 (결과 파일의 `labels.disclaimers`).
+- 화면 고치는 규칙은 `app/README.md`에 있습니다. 디자인 변경은 CSS에서 합니다.
+
+### Final Sprint 데이터 모드 (10/19, PR #19)
 
 현재 `app/data/results.json`에는 **삼성전자·SK하이닉스 실제 공시 문장을 사람이 원문 대조한 검증용 시연 데이터**가 들어 있습니다. 이는 fake sample이 아니지만, 자동 엔진의 최종 accuracy 결과로 주장하지 않습니다.
 
@@ -27,87 +102,80 @@
 
 이 임시 모드는 사용자 테스트에서 **UI/이해도/신뢰도/활용 의향**을 확인하기 위한 것입니다. 실제 AI 정확도 수치가 없으면 만들어 쓰지 않습니다.
 
-## 2. 화면
+## 6. 작업 규칙
 
-- `app/index.html`은 `app/data/results.json`(엔진 결과)을 먼저 읽고, 없으면 `app/data/sample-data.js`(가상 회사 2곳 예시 데이터)를 보여줍니다. 예시 데이터일 때는 화면 위에 "예시 데이터입니다" 띠가 나옵니다.
-- 화면 고치는 규칙은 `app/README.md`에 있습니다. 디자인 변경은 CSS에서 합니다.
-
-## 3. 엔진
-
-자세한 준비와 실행 순서는 `engine/README.md`에 있습니다. 결과를 화면에 넣는 명령은 다음과 같습니다.
-
-```bash
-cd engine
-python run.py export --companies samsung skhynix --copy-to ../app/data/results.json
-```
-
-코드 점검(키 없이 가상 회사로 시험):
-
-```bash
-python tests/test_mock.py        # 엔진·평가: 마지막 줄에 "시험 통과"
-python tests/test_ui_static.py   # 화면: app.js가 쓰는 class가 CSS에 모두 있는지 (브라우저 없이)
-python tests/ui_check.py         # 화면: 모든 화면(예시 데이터 18개) x 다크/라이트의 글자 대비, 가로 넘침, 필수 부품 (Playwright 필요)
-```
-
-세 검사는 GitHub에 올릴 때마다 CI에서도 자동으로 돌아갑니다.
-
-## 4. 작업 규칙
-
-- 최종 마감 구간에는 **최신 main → 작업 브랜치 → 테스트 → Pull Request → merge** 순서만 사용합니다.
-- 실제 배포 여부와 배포 URL은 README의 링크 섹션에 명시하며, 배포가 확인되지 않은 상태를 '배포 완료'라고 표현하지 않습니다.
-- main에 합치기 전 `python tests/test_mock.py`, `python tests/test_ui_static.py`, `python tests/ui_check.py`를 통과시킵니다.
+- main에 올라간 것은 바로 서비스 주소에 배포됩니다.
+- 최종 마감 구간에는 **최신 main → 작업 브랜치 → 테스트 → Pull Request → merge** 순서만 사용합니다. 두 도구가 main을 동시에 고치면 서로 덮어쓰기 때문입니다.
+- 실제 배포 여부와 배포 URL은 README 14장의 제출 링크에 적고, 배포가 확인되지 않은 상태를 '배포 완료'라고 쓰지 않습니다.
+- main에 합치기 전 `python tests/test_config.py`, `python tests/test_mock.py`, `python tests/test_ui_static.py`, `python tests/ui_check.py`를 통과시킵니다.
 - 디자인을 바꾸면 `app/css/style.css` 맨 아래 데이터 연결 부품을 유지하고, 320~390px 모바일 화면과 명도 대비를 다시 확인합니다.
-- 사용자 테스트 중 발견된 문제는 먼저 기록하고, 테스트가 끝난 뒤 우선순위가 높은 피드백을 브랜치에서 수정합니다.
+- 사용자 테스트 기간에는 테스트를 막는 오류만 바로 고칩니다. 나머지 발견된 문제는 먼저 기록하고, 테스트가 끝난 뒤 우선순위가 높은 피드백을 브랜치에서 수정합니다.
 
-## 5. 지키는 것
+## 7. 지키는 것
 
 - API 키(`engine/.env`), 사용자 테스트 참여자의 이름과 연락처는 저장소에 올리지 않습니다. (`.gitignore`로 막아 둠)
 - 화면과 판정 이유에 "거짓", "AI 워싱" 같은 단정 표현을 쓰지 않습니다. 근거를 못 찾은 약속은 "공시에서 확인 불가"로 표시하며, 안 했다는 뜻이 아닙니다.
 - SK하이닉스는 평가용 기업이라, 사람 정답을 먼저 만든 뒤 AI 결과와 비교합니다.
+- 사용자 테스트는 참여 동의를 받은 뒤 진행하고, 참여자는 번호(P01 등)로만 기록합니다.
 
-## 6. 역할
+## 8. 역할
 
 - 김성태: 총괄, AI 엔진, 평가 설계, 저장소와 배포
 - 박수민: 화면 4개
 - 김서원: 공시 직접 읽기와 정답 매기기, 사용자 테스트 진행
 - 서준용: 화면 디자인, 사용자 테스트 진행 보조, 발표자료, 3분 시연 영상
 
-## 7. AI 사용
+## 9. 결과
 
-엔진 코드의 첫 버전, 화면의 엔진 결과 연결 수정, 디자인 시안 반영과 접근성 보정, 화면 자동 검사는 AI 도구(Claude)로 작성했습니다. 문서와 CI 일부는 ChatGPT가 Pull Request로 올렸습니다 (PR #1, #2). 실행, 점검, 수정은 김성태가 합니다. 엔진의 모든 AI 호출 기록은 실행할 때 `data/work/<기업>/llm_log.jsonl`에 남습니다.
+사용자 테스트와 SK하이닉스 정답 평가가 끝나면 이 장을 채웁니다. 숫자는 실제로 잰 값만 씁니다.
 
+| 결과 | 원자료 | 계산 |
+| --- | --- | --- |
+| AI 판정 평가 (사람 합의 정답 대비 정확도, macro-F1, 혼동표, 사람 간 kappa) | `eval/gold/`(사람 정답), `data/work/<기업>/judged.json`(엔진 판정) | `python eval/evaluate.py` |
+| 사용자 테스트 (응답 수, 설문 점수 평균, 작은 과제를 4분 안에 해낸 비율) | 설문 응답 시트 (이름·연락처 없음). 화면공유 테스트를 했으면 `eval/user_test/results.csv` (번호만) | 응답 시트 집계. 화면공유 테스트는 `python eval/user_test/analyze.py eval/user_test/results.csv` |
+| 피드백 반영 (의견, 원인, 조치, 커밋, 재확인) | [사용자 피드백 반영 로그](docs/feedback-log.md) | 테스트가 끝난 뒤 작성 |
 
-## 8. 프로젝트 문서
+## 10. AI 사용
 
+엔진 코드의 첫 버전, 화면의 엔진 결과 연결 수정, 디자인 시안 반영과 접근성 보정, 화면 자동 검사, 기능 요구 명세서와 진행 기록의 초안은 AI 도구(Claude)로 작성했습니다. 문서, CI, 평가 코드 일부(PR #1, #2)와 판정기준 v2 동결 및 엔진 검색어·지시문 동기화(PR #13)는 ChatGPT가 Pull Request로 올렸습니다. 실행, 점검, 수정은 김성태가 합니다. 엔진의 모든 LLM 호출 기록은 실행할 때 `data/work/<기업>/llm_log.jsonl`에 남습니다.
+
+## 11. 프로젝트 문서
+
+- [심사용 요약 (Executive Summary)](docs/executive-summary.md)
+- [프로젝트 기획서](docs/project-plan.md)
+- [기능 요구 명세서 (기능·비기능 요구사항)](docs/requirements.md)
+- [공식 요구사항 ↔ 증빙 매트릭스](docs/official-requirements-matrix.md)
+- [제출 증빙 체크리스트 (공식 미션 19개 항목)](docs/submission-evidence-checklist.md)
+- [최종 제출 Release Checklist](docs/release-checklist.md)
+- [마감 최소 완성안](docs/final-sprint.md)
+- [진행 기록](docs/progress-log.md)
 - [아키텍처](docs/architecture.md)
 - [평가 계획](docs/evaluation-plan.md)
-- [10분 비대면 사용자 테스트](docs/user-test-protocol.md)
-- [시연용 기업 확장 계획 (관문 2 통과 시)](docs/company-expansion-plan.md)
+- [빠른 사용자 테스트 (혼자 써 보기)](docs/user-test-quick.md)
+- [10분 비대면 사용자 테스트 (화면공유)](docs/user-test-protocol.md)
+- [사용자 피드백 반영 로그](docs/feedback-log.md)
+- [최종 발표 구성안](docs/presentation-outline.md)
+- [3분 시연 대본](docs/demo-script-3min.md)
+- [예상 심사 질문과 답](docs/judge-qa.md)
+- [Final Project 결과보고서 초안](docs/final-report-draft.md)
+- [팀 기여 내역](docs/team-contributions.md)
+- [시연용 기업 확장 계획](docs/company-expansion-plan.md)
 - [AI 윤리·신뢰성](docs/ai-ethics.md)
 - [Vercel 배포](docs/deploy.md)
 - [Google Drive ↔ GitHub 동기화](docs/drive-sync.md)
-- [제출 증빙 체크리스트](docs/submission-evidence-checklist.md)
+- [후속 연구 계획](docs/follow-up-study-plan.md)
 - [팀 협업 규칙](CONTRIBUTING.md)
-- [프로젝트 기획서](docs/project-plan.md)
-- [기능·비기능 요구사항](docs/requirements.md)
-- [공식 요구사항 ↔ 증빙 매트릭스](docs/official-requirements-matrix.md)
-- [사용자 피드백 반영 로그](docs/feedback-log.md)
-- [최종 발표 구성안](docs/presentation-outline.md)
-- [최종 제출 Release Checklist](docs/release-checklist.md)
-- [팀 기여 내역](docs/team-contributions.md)
-- [Final Project 결과보고서 초안](docs/final-report-draft.md)
 
-## 9. 추가 평가
+## 12. 추가 평가
 
 - 사용자 테스트: `eval/user_test/`
-- 문장 분류 ML 실험 (`eval/ml/`): 이번 제출(10/18)에서는 하지 않고 다음 단계로 둡니다 (기획 보고서 8.3). 코드와 데이터 형식만 있습니다.
+- 문장 분류 ML 실험 (`eval/ml/`): 이번 제출에서는 하지 않고 다음 단계로 둡니다 (기획 보고서 8.3). 코드와 데이터 형식만 있습니다.
 
-
-## 10. 공식 Final Project 요구사항 대응
+## 13. 공식 Final Project 요구사항 대응
 
 - 생성형 AI / AI Agent 핵심 기능: 약속 추출, 근거 검색·재검색, 판정, citation verification, 면접 카드
-- 필수 기술요소: **RAG + Agent-style workflow** (자동화 Python pipeline 보조)
-- 외부 배포: 공개 URL 필수
+- 필수 기술요소: **RAG + 자동화 워크플로우** (AI Agent는 제한적 재검색으로 보조)
+- 외부 배포: 공개 URL (14장 제출 링크)
 - 실제 사용자: **최소 5명 이상**
 - 사용자 피드백: 수집 후 최소 1건 이상 실제 서비스에 반영하고 commit/PR로 증빙
 - AI 윤리: AI 생성 분석 고지, 단정 표현 금지, 개인정보 비저장
@@ -115,8 +183,7 @@ python tests/ui_check.py         # 화면: 모든 화면(예시 데이터 18개)
 - 마감 최소 완성안: [docs/final-sprint.md](docs/final-sprint.md)
 - 빠른 사용자 테스트: [docs/user-test-quick.md](docs/user-test-quick.md)
 
-
-## 11. 심사자에게 보여줄 핵심
+## 14. 심사자에게 보여줄 핵심
 
 **AI Promise는 공시 요약기가 아니라 ‘기업의 AI 약속 ↔ 후속 실행 근거’를 연결하는 조사 서비스입니다.**
 
@@ -127,7 +194,7 @@ python tests/ui_check.py         # 화면: 모든 화면(예시 데이터 18개)
 5. **실사용 검증**: 최소 5명 테스트 및 실제 피드백 반영을 제출 증빙으로 남김
 
 ### 제출 링크
-- 현재 팀 공유 배포 URL: https://ai-promise-six.vercel.app
+- 서비스 URL: https://ai-promise-six.vercel.app (10/19 접속 확인. 지금은 사람이 원문 대조한 검증용 시연 데이터, 5장)
 - 서비스 URL 최종 검증: **제출 전 시크릿 창/모바일에서 직접 확인 필요**
 - 사용자 테스트: **[실제 인원 입력]명**
 - 피드백 반영: [docs/feedback-log.md](docs/feedback-log.md)

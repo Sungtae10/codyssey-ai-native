@@ -3,6 +3,8 @@
 ## 목표
 기업이 정기공시에서 밝힌 AI 계획과 이후 정기공시의 실행 근거를 연결하고, 근거가 검증된 정보만 면접 준비에 사용합니다.
 
+이 문서는 엔진 7단계와 그 흐름 그림을 다룹니다. 화면, 배포, 평가까지 포함한 시스템 전체 그림은 [기능 요구 명세서](requirements.md) 5장에 있습니다.
+
 ## 7단계
 1. **Collect**: 2024 사업보고서와 후속 보고서에서 지정 섹션을 추출
 2. **Promise Extraction**: AI 관련 미래 계획 문장을 원문 그대로 선택
@@ -41,18 +43,18 @@ DART PDF
 
 ```mermaid
 flowchart LR
-    A[DART 정기공시 PDF] --> B[Collect\n지정 섹션 추출]
-    B --> C[LLM Promise Extraction\nAI 미래 계획 추출]
-    C --> D[Specificity Classification\n구체적/방향성]
-    D --> E[RAG Retrieval\n키워드 + 의미 검색]
-    E --> F{근거 충분?}
-    F -- 아니오 --> G[검색어 재구성\n최대 횟수 제한]
+    A[DART 정기공시 PDF] --> B[Collect<br/>지정 섹션 추출]
+    B --> C[LLM Promise Extraction<br/>AI 미래 계획 추출]
+    C --> D[Specificity Classification<br/>구체적/방향성]
+    D --> E[RAG Retrieval<br/>키워드 + 의미 검색]
+    E --> H[LLM Judgment<br/>4개 판정]
+    H --> F{공시에서<br/>확인 불가?}
+    F -- 예, 3번 전이면 --> G[AI가 새 검색어 제안]
     G --> E
-    F -- 예 --> H[LLM Judgment\n4개 판정]
-    H --> I[Citation Verification\n원문 exact-match]
-    I --> J[Interview Card\n검증 근거 중심]
+    F -- 아니오, 또는 3번째 --> I[Citation Verification<br/>원문 exact-match]
+    I --> J[Interview Card<br/>검증 근거 중심]
     J --> K[results.json]
-    K --> L[Web UI\n약속→근거→원문→면접 카드]
+    K --> L[Web UI<br/>약속→근거→원문→면접 카드]
 ```
 
 ## 공식 필수 기술요소 대응

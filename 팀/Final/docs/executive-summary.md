@@ -1,4 +1,4 @@
-# AI Promise — Executive Summary
+# AI Promise: Executive Summary
 
 ## 한 줄
 기업이 과거 공시에서 밝힌 AI 계획과 이후 실행 근거를 연결해, 취업·이직 준비자가 5분 안에 기업의 AI 전략을 원문 근거와 함께 확인하도록 돕는 서비스.

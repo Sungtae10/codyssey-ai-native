@@ -1,4 +1,4 @@
-# Final Sprint — 최소 완성안
+# Final Sprint: 최소 완성안
 
 ## 목표
 공식 Final Project 필수요건을 우선 충족한다.

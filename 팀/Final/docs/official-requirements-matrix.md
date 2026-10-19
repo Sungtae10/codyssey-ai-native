@@ -9,7 +9,7 @@
 | 생성형 AI 핵심 기능 | 약속 추출, 판정, 면접 카드 생성, 내 경험 연결(이력서, 요청마다 생성) | engine/, docs/architecture.md, data/work/<기업>/llm_log.jsonl, app/api/resume-fit.js | 완료 |
 | 필수 기술요소 2개 이상 | RAG + 자동화 워크플로우(OpenDART 자동 수집 → 엔진 → 화면 데이터, GitHub Actions `Engine run`), Agent-style retry 보조 | engine/, docs/architecture.md, .github/workflows/engine-run.yml | 완료 |
 | 서비스 아키텍처 | 7단계 파이프라인 | docs/architecture.md | 완료 |
-| 기능/비기능 요구사항 | FR-01~FR-36(29개) / NFR-01~NFR-14 | docs/requirements.md | 완료 |
+| 기능/비기능 요구사항 | FR-01~FR-38(31개) / NFR-01~NFR-14 | docs/requirements.md | 완료 |
 | GitHub 버전관리 | 브랜치/PR/CI/역할 기록 | Git history, CONTRIBUTING.md | 완료 |
 | 팀 역할 분담 | PM·AI·Frontend·Validation·UX | README 8장 | 완료 |
 | AI 윤리 | 비단정 표현, AI 고지, citation verification | docs/ai-ethics.md | 완료 |

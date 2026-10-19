@@ -585,6 +585,50 @@
     '</div>';
   }
 
+  // 10/20 사용자 의견(기술 용어가 많아 설명이 한눈에 들어오지 않음, 2명) 반영:
+  // 약속 문장과 근거 문장에 나온 용어만 골라 쉬운 말로 풀어요. 영어 줄임말은 앞뒤가 다른 영어 글자가 아닐 때만 맞춰요 (예: LPDDR5x 안의 DDR5는 빼요)
+  function W(word) { return new RegExp('(^|[^A-Za-z])(' + word + ')(?![A-Za-z])'); }
+  var GLOSSARY = [
+    { term: 'HBM', re: W('HBM'), text: '고대역폭 메모리. D램을 여러 층 쌓아 데이터를 한꺼번에 많이 보내는 메모리로, AI 서버에 많이 쓰여요.' },
+    { term: 'D램', re: /D램|DRAM/, text: '전원이 켜져 있는 동안 데이터를 잠시 담아 두는 반도체 메모리예요.' },
+    { term: 'DDR5', re: W('DDR5'), text: '서버와 PC에 쓰는 D램 규격(5세대)이에요.' },
+    { term: 'LPDDR', re: W('LPDDR'), text: '전력을 적게 쓰는 D램 규격으로, 스마트폰과 노트북에 많이 쓰여요.' },
+    { term: 'SSD', re: W('SSD'), text: '반도체(낸드)로 만든 저장장치예요.' },
+    { term: 'QLC', re: W('QLC'), text: '저장 칸 하나에 4비트를 담는 낸드 방식이에요. 같은 크기에 더 많이 저장해요.' },
+    { term: 'SOCAMM·LPCAMM', re: /SOCAMM|LPCAMM/, text: '저전력 D램을 갈아 끼울 수 있는 모듈로 만든 규격이에요. LPCAMM은 주로 노트북, SOCAMM은 AI 서버용이에요.' },
+    { term: 'ZUFS', re: W('ZUFS'), text: '스마트폰 저장장치 규격(UFS)을 데이터를 구역별로 나눠 관리하게 바꾼 것으로, 오래 써도 속도가 덜 느려져요.' },
+    { term: '온디바이스 AI', re: /온디바이스/, text: '인터넷 서버를 거치지 않고 스마트폰이나 PC 같은 기기 안에서 바로 돌아가는 AI예요.' },
+    { term: 'CXL', re: W('CXL'), text: 'CPU와 메모리를 더 빠르게 이어 메모리를 늘려 쓰게 하는 연결 규격이에요.' },
+    { term: 'SoC', re: W('SoC'), text: '여러 기능의 칩을 하나로 합친 반도체예요.' },
+    { term: 'SDV', re: W('SDV'), text: '소프트웨어 중심 자동차. 소프트웨어를 업데이트하면 기능이 바뀌고 좋아지는 차예요.' },
+    { term: 'OTA', re: W('OTA'), text: '무선 업데이트. 정비소에 가지 않고 인터넷으로 차나 기기의 소프트웨어를 바꿔요.' },
+    { term: 'AAM', re: W('AAM'), text: '미래 항공 모빌리티. 도심 항공 교통처럼 하늘을 나는 이동 수단이에요.' },
+    { term: '인포테인먼트', re: /인포테인먼트/, text: '차 안에서 쓰는 정보와 오락 기능(내비게이션, 음악 등)을 합친 말이에요.' },
+    { term: '플릿', re: /플릿/, text: '여러 대의 차를 한꺼번에 운영하는 것(차량 운영단)이에요.' },
+    { term: '모빌리티', re: /모빌리티/, text: '사람과 물건을 옮기는 이동 수단과 서비스를 아우르는 말이에요.' },
+    { term: 'MTS', re: W('MTS'), text: '모바일 주식 거래 앱이에요.' },
+    { term: 'PB', re: W('PB'), text: '고객의 자산 관리를 도와주는 금융 전문가(프라이빗 뱅커)예요.' },
+    { term: '오케스트레이션', re: /오케스트레이션/, text: '여러 AI 모델 중 상황에 맞는 것을 골라 함께 쓰도록 조율하는 방식이에요.' },
+    { term: '폼팩터', re: /폼팩터|Form Factor/, text: '제품의 겉모양과 크기, 형태예요 (예: 폴더블폰).' },
+    { term: '데이터센터', re: /데이터센터|(^|[^A-Za-z])IDC(?![A-Za-z])/, text: '서버를 많이 모아 운영하는 시설이에요.' },
+    { term: '클라우드', re: /클라우드/, text: '인터넷으로 서버와 저장 공간을 빌려 쓰는 방식이에요.' },
+    { term: 'CBT', re: W('CBT'), text: '정식 출시 전에 일부 사용자에게 먼저 써 보게 하는 시험 운영이에요.' },
+    { term: '생성형 AI', re: /생성형/, text: '글, 그림, 답변 같은 새 결과물을 만들어 내는 AI예요.' }
+  ];
+  function glossaryFor(texts) {
+    var all = texts.join(' ');
+    return GLOSSARY.filter(function (g) { return g.re.test(all); });
+  }
+  function glossaryCard(items) {
+    if (!items.length) return '';
+    return '<section class="card" aria-label="용어 풀이">' +
+      '<h2 class="card-title" style="font-size:13px">이 약속에 나온 용어</h2>' +
+      '<dl class="glossary">' + items.map(function (g) {
+        return '<div><dt>' + esc(g.term) + '</dt><dd>' + esc(g.text) + '</dd></div>';
+      }).join('') + '</dl>' +
+    '</section>';
+  }
+
   function evidenceBlock(e, kindLabel, kicker, terms) {
     terms = terms || [];
     var verified = e.citation_verified === true
@@ -688,11 +732,13 @@
             '<div class="timeline-body verdict-panel">' +
               '<div class="timeline-kicker">판정</div>' +
               pill +
+              (specific && verdictInfo(p.verdict) ? '<p class="note">' + esc(verdictInfo(p.verdict).label + ': ' + verdictInfo(p.verdict).meaning) + '</p>' : '') +
               (specific ? (p.reason ? '<p class="reason">' + esc(p.reason) + '</p>' : '') : '<p class="note">' + esc(L.promise_types.directional.note) + '</p>') +
               timingNote(promiseTiming(p.sentence, evidenceWindow([company]))) +
             '</div>' +
           '</div>' +
         '</section>' +
+        glossaryCard(glossaryFor([p.sentence].concat(evidence.map(function (e) { return e.sentence; })))) +
         '<details class="card pipeline-card" open>' +
           '<summary><span>확인 4단계</span><small>약속 찾기 → 근거 찾기(RAG) → 판정 → 원문 인용 검사</small></summary>' +
           '<ul class="pipeline-list">' + pipelineRows + '</ul>' +
@@ -802,6 +848,11 @@
           '<p class="fit-note" id="resume-file-note">PDF는 이 브라우저 안에서 글자만 뽑아요. 파일 자체는 보내지 않아요.</p>' +
           '<button type="button" class="btn btn-primary" id="fit-run" disabled>연결 찾기</button>' +
           '<p class="fit-note" id="fit-status" role="status">서버 준비 상태를 확인하고 있어요.</p>' +
+          // 10/20 사용자 의견(분석 중 진행 표시가 없어 오류인 줄 알았음) 반영: 실제 진행률은 알 수 없어서 퍼센트 대신 경과 시간과 움직이는 막대
+          '<div class="fit-progress" id="fit-progress" hidden>' +
+            '<span class="fit-progress-bar" aria-hidden="true"><span></span></span>' +
+            '<span class="fit-progress-time" id="fit-progress-time" aria-hidden="true">0초째</span>' +
+          '</div>' +
         '</section>' +
         '<div id="fit-result" aria-live="polite"></div>' +
       '</main>';
@@ -913,9 +964,24 @@
         status.textContent = ready ? '준비됐어요. 이력서를 넣고 "연결 찾기"를 눌러 주세요 (' + FIT_MIN + '자 이상).' : '이 기능은 아직 준비 중이에요 (서버 설정 전).';
       }, function () { status.textContent = '이 기능은 아직 준비 중이에요 (서버에 연결하지 못함).'; })
       .then(update);
+    var progress = document.getElementById('fit-progress');
+    var progressTime = document.getElementById('fit-progress-time');
+    var timer = null;
+    function stopProgress() {
+      if (timer) { clearInterval(timer); timer = null; }
+      progress.hidden = true;
+    }
     btn.addEventListener('click', function () {
       busy = true; update();
-      status.textContent = 'AI가 연결을 찾고 있어요. 1~2분 걸릴 수 있어요.';
+      status.textContent = 'AI가 연결을 찾고 있어요. 멈춘 게 아니라 분석 중이에요. 1~2분 걸릴 수 있어요.';
+      var started = Date.now();
+      progressTime.textContent = '0초째';
+      progress.hidden = false;
+      if (timer) clearInterval(timer);
+      timer = setInterval(function () {
+        if (!document.body.contains(progressTime)) { clearInterval(timer); timer = null; return; }   // 다른 화면으로 가면 멈춰요
+        progressTime.textContent = Math.floor((Date.now() - started) / 1000) + '초째';
+      }, 1000);
       out.innerHTML = '';
       fetch('api/resume-fit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ company: company.id, resume: ta.value }) })
         .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { status: r.status, json: j }; }); })
@@ -927,7 +993,7 @@
             status.textContent = (x.json && x.json.error) || '분석하지 못했어요. 잠시 뒤 다시 시도해 주세요.';
           }
         }, function () { status.textContent = '서버에 연결하지 못했어요. 인터넷 연결을 확인해 주세요.'; })
-        .then(function () { busy = false; update(); });
+        .then(function () { stopProgress(); busy = false; update(); });
     });
     update();
   }

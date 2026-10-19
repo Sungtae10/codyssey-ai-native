@@ -1,0 +1,511 @@
+{
+ "meta": {
+  "is_sample": false,
+  "notice": "",
+  "schema_version": "0.1",
+  "updated": "2026-10-19",
+  "engine": {
+   "extract_model": "gpt-6-luna",
+   "judge_model": "gpt-6.1-sol",
+   "card_model": "gpt-6.1-sol",
+   "embed_model": "text-embedding-3-large"
+  }
+ },
+ "labels": {
+  "service_name": "AI Promise",
+  "service_subtitle": "기업 AI 약속 검증",
+  "tagline": "면접 전 5분 기업 AI 체크",
+  "disclaimers": [
+   "공시 범위 안에서 확인한 결과입니다.",
+   "AI가 생성한 분석입니다."
+  ],
+  "verdicts": {
+   "evidence_found": {
+    "label": "근거 확인",
+    "short_label": "근거 확인",
+    "meaning": "약속과 같은 대상이 후속 공시에 실행한 것으로 적혀 있음"
+   },
+   "partial": {
+    "label": "일부 확인",
+    "short_label": "일부 확인",
+    "meaning": "관련 활동은 있으나 범위, 시점, 수치가 약속에 못 미치거나 불분명함"
+   },
+   "not_verifiable": {
+    "label": "공시에서 확인 불가",
+    "short_label": "확인 불가",
+    "meaning": "읽은 공시 범위에서 찾지 못함. 미이행이라는 뜻이 아님"
+   },
+   "company_reported_not_pursued": {
+    "label": "회사가 미추진으로 공시",
+    "short_label": "미추진 공시",
+    "meaning": "회사가 추진하지 않았다고 직접 적음"
+   }
+  },
+  "promise_types": {
+   "specific": {
+    "label": "구체적 약속",
+    "note": "판정하고 개수에 넣습니다."
+   },
+   "directional": {
+    "label": "방향성 약속",
+    "note": "방향이 넓어 판정하지 않고 관련 활동만 보여줍니다. 개수에는 넣지 않습니다."
+   }
+  },
+  "not_verifiable_message": "읽은 공시 범위에서 관련 내용을 찾지 못했습니다. 면접에서 추진 방향을 질문해 보세요.",
+  "no_related_activity_message": "읽은 공시 범위에서 관련 활동을 찾지 못했습니다.",
+  "citation_verified_label": "원문 확인됨",
+  "interview_card_notice": "완성된 답변이 아니라 근거가 붙은 소재입니다. 자신의 말로 바꿔 쓰세요."
+ },
+ "companies": [
+  {
+   "id": "kakao",
+   "name": "카카오",
+   "reports": {
+    "promise": [
+     {
+      "title": "2024 사업보고서",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250324000901"
+     }
+    ],
+    "evidence": [
+     {
+      "title": "2025 사업보고서",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260318001423"
+     },
+     {
+      "title": "2026 반기보고서",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260819000055"
+     }
+    ]
+   },
+   "promises": [
+    {
+     "id": "kakao-p1",
+     "type": "specific",
+     "title": "AI 캠퍼스 활용 확대",
+     "sentence": "(7) 향후 추진계획- 시간을 거듭하면서 AI 캠퍼스의 활용이 증가되는 것이 목표이며, 이를 통해 계열사 내 지속적인 홍보와 각 종 프로모션과 컨텐츠 제안을 계획하고 있습니다.",
+     "source": {
+      "report": "2024 사업보고서",
+      "section": "I. 회사의 개요 > 5. 정관에 관한 사항",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250324000901",
+      "page": null
+     },
+     "verdict": "partial",
+     "reason": "후속 공시에서 약속 대상인 카카오 AI 캠퍼스를 카카오와 그룹사가 사용하고 있으며, 예약과 이용객 응대 등 운영이 이루어지고 있음은 확인됩니다. 다만 기존 대비 활용이 증가했는지와 계열사 대상 홍보·프로모션·콘텐츠 제안의 실행 여부는 확인되지 않아 일부 확인으로 판단합니다.",
+     "evidence": [
+      {
+       "sentence": "(4) 사업 추진현황(조직 및 인력구성 현황, 연구개발활동 내역, 제품 및 서비스 개발 진척도 및 상용화 여부, 매출 발생여부 등)- 카카오 AI 캠퍼스는 카카오와 카카오 그룹사를 위한 AI 인재양성 공간으로 현재는 카카오와 그룹사 위주로 사용이 나타나고 있어, 일부 사용 건을 제외하고는 연결기준으로는 매출이 거의 발생하지 않는 구조입니다.",
+       "source": {
+        "report": "2026 반기보고서",
+        "section": "I. 회사의 개요 > 5. 정관에 관한 사항",
+        "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260819000055",
+        "page": null
+       },
+       "citation_verified": true
+      },
+      {
+       "sentence": "카카오본사 조직의 경우 기획 및 관리 인력으로 상황별/기간별 특성에 맞춰 3~6명 내외로 운영 중이며 캠퍼스 예약, 이용객 응대, 식사제공 등 전반적인 운영은 운영사(수탁사)를 통해 이루어지고 있고 도급사는 미화, 보안 등의 업무를 담당합니다.",
+       "source": {
+        "report": "2026 반기보고서",
+        "section": "I. 회사의 개요 > 5. 정관에 관한 사항",
+        "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260819000055",
+        "page": null
+       },
+       "citation_verified": true
+      }
+     ],
+     "search_attempts": 3
+    },
+    {
+     "id": "kakao-p2",
+     "type": "specific",
+     "title": "카카오톡 AI 신규 기능·서비스 선보임",
+     "sentence": "카카오톡의 지속적인 성장을 위해 카카오만의 AI 기술이 집약된 신규 기능과 서비스들을 선보이고, 이용자들이 관심사 중심의 콘텐츠를 탐색할 수 있는 새로운 지면을 마련하면서, 채팅 중심의 목적형 트래픽에서 새로운 맥락의 트래픽으로 확대하며, 유저 활동성을 대폭 개선할 수 있는 기반을 구축하고자 합니다.",
+     "source": {
+      "report": "2024 사업보고서",
+      "section": "IV. 이사의 경영진단 및 분석의견",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250324000901",
+      "page": null
+     },
+     "verdict": "partial",
+     "reason": "2025 사업보고서는 카카오톡 내 AI 서비스인 'ChatGPT for Kakao'와 'Kanana in KakaoTalk'의 정식 서비스 출시 및 CBT 진행을 기재하여, 약속한 카카오톡 AI 신규 기능·서비스와 관련된 실행을 확인할 수 있습니다. 다만 일부는 CBT 단계이며, 관심사 중심 콘텐츠 탐색 지면 마련과 트래픽 확대·이용자 활동성 개선 기반 구축까지 확인되지는 않아 일부 확인으로 판단합니다.",
+     "evidence": [
+      {
+       "sentence": "글로벌 파트너십 강화와 지속적인 연구 개발을 통해 국민 누구나 카카오톡 안에서 AI를 일상적으로 경험할 수 있도록 '모두의 AI' 기반을 다져나갈 계획으로, 정식 서비스 출시 및 CBT를 진행한 'ChatGPT for Kakao'와 'Kanana in KakaoTalk'은 이용자 저변을 확대하고, 반복 사용을 유도할 수 있도록 사용 맥락을 강화하면서 AI 트래픽이 플랫폼 내에 새로운 성장 동력으로서 자리매김하는 것을 기대하고 있습니다.",
+       "source": {
+        "report": "2025 사업보고서",
+        "section": "IV. 이사의 경영진단 및 분석의견",
+        "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260318001423",
+        "page": null
+       },
+       "citation_verified": true
+      }
+     ],
+     "search_attempts": 1
+    },
+    {
+     "id": "kakao-p3",
+     "type": "specific",
+     "title": "카카오톡 AI 기능 및 별도 앱 서비스 준비",
+     "sentence": "카카오는 각 서비스에서 최고의 사용자 경험을 비용 경쟁력 있게 제공하기 위해 다양한 내부 및 외부 AI 모델을 활용한 모델 오케스트레이션 전략을 통해 카카오톡 내 AI 기능 적용와 별도의 앱 출시를 통한 AI 서비스를 준비하고 있습니다.",
+     "source": {
+      "report": "2024 사업보고서",
+      "section": "IV. 이사의 경영진단 및 분석의견",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250324000901",
+      "page": null
+     },
+     "verdict": "partial",
+     "reason": "후보 문장에는 카카오톡 내 AI 서비스인 'ChatGPT for Kakao'와 'Kanana in KakaoTalk'의 정식 서비스 출시 및 CBT 진행이 기재되어 있습니다. 자체·외부 모델을 선택하는 오케스트레이션 모델 연구와 다중 모델 조합 응답 시스템 구현도 확인되지만, 이를 해당 서비스에 적용했는지와 별도 앱 출시 여부는 확인되지 않아 약속의 일부만 확인됩니다.",
+     "evidence": [
+      {
+       "sentence": "글로벌 파트너십 강화와 지속적인 연구 개발을 통해 국민 누구나 카카오톡 안에서 AI를 일상적으로 경험할 수 있도록 '모두의 AI' 기반을 다져나갈 계획으로, 정식 서비스 출시 및 CBT를 진행한 'ChatGPT for Kakao'와 'Kanana in KakaoTalk'은 이용자 저변을 확대하고, 반복 사용을 유도할 수 있도록 사용 맥락을 강화하면서 AI 트래픽이 플랫폼 내에 새로운 성장 동력으로서 자리매김하는 것을 기대하고 있습니다.",
+       "source": {
+        "report": "2025 사업보고서",
+        "section": "IV. 이사의 경영진단 및 분석의견",
+        "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260318001423",
+        "page": null
+       },
+       "citation_verified": true
+      },
+      {
+       "sentence": "ᄂ 논문명: Online Knowledge Distillation of Decoder-Only Large Language Models for Efficient Speech Recognition 2024 Tech 채널메시지 타겟팅 알고리즘 연구 개발 유저 관심사 및 내재된 반응성 정보를 활용한 채널메시지 타겟팅효율 증대 알고리즘 연구 개발 2025 Tech AI 오케스트레이션 모델 개발 사용자의 편의성, 비용효율성, 성능 등 다양한 요소를 종합적으로 고려해 자체 모델과 외부 모델 중 최적의 모델을 선택하는 오케스트레이션 모델 연구.",
+       "source": {
+        "report": "2026 반기보고서",
+        "section": "II. 사업의 내용",
+        "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260819000055",
+        "page": null
+       },
+       "citation_verified": true
+      },
+      {
+       "sentence": "다중 모델 조합을 통한 효율적인 AI 응답 시스템 구현.",
+       "source": {
+        "report": "2026 반기보고서",
+        "section": "II. 사업의 내용",
+        "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260819000055",
+        "page": null
+       },
+       "citation_verified": true
+      }
+     ],
+     "search_attempts": 1
+    },
+    {
+     "id": "kakao-d1",
+     "type": "directional",
+     "title": "AI 관련 인프라 확충",
+     "sentence": "카카오데이터센터 운영 및 부가사업 등에 따른 사업의 목적 추가 이사회 회사의 주된 사업 및 공동체 서비스를 안정적으로 지원하고 동시에 클라우드 및 AI 관련 인프라 확충이 가능할 것으로 기대 2025.03.26",
+     "source": {
+      "report": "2024 사업보고서",
+      "section": "I. 회사의 개요 > 5. 정관에 관한 사항",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250324000901",
+      "page": null
+     },
+     "verdict": null,
+     "reason": null,
+     "evidence": [
+      {
+       "sentence": "호스팅 및 관련 서비스업] (1) 그 사업 분야(업종, 제품 및 서비스의 내용 등) 및 진출 목적- 당사는 2021년 3월 12일 이사회 결의를 통해, 공동체의 서비스를 안정적으로 지원하고 동시에 클라우드 및 AI 관련 인프라 확충을 목적으로 자체 인터넷데이터센터(IDC)의 구축을 결정했습니다.",
+       "source": {
+        "report": "2026 반기보고서",
+        "section": "I. 회사의 개요 > 5. 정관에 관한 사항",
+        "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260819000055",
+        "page": null
+       },
+       "citation_verified": true
+      },
+      {
+       "sentence": "카카오의 첫 번째 자체 데이터센터인 '카카오 데이터센터 안산'은 지난 2023년 9월 준공되었으며, 2024년 1분기부터 본격적인 가동을 시작하였습니다.",
+       "source": {
+        "report": "2026 반기보고서",
+        "section": "I. 회사의 개요 > 5. 정관에 관한 사항",
+        "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260819000055",
+        "page": null
+       },
+       "citation_verified": true
+      }
+     ],
+     "search_attempts": 1
+    },
+    {
+     "id": "kakao-d2",
+     "type": "directional",
+     "title": "AI 기반 서비스 확대",
+     "sentence": "당사는 AI 기반 서비스 확대를 미래성장동력으로 생각하고 사업을 전개해 나가고 있습니다.",
+     "source": {
+      "report": "2024 사업보고서",
+      "section": "IV. 이사의 경영진단 및 분석의견",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250324000901",
+      "page": null
+     },
+     "verdict": null,
+     "reason": null,
+     "evidence": [
+      {
+       "sentence": "글로벌 파트너십 강화와 지속적인 연구 개발을 통해 국민 누구나 카카오톡 안에서 AI를 일상적으로 경험할 수 있도록 '모두의 AI' 기반을 다져나갈 계획으로, 정식 서비스 출시 및 CBT를 진행한 'ChatGPT for Kakao'와 'Kanana in KakaoTalk'은 이용자 저변을 확대하고, 반복 사용을 유도할 수 있도록 사용 맥락을 강화하면서 AI 트래픽이 플랫폼 내에 새로운 성장 동력으로서 자리매김하는 것을 기대하고 있습니다.",
+       "source": {
+        "report": "2025 사업보고서",
+        "section": "IV. 이사의 경영진단 및 분석의견",
+        "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260318001423",
+        "page": null
+       },
+       "citation_verified": true
+      },
+      {
+       "sentence": "인공지능 개발 및 이용업] (1) 그 사업 분야(업종, 제품 및 서비스의 내용 등) 및 진출 목적- 당사는 AI 기반 서비스 및 AI 생태계 협력 사업을 추진하기 위해 사업 목적을 추가함으로써 안정적인 법적 근거를 마련하였습니다.",
+       "source": {
+        "report": "2026 반기보고서",
+        "section": "I. 회사의 개요 > 5. 정관에 관한 사항",
+        "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260819000055",
+        "page": null
+       },
+       "citation_verified": true
+      }
+     ],
+     "search_attempts": 1
+    },
+    {
+     "id": "kakao-d3",
+     "type": "directional",
+     "title": "AI 대중화 서비스 구축",
+     "sentence": "카카오는 카카오톡뿐만 아니라, 커머스, 모빌리티, 콘텐츠, 금융까지 이용자의 일상 전반에 걸친 다양한 서비스에서 이용자들의 일상에서 필수적인 서비스를 제공해오고 있으며, AI서비스를 일상에서도 널리 사용할 수 있도록 AI 대중화 실현을 위한 서비스 구축 및 기반을 마련하는데 집중하고 있습니다.",
+     "source": {
+      "report": "2024 사업보고서",
+      "section": "IV. 이사의 경영진단 및 분석의견",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250324000901",
+      "page": null
+     },
+     "verdict": null,
+     "reason": null,
+     "evidence": [
+      {
+       "sentence": "글로벌 파트너십 강화와 지속적인 연구 개발을 통해 국민 누구나 카카오톡 안에서 AI를 일상적으로 경험할 수 있도록 '모두의 AI' 기반을 다져나갈 계획으로, 정식 서비스 출시 및 CBT를 진행한 'ChatGPT for Kakao'와 'Kanana in KakaoTalk'은 이용자 저변을 확대하고, 반복 사용을 유도할 수 있도록 사용 맥락을 강화하면서 AI 트래픽이 플랫폼 내에 새로운 성장 동력으로서 자리매김하는 것을 기대하고 있습니다.",
+       "source": {
+        "report": "2025 사업보고서",
+        "section": "IV. 이사의 경영진단 및 분석의견",
+        "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260318001423",
+        "page": null
+       },
+       "citation_verified": true
+      },
+      {
+       "sentence": "인공지능 개발 및 이용업] (1) 그 사업 분야(업종, 제품 및 서비스의 내용 등) 및 진출 목적- 당사는 AI 기반 서비스 및 AI 생태계 협력 사업을 추진하기 위해 사업 목적을 추가함으로써 안정적인 법적 근거를 마련하였습니다.",
+       "source": {
+        "report": "2026 반기보고서",
+        "section": "I. 회사의 개요 > 5. 정관에 관한 사항",
+        "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260819000055",
+        "page": null
+       },
+       "citation_verified": true
+      }
+     ],
+     "search_attempts": 1
+    }
+   ],
+   "interview_card": {
+    "issues": [
+     {
+      "text": "AI 캠퍼스의 카카오·그룹사 사용 및 운영 확인, 기존 대비 활용 증가 여부는 확인 제한 (일부 확인)",
+      "promise_id": "kakao-p1"
+     },
+     {
+      "text": "카카오톡 내 AI 서비스의 정식 출시 및 CBT 진행 확인, 트래픽 확대·이용자 활동성 개선 기반 구축은 확인 제한 (일부 확인)",
+      "promise_id": "kakao-p2"
+     },
+     {
+      "text": "AI 오케스트레이션 모델 연구 및 다중 모델 조합 응답 시스템 구현 확인, 해당 서비스 적용·별도 앱 출시 여부는 확인 제한 (일부 확인)",
+      "promise_id": "kakao-p3"
+     }
+    ],
+    "talking_points": [
+     {
+      "text": "카카오 AI 캠퍼스는 AI 인재양성 공간으로 카카오와 그룹사 위주로 사용되고 있습니다. 캠퍼스 예약, 이용객 응대, 식사 제공 등 전반적인 운영은 운영사를 통해 이루어지고 있습니다.",
+      "promise_id": "kakao-p1",
+      "evidence_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260819000055"
+     },
+     {
+      "text": "카카오톡 내 AI 서비스인 'ChatGPT for Kakao'와 'Kanana in KakaoTalk'에 대해 정식 서비스 출시 및 CBT 진행이 기재되어 있습니다.",
+      "promise_id": "kakao-p2",
+      "evidence_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260318001423"
+     },
+     {
+      "text": "사용자 편의성, 비용효율성, 성능 등을 고려해 자체 모델과 외부 모델 중 최적의 모델을 선택하는 AI 오케스트레이션 모델 연구가 기재되어 있습니다. 다중 모델 조합을 통한 효율적인 AI 응답 시스템 구현도 기재되어 있습니다.",
+      "promise_id": "kakao-p3",
+      "evidence_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260318001423"
+     }
+    ],
+    "questions": [
+     {
+      "text": "공시에서 AI 캠퍼스의 기존 대비 활용 증가 여부와 계열사 대상 홍보·프로모션·콘텐츠 제안의 실행 여부를 확인하기 어려웠습니다. 활용 확대를 어떤 지표로 살펴보고 계시며, 계열사 대상 활용 제안은 어떻게 진행하고 계신지 궁금합니다.",
+      "promise_id": "kakao-p1"
+     },
+     {
+      "text": "공시에서 AI 오케스트레이션 연구의 해당 서비스 적용 여부와 별도 앱 출시 여부를 확인하기 어려웠습니다. 해당 연구의 서비스 적용 방향과 별도 앱 준비 현황 중 공개 가능한 내용을 듣고 싶습니다.",
+      "promise_id": "kakao-p3"
+     }
+    ]
+   },
+   "check_note": "AI 엔진 결과예요(사람 검토 전). 근거 문장은 코드가 원문과 글자 그대로 대조했고, 사람 정답과 비교한 정확도는 없어요.",
+   "data_mode": "engine"
+  },
+  {
+   "id": "hyundai",
+   "name": "현대자동차",
+   "reports": {
+    "promise": [
+     {
+      "title": "2024 사업보고서",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250312001148"
+     }
+    ],
+    "evidence": [
+     {
+      "title": "2025 사업보고서",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260318001394"
+     },
+     {
+      "title": "2026 반기보고서",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003521"
+     }
+    ]
+   },
+   "promises": [
+    {
+     "id": "hyundai-p1",
+     "type": "specific",
+     "title": "AI 기반 SDV 체계 전환",
+     "sentence": "차량 데이터와 AI 기반으로 기능과 서비스를 지속적으로 개선하는 SDV 체계로 전환하고, 이를 바탕으로 이동의 혁신을 실현하기 위한 수익 및 성장 전략을 수립하여 EV 경쟁력을 강화하고 수익성을 확보하며, SW 핵심 역량 내재화 기반으로 차량 개발 뿐 아니라 전 밸류체인과 서비스의 SW 중심 전환을 추진하며, SW 플랫폼 기반으로 AAM, 로봇 등 다양한 모빌리티 서비스를 연결하고자 합니다.",
+     "source": {
+      "report": "2024 사업보고서",
+      "section": "II. 사업의 내용",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250312001148",
+      "page": null
+     },
+     "verdict": "partial",
+     "reason": "2025 사업보고서에는 Pleos OS 기반 OTA 업데이트·기능 확장과 서비스 기반 수익 모델 구축, AI 엔진을 통한 지속 학습형 모빌리티 생태계 구현이 기재되어 있어 약속한 AI 기반 SDV 전환과 관련된 활동이 확인됩니다. 다만 차량 데이터 활용, 전 밸류체인과 서비스의 SW 중심 전환, SW 플랫폼을 통한 AAM·로봇 서비스 연결까지는 확인되지 않아 약속 범위의 일부만 확인됩니다.",
+     "evidence": [
+      {
+       "sentence": "소프트웨어 전략에서는 CODA 플랫폼을 통해 차량 하드웨어 구조를 단순화하고, 독자 운영체제인 Pleos OS를 기반으로 OTA 업데이트와 기능 확장을 가능하게 하며, 차세대 인포테인먼트 플랫폼 Pleos Connect를 통해 개인화된 디지털 경험과 서비스 기반 수익 모델을 구축하고 있습니다.",
+       "source": {
+        "report": "2025 사업보고서",
+        "section": "II. 사업의 내용",
+        "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260318001394",
+        "page": null
+       },
+       "citation_verified": true
+      },
+      {
+       "sentence": "또한, Atria(자율주행), Gleo(자연어 인터페이스), Capora(플릿 운영 최적화)로 구성된 AI 엔진을 통해 지속적으로 학습하고 진화하는 지능형 모빌리티 생태계를 실현하고 있습니다.현대자동차는 이러한 역량을 바탕으로 차량을 넘어 지속 가능한, 지능형 모빌리티 솔루션을 통해 고객과의 관계를 강화하고 미래 모빌리티 시장을 선도해 나갈 것입니다.",
+       "source": {
+        "report": "2025 사업보고서",
+        "section": "II. 사업의 내용",
+        "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260318001394",
+        "page": null
+       },
+       "citation_verified": true
+      }
+     ],
+     "search_attempts": 1
+    },
+    {
+     "id": "hyundai-p2",
+     "type": "specific",
+     "title": "차량 러닝 머신 개발",
+     "sentence": "SW 중심 전환 (SDV)의 궁극적인 목표는 데이터와 AI를 기반으로 차량이 스스로 학습하고 발전하는 러닝 머신을 개발하는 것입니다.",
+     "source": {
+      "report": "2024 사업보고서",
+      "section": "II. 사업의 내용",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250312001148",
+      "page": null
+     },
+     "verdict": "partial",
+     "reason": "2025 사업보고서는 차량 소프트웨어 플랫폼을 구축하고 있으며, AI 엔진을 통해 지속적으로 학습하고 진화하는 지능형 모빌리티 생태계를 실현하고 있다고 밝혔습니다. 이는 약속한 차량의 학습·발전 방향과 관련된 활동이지만, 데이터와 AI를 기반으로 차량 자체가 스스로 학습하는 러닝 머신의 개발이 어느 단계까지 이루어졌는지는 명확하지 않습니다.",
+     "evidence": [
+      {
+       "sentence": "소프트웨어 전략에서는 CODA 플랫폼을 통해 차량 하드웨어 구조를 단순화하고, 독자 운영체제인 Pleos OS를 기반으로 OTA 업데이트와 기능 확장을 가능하게 하며, 차세대 인포테인먼트 플랫폼 Pleos Connect를 통해 개인화된 디지털 경험과 서비스 기반 수익 모델을 구축하고 있습니다.",
+       "source": {
+        "report": "2025 사업보고서",
+        "section": "II. 사업의 내용",
+        "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260318001394",
+        "page": null
+       },
+       "citation_verified": true
+      },
+      {
+       "sentence": "또한, Atria(자율주행), Gleo(자연어 인터페이스), Capora(플릿 운영 최적화)로 구성된 AI 엔진을 통해 지속적으로 학습하고 진화하는 지능형 모빌리티 생태계를 실현하고 있습니다.현대자동차는 이러한 역량을 바탕으로 차량을 넘어 지속 가능한, 지능형 모빌리티 솔루션을 통해 고객과의 관계를 강화하고 미래 모빌리티 시장을 선도해 나갈 것입니다.",
+       "source": {
+        "report": "2025 사업보고서",
+        "section": "II. 사업의 내용",
+        "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260318001394",
+        "page": null
+       },
+       "citation_verified": true
+      }
+     ],
+     "search_attempts": 1
+    },
+    {
+     "id": "hyundai-p3",
+     "type": "specific",
+     "title": "AI 기능 구현",
+     "sentence": "특히 ‘26년 하반기에는 자체 개발한 차량용 고성능 컴퓨터와 중앙집중형 전기전자 아키텍처를 적용한 SDV 페이스 카를 통해, 보다 안정적인 자율주행과 편리한 AI 기능을 구현하고, 새로운 모빌리티 서비스와 비즈니스를 실증할 예정입니다.",
+     "source": {
+      "report": "2024 사업보고서",
+      "section": "II. 사업의 내용",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250312001148",
+      "page": null
+     },
+     "verdict": "not_verifiable",
+     "reason": "읽은 공시 범위(2025 사업보고서, 2026 반기보고서)에서 관련 내용을 찾지 못했습니다. 검색어를 바꿔 2번 다시 찾았지만 결과가 같았습니다.",
+     "evidence": [],
+     "search_attempts": 3
+    }
+   ],
+   "interview_card": {
+    "issues": [
+     {
+      "text": "Pleos OS 기반 OTA 업데이트·기능 확장 및 AI 엔진 기반 모빌리티 생태계 구현 관련 활동 (일부 확인)",
+      "promise_id": "hyundai-p1"
+     },
+     {
+      "text": "AI 엔진 기반 지속 학습 방향은 확인되나 차량 자체의 러닝 머신 개발 단계는 불명확 (일부 확인)",
+      "promise_id": "hyundai-p2"
+     },
+     {
+      "text": "검토한 공시 범위에서 AI 기능 구현 관련 근거 미확인 (확인 어려움)",
+      "promise_id": "hyundai-p3"
+     }
+    ],
+    "talking_points": [
+     {
+      "text": "CODA 플랫폼을 통한 차량 하드웨어 구조 단순화와 Pleos OS 기반 OTA 업데이트·기능 확장이 기재되어 있습니다.",
+      "promise_id": "hyundai-p1",
+      "evidence_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260318001394"
+     },
+     {
+      "text": "Pleos Connect를 통해 개인화된 디지털 경험과 서비스 기반 수익 모델을 구축하고 있습니다.",
+      "promise_id": "hyundai-p1",
+      "evidence_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260318001394"
+     },
+     {
+      "text": "Atria는 자율주행, Gleo는 자연어 인터페이스, Capora는 플릿 운영 최적화를 담당하는 AI 엔진으로 제시되어 있습니다. 이 AI 엔진을 통해 지속적으로 학습하고 진화하는 지능형 모빌리티 생태계를 실현하고 있다고 기재되어 있습니다.",
+      "promise_id": "hyundai-p2",
+      "evidence_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260318001394"
+     }
+    ],
+    "questions": [
+     {
+      "text": "검토한 2025 사업보고서와 2026 반기보고서에서는 AI 기능 구현 약속의 후속 내용을 확인하기 어려웠습니다. 현재 구체화하고 있는 AI 기능과 적용 단계는 무엇인지 궁금합니다.",
+      "promise_id": "hyundai-p3"
+     },
+     {
+      "text": "공시에서 AI 엔진을 통한 지속 학습 방향은 확인했지만, 차량 자체가 스스로 학습하는 러닝 머신의 개발 단계는 확인하기 어려웠습니다. 현재 개발 단계와 향후 확인할 수 있는 주요 이정표는 무엇인지 궁금합니다.",
+      "promise_id": "hyundai-p2"
+     }
+    ]
+   },
+   "check_note": "AI 엔진 결과예요(사람 검토 전). 근거 문장은 코드가 원문과 글자 그대로 대조했고, 사람 정답과 비교한 정확도는 없어요.",
+   "data_mode": "engine"
+  }
+ ]
+}

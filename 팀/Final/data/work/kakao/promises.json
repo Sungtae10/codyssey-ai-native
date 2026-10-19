@@ -1,0 +1,83 @@
+{
+ "promises": [
+  {
+   "type": "specific",
+   "title": "AI 캠퍼스 활용 확대",
+   "sentence": "(7) 향후 추진계획- 시간을 거듭하면서 AI 캠퍼스의 활용이 증가되는 것이 목표이며, 이를 통해 계열사 내 지속적인 홍보와 각 종 프로모션과 컨텐츠 제안을 계획하고 있습니다.",
+   "sentence_id": "y2024-I5-0063",
+   "source": {
+    "report": "2024 사업보고서",
+    "section": "I. 회사의 개요 > 5. 정관에 관한 사항",
+    "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250324000901",
+    "page": null
+   },
+   "id": "kakao-p1"
+  },
+  {
+   "type": "specific",
+   "title": "카카오톡 AI 신규 기능·서비스 선보임",
+   "sentence": "카카오톡의 지속적인 성장을 위해 카카오만의 AI 기술이 집약된 신규 기능과 서비스들을 선보이고, 이용자들이 관심사 중심의 콘텐츠를 탐색할 수 있는 새로운 지면을 마련하면서, 채팅 중심의 목적형 트래픽에서 새로운 맥락의 트래픽으로 확대하며, 유저 활동성을 대폭 개선할 수 있는 기반을 구축하고자 합니다.",
+   "sentence_id": "y2024-IV-0010",
+   "source": {
+    "report": "2024 사업보고서",
+    "section": "IV. 이사의 경영진단 및 분석의견",
+    "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250324000901",
+    "page": null
+   },
+   "id": "kakao-p2"
+  },
+  {
+   "type": "specific",
+   "title": "카카오톡 AI 기능 및 별도 앱 서비스 준비",
+   "sentence": "카카오는 각 서비스에서 최고의 사용자 경험을 비용 경쟁력 있게 제공하기 위해 다양한 내부 및 외부 AI 모델을 활용한 모델 오케스트레이션 전략을 통해 카카오톡 내 AI 기능 적용와 별도의 앱 출시를 통한 AI 서비스를 준비하고 있습니다.",
+   "sentence_id": "y2024-IV-0013",
+   "source": {
+    "report": "2024 사업보고서",
+    "section": "IV. 이사의 경영진단 및 분석의견",
+    "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250324000901",
+    "page": null
+   },
+   "id": "kakao-p3"
+  },
+  {
+   "type": "directional",
+   "title": "AI 관련 인프라 확충",
+   "sentence": "카카오데이터센터 운영 및 부가사업 등에 따른 사업의 목적 추가 이사회 회사의 주된 사업 및 공동체 서비스를 안정적으로 지원하고 동시에 클라우드 및 AI 관련 인프라 확충이 가능할 것으로 기대 2025.03.26",
+   "sentence_id": "y2024-I5-0029",
+   "source": {
+    "report": "2024 사업보고서",
+    "section": "I. 회사의 개요 > 5. 정관에 관한 사항",
+    "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250324000901",
+    "page": null
+   },
+   "id": "kakao-d1"
+  },
+  {
+   "type": "directional",
+   "title": "AI 기반 서비스 확대",
+   "sentence": "당사는 AI 기반 서비스 확대를 미래성장동력으로 생각하고 사업을 전개해 나가고 있습니다.",
+   "sentence_id": "y2024-IV-0012",
+   "source": {
+    "report": "2024 사업보고서",
+    "section": "IV. 이사의 경영진단 및 분석의견",
+    "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250324000901",
+    "page": null
+   },
+   "id": "kakao-d2"
+  },
+  {
+   "type": "directional",
+   "title": "AI 대중화 서비스 구축",
+   "sentence": "카카오는 카카오톡뿐만 아니라, 커머스, 모빌리티, 콘텐츠, 금융까지 이용자의 일상 전반에 걸친 다양한 서비스에서 이용자들의 일상에서 필수적인 서비스를 제공해오고 있으며, AI서비스를 일상에서도 널리 사용할 수 있도록 AI 대중화 실현을 위한 서비스 구축 및 기반을 마련하는데 집중하고 있습니다.",
+   "sentence_id": "y2024-IV-0014",
+   "source": {
+    "report": "2024 사업보고서",
+    "section": "IV. 이사의 경영진단 및 분석의견",
+    "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250324000901",
+    "page": null
+   },
+   "id": "kakao-d3"
+  }
+ ],
+ "dropped": []
+}

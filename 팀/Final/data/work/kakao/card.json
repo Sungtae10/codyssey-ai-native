@@ -1,0 +1,43 @@
+{
+ "issues": [
+  {
+   "text": "AI 캠퍼스의 카카오·그룹사 사용 및 운영 확인, 기존 대비 활용 증가 여부는 확인 제한 (일부 확인)",
+   "promise_id": "kakao-p1"
+  },
+  {
+   "text": "카카오톡 내 AI 서비스의 정식 출시 및 CBT 진행 확인, 트래픽 확대·이용자 활동성 개선 기반 구축은 확인 제한 (일부 확인)",
+   "promise_id": "kakao-p2"
+  },
+  {
+   "text": "AI 오케스트레이션 모델 연구 및 다중 모델 조합 응답 시스템 구현 확인, 해당 서비스 적용·별도 앱 출시 여부는 확인 제한 (일부 확인)",
+   "promise_id": "kakao-p3"
+  }
+ ],
+ "talking_points": [
+  {
+   "text": "카카오 AI 캠퍼스는 AI 인재양성 공간으로 카카오와 그룹사 위주로 사용되고 있습니다. 캠퍼스 예약, 이용객 응대, 식사 제공 등 전반적인 운영은 운영사를 통해 이루어지고 있습니다.",
+   "promise_id": "kakao-p1",
+   "evidence_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260819000055"
+  },
+  {
+   "text": "카카오톡 내 AI 서비스인 'ChatGPT for Kakao'와 'Kanana in KakaoTalk'에 대해 정식 서비스 출시 및 CBT 진행이 기재되어 있습니다.",
+   "promise_id": "kakao-p2",
+   "evidence_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260318001423"
+  },
+  {
+   "text": "사용자 편의성, 비용효율성, 성능 등을 고려해 자체 모델과 외부 모델 중 최적의 모델을 선택하는 AI 오케스트레이션 모델 연구가 기재되어 있습니다. 다중 모델 조합을 통한 효율적인 AI 응답 시스템 구현도 기재되어 있습니다.",
+   "promise_id": "kakao-p3",
+   "evidence_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260318001423"
+  }
+ ],
+ "questions": [
+  {
+   "text": "공시에서 AI 캠퍼스의 기존 대비 활용 증가 여부와 계열사 대상 홍보·프로모션·콘텐츠 제안의 실행 여부를 확인하기 어려웠습니다. 활용 확대를 어떤 지표로 살펴보고 계시며, 계열사 대상 활용 제안은 어떻게 진행하고 계신지 궁금합니다.",
+   "promise_id": "kakao-p1"
+  },
+  {
+   "text": "공시에서 AI 오케스트레이션 연구의 해당 서비스 적용 여부와 별도 앱 출시 여부를 확인하기 어려웠습니다. 해당 연구의 서비스 적용 방향과 별도 앱 준비 현황 중 공개 가능한 내용을 듣고 싶습니다.",
+   "promise_id": "kakao-p3"
+  }
+ ]
+}

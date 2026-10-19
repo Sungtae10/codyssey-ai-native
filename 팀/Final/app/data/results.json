@@ -219,7 +219,7 @@
     {
       "id": "skhynix",
       "name": "SK하이닉스",
-      "check_note": "김서원 독립 Human Review를 반영한 검증용 시연 데이터입니다. 자동 엔진 결과와 Human Gold 합의 평가는 별도로 구분합니다.",
+      "check_note": "김성태·김서원이 함께 공시 원문을 대조한 검증용 시연 데이터입니다(공동 검토). 자동 엔진 결과와 정확도 평가는 별도로 구분합니다.",
       "reports": {
         "promise": [
           {
@@ -299,6 +299,20 @@
           "source": {
             "report": "2024 사업보고서",
             "section": "IV. 이사의 경영진단 및 분석의견 / DART Page 293",
+            "url": "https://dart.fss.or.kr/navi/searchNavi.do?naviCode=A002&naviCrpCik=00164779&naviCrpNm=SK하이닉스"
+          },
+          "verdict": null,
+          "reason": null,
+          "evidence": []
+        },
+        {
+          "id": "skhynix-d2",
+          "type": "directional",
+          "title": "CXL 메모리 시장 대비 솔루션 준비",
+          "sentence": "CXL 메모리는 메모리 Intensive 서버향 위주 채용이 예상되며, 당사는 중장기 고성장 가능성에 대비하고 CXL 시장을 선도하기 위해 SoC 협력사들과 협업하며 최적의 Solution을 준비하고 있습니다.",
+          "source": {
+            "report": "2024 사업보고서",
+            "section": "II. 사업의 내용 / DART Page 38",
             "url": "https://dart.fss.or.kr/navi/searchNavi.do?naviCode=A002&naviCrpCik=00164779&naviCrpNm=SK하이닉스"
           },
           "verdict": null,

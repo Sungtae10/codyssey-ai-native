@@ -32,7 +32,8 @@ def _cand_text(corpus, ids):
     rows = []
     for sid in ids:
         s = corpus.by_id[sid]
-        rows.append(f"{sid} | {s['report']} | {s['section']} | p.{s['page']} | {s['text']}")
+        page = f"p.{s['page']}" if s.get("page") else "-"   # DART 자동 수집 글은 쪽 번호가 없습니다
+        rows.append(f"{sid} | {s['report']} | {s['section']} | {page} | {s['text']}")
     return "\n".join(rows)
 
 

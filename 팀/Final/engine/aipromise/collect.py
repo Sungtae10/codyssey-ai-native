@@ -60,8 +60,59 @@ def _find(pages, pattern, start_page=0, start_pos=0, anchored=True):
     return None
 
 
-def locate_sections(pages, wanted, overrides=None):
-    """장마다 (시작 쪽, 시작 글자 위치, 끝 쪽, 끝 글자 위치)를 찾습니다. 쪽 번호는 0부터."""
+def _heading_lines(pages, pattern, start_page=0, start_pos=0, slack=12):
+    """제목 줄 후보: 줄 맨 앞이 장 제목이고 뒤에 붙은 글이 짧은(slack자 이하) 줄만. (DART 자동 수집 글용)
+    정정 보고서 앞의 '정정 사항' 표처럼 장 제목 뒤에 다른 칸 글이 이어지는 줄은 빼려는 것입니다."""
+    rx = re.compile(r"(?m)^[ \t]*(?:" + pattern + r")(.*)$")
+    out = []
+    for i in range(start_page, len(pages)):
+        if _is_toc(pages[i]):
+            continue
+        for m in rx.finditer(pages[i], start_pos if i == start_page else 0):
+            if len(m.group(1).strip()) <= slack:
+                out.append((i, m.start()))
+    return out
+
+
+def span_chars(pages, start, end):
+    """(쪽, 글자 위치) 시작과 끝 사이 글자 수 (끝이 없으면 문서 끝까지)."""
+    (sp, spos) = start
+    ep, epos = end if end else (len(pages) - 1, None)
+    total = 0
+    for i in range(sp, min(ep, len(pages) - 1) + 1):
+        a = spos if i == sp else 0
+        b = epos if (i == ep and epos is not None) else len(pages[i])
+        total += max(0, b - a)
+    return total
+
+
+# 이보다 짧으면 본문 장이 아니라 표 칸 등으로 봅니다 (II장은 길고, 정관 장과 반기보고서의 IV장은 짧을 수 있음)
+_DART_MIN_CHARS = {"I5": 150, "II": 2000, "IV": 150}
+
+
+def _locate_dart(pages, spec, min_chars=2000):
+    """DART 자동 수집 글: 제목 줄 후보 가운데 장 길이가 min_chars 이상인 첫 후보, 없으면 가장 긴 후보.
+    (10/19 고침) 카카오 2026 반기보고서([기재정정])는 맨 앞 정정 사항 표의 'II. 사업의 내용' 칸이 먼저 잡혀
+    II장이 91자만 남았습니다. 본문 장 제목(XML의 TITLE)은 한 줄에 제목만 있으므로 이 규칙으로 본문을 고릅니다."""
+    best = None
+    for st in _heading_lines(pages, spec["start"]):
+        en = None
+        for pat in spec["end"]:
+            cands = _heading_lines(pages, pat, st[0], st[1] + 1)
+            cand = cands[0] if cands else None
+            if cand and (en is None or cand < en):
+                en = cand
+        size = span_chars(pages, st, en)
+        if size >= min_chars:
+            return st, en
+        if best is None or size > best[2]:
+            best = (st, en, size)
+    return (best[0], best[1]) if best else None
+
+
+def locate_sections(pages, wanted, overrides=None, dart=False):
+    """장마다 (시작 쪽, 시작 글자 위치, 끝 쪽, 끝 글자 위치)를 찾습니다. 쪽 번호는 0부터.
+    dart=True(OpenDART 자동 수집 글)면 제목 줄 규칙(_locate_dart)을 먼저 쓰고, 못 찾으면 원래 방법으로 찾습니다."""
     overrides = overrides or {}
     found = {}
     for key in wanted:
@@ -70,6 +121,11 @@ def locate_sections(pages, wanted, overrides=None):
             s, e = overrides[key]
             found[key] = {"start": (s - 1, 0), "end": (e - 1, None), "how": "config"}
             continue
+        if dart:
+            got = _locate_dart(pages, spec, _DART_MIN_CHARS.get(key, 150))
+            if got:
+                found[key] = {"start": got[0], "end": got[1], "how": "auto"}
+                continue
         st = _find(pages, spec["start"]) or _find(pages, spec["start"], anchored=False)
         if not st:
             found[key] = None
@@ -164,19 +220,30 @@ def section_sentences(page_slices, min_len=12, max_len=500):
     return out
 
 
+def report_path(cfg, report):
+    """읽을 파일: OpenDART에서 자동으로 받은 글(report['text'], data/dart)이 있으면 그것, 없으면 PDF(data/pdf)."""
+    if report.get("text"):
+        from .dart import dart_dir
+        return os.path.join(dart_dir(cfg), report["text"]), report["text"]
+    return os.path.join(cfg["paths"]["pdf_dir"], report["pdf"]), report["pdf"]
+
+
 def collect_report(cfg, company, report, role):
-    pdf_path = os.path.join(cfg["paths"]["pdf_dir"], report["pdf"])
+    pdf_path, source_file = report_path(cfg, report)
     if not os.path.exists(pdf_path):
-        raise SystemExit(f"파일이 없습니다: {pdf_path}\n→ DART에서 받은 PDF를 이 이름으로 data/pdf 폴더에 넣어 주세요.")
+        raise SystemExit(f"파일이 없습니다: {pdf_path}\n→ DART에서 받은 PDF를 이 이름으로 data/pdf 폴더에 넣거나, "
+                         "python fetch_dart.py --companies <기업>으로 자동으로 받아 주세요.")
     pages = read_pages(pdf_path)
+    # DART 자동 수집 글은 쪽이 PDF 쪽과 다르므로 쪽 번호를 남기지 않습니다 (화면에 'p.' 표시 안 함)
+    no_pages = bool(report.get("no_pages"))
     overrides = (cfg.get("section_pages") or {}).get(company["key"], {}).get(report["key"], {})
-    loc = locate_sections(pages, cfg["sections"], overrides)
+    loc = locate_sections(pages, cfg["sections"], overrides, dart=no_pages)
     kw = keyword_regex(cfg.get("keywords") or DEFAULT_KEYWORDS)
 
     result = {
         "company": company["key"], "report_key": report["key"], "title": report["title"],
-        "url": report.get("url", ""), "role": role, "source_file": report["pdf"],
-        "num_pages": len(pages), "sections": {},
+        "url": report.get("url", ""), "role": role, "source_file": source_file,
+        "source": "dart" if no_pages else "pdf", "num_pages": None if no_pages else len(pages), "sections": {},
     }
     for key in cfg["sections"]:
         spec = SECTIONS[key]
@@ -200,9 +267,10 @@ def collect_report(cfg, company, report, role):
         sents = section_sentences(slices)
         result["sections"][key] = {
             "name": spec["name"], "found": True, "how": info["how"],
-            "start_page": sp + 1, "end_page": ep + 1, "end_found": end is not None,
+            "start_page": None if no_pages else sp + 1, "end_page": None if no_pages else ep + 1,
+            "end_found": end is not None,
             "sentences": [
-                {"id": f"{report['key']}-{key}-{n:04d}", "text": s, "page": pg,
+                {"id": f"{report['key']}-{key}-{n:04d}", "text": s, "page": None if no_pages else pg,
                  "has_keyword": bool(kw.search(s))}
                 for n, (pg, s) in enumerate(sents, 1)
             ],
@@ -231,6 +299,6 @@ def run_collect(cfg, company, roles=("promise", "evidence")):
     for t, n, s, e, ns, nk, ok, eok in summary:
         flag = "OK" if ok and eok else ("끝 제목 못 찾음, 문서 끝까지 읽음 → 끝 쪽 확인 필요" if ok else
                                         "장을 못 찾음 (보고서에 원래 없는 장이면 그대로 두고, 있는데 못 찾았으면 config.yaml section_pages에 쪽 번호를 적기)")
-        print(f"{t} | {n} | {s} | {e} | {ns} | {nk} | {flag}")
+        print(f"{t} | {n} | {'-' if s is None else s} | {'-' if e is None else e} | {ns} | {nk} | {flag}")
     print("→ 시작 쪽과 끝 쪽이 PDF 목차와 맞는지 꼭 한 번 확인해 주세요.")
     return summary

@@ -15,3 +15,7 @@ tests/tmp/
 # 화면
 node_modules/
 .next/
+
+# OpenDART 자동 수집 글(다시 받을 수 있음). manifest.json(접수번호, 원문 주소)은 올립니다
+data/dart/*.txt
+data/dart/_corpcode.zip

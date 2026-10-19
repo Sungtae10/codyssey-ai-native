@@ -28,7 +28,9 @@ def company_cfg(cfg: dict, key: str) -> dict:
                          f"후보 기업: {list(cfg.get('candidates') or {})}")
     c = dict(pool[key])
     c["key"] = key
-    return c
+    # 10/19: OpenDART에서 자동으로 받은 글(fetch_dart.py)이 있으면 PDF 대신 그 글과 DART 원문 주소를 씁니다
+    from .dart import apply_manifest
+    return apply_manifest(cfg, c)
 
 
 def work_dir(cfg: dict, company_key: str) -> str:

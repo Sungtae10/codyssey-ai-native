@@ -88,7 +88,8 @@ def run_extract(cfg, company, llm, work):
     print(f"구체적 약속 {np_}개, 방향성 약속 {nd}개 (버린 항목 {len(dropped)}개)")
     for p in promises:
         kind = "구체적" if p["type"] == "specific" else "방향성"
-        print(f"  {p['id']} [{kind}] {p['title']}  (p.{p['source']['page']})")
+        where = f"p.{p['source']['page']}" if p["source"].get("page") else p["source"]["section"]
+        print(f"  {p['id']} [{kind}] {p['title']}  ({where})")
     print(f"→ 정답 매길 목록: {gold_path}")
     return promises
 
@@ -102,7 +103,7 @@ def write_gold_template(cfg, company, promises):
         w = csv.writer(f)
         w.writerow(cols)
         for n, p in enumerate(promises, 1):
-            loc = f"{p['source']['report']}, {p['source']['section']}, p.{p['source']['page']}"
+            loc = f"{p['source']['report']}, {p['source']['section']}" + (f", p.{p['source']['page']}" if p["source"].get("page") else "")
             kind = "구체적" if p["type"] == "specific" else "방향성"
             w.writerow([n, p["id"], p["sentence"], loc, kind, "", "", "", "", ""])
     return path

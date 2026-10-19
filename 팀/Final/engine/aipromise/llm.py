@@ -49,7 +49,8 @@ class LLM:
     def _client(self, model):
         if model not in self._clients:
             from langchain_openai import ChatOpenAI
-            kwargs = {"model": model}
+            # 10/19: 여러 기업을 동시에 돌릴 때 요청 제한(429)에 바로 대체 모델로 넘어가지 않도록 재시도를 늘립니다
+            kwargs = {"model": model, "max_retries": 6}
             temp = self.cfg["llm"].get("temperature", 0)
             if temp is not None:
                 kwargs["temperature"] = temp
@@ -108,4 +109,4 @@ class LLM:
 
 def get_embeddings(cfg):
     from langchain_openai import OpenAIEmbeddings
-    return OpenAIEmbeddings(model=cfg["llm"]["embed_model"])
+    return OpenAIEmbeddings(model=cfg["llm"]["embed_model"], max_retries=6)

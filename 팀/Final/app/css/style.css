@@ -709,3 +709,55 @@ a.question { color: inherit; }
 [data-theme="dark"] .pipeline-num,
 [data-theme="dark"] .ev-link { color: var(--body); }
 [data-theme="light"] .pipeline-num { color: var(--body); }
+
+/* ---------- 15. 첫 화면 검색 (10/19): 분석 완료 / 분석 준비 중 / 상장 기업(아직 분석 전) ---------- */
+.search-hero { gap: 14px; }
+.company-search { position: relative; }
+.company-search .search-icon {
+  position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+  display: inline-flex; color: var(--sub); pointer-events: none;
+}
+.company-search input { min-height: 54px; padding: 0 16px 0 46px; font-size: 16px; } /* 16px: 휴대폰에서 누를 때 화면이 확대되지 않게 */
+.search-help { margin: -4px 0 0; font-size: 12px; line-height: 1.5; color: var(--sub); }
+.search-results { display: flex; flex-direction: column; gap: 8px; }
+.search-results:empty { display: none; }
+.search-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.search-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px; border-radius: var(--radius-md);
+  background: var(--surface); box-shadow: 0 0 0 1px var(--glass-line); color: inherit;
+}
+a.search-item { text-decoration: none; transition: transform 0.12s; }
+a.search-item:active { transform: scale(0.985); }
+.search-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.search-name { font-size: 15px; font-weight: 700; color: var(--text); }
+.search-meta { font-size: 12px; line-height: 1.45; color: var(--sub); }
+.status-badge { flex: none; font-size: 11px; font-weight: 800; line-height: 1.3; padding: 4px 8px; border-radius: 999px; }
+.status-badge.is-ready { color: var(--confirmed); background: var(--confirmed-bg); box-shadow: inset 0 0 0 1px var(--confirmed-line); }
+.status-badge.is-pending { color: var(--partial); background: var(--partial-bg); box-shadow: inset 0 0 0 1px var(--partial-line); }
+.status-badge.is-listed { color: var(--body); background: var(--chip); }
+.search-note { margin: 0; font-size: 12px; line-height: 1.6; color: var(--sub); }
+.search-empty {
+  display: flex; flex-direction: column; gap: 4px; padding: 14px;
+  border-radius: var(--radius-md); background: var(--surface); box-shadow: 0 0 0 1px var(--glass-line);
+}
+.search-empty strong { font-size: 14px; color: var(--text); }
+.search-empty span { font-size: 12px; line-height: 1.6; color: var(--sub); }
+
+/* 분석 준비 중: 누를 수 없는 작은 칸 */
+.pending-list { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.pending-chip {
+  flex: 1 1 140px; min-width: 0; display: flex; flex-direction: column; gap: 2px;
+  padding: 10px 12px; border-radius: var(--radius-sm);
+  background: var(--surface); box-shadow: inset 0 0 0 1px var(--glass-line);
+}
+.pending-name { font-size: 14px; font-weight: 700; color: var(--text); }
+.pending-note { font-size: 11px; line-height: 1.45; color: var(--sub); }
+
+/* 약속 상세 확인 4단계: 단계마다 누가 했는지 */
+.pipeline-head { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
+.pipeline-who { font-size: 10px; font-weight: 700; line-height: 1.4; padding: 2px 7px; border-radius: 999px; color: var(--body); background: var(--chip); }
+
+/* 첫 화면 '이렇게 확인해요': 두 줄이 되어도 번호가 첫 줄에 맞게 */
+.steps li { align-items: flex-start; line-height: 1.55; }
+.steps .step-num { flex: none; }

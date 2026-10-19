@@ -9,6 +9,7 @@
 사용법 (저장소 맨 위 폴더에서): python tests/test_ui_static.py
 마지막 줄이 "화면 정적 검사 통과"면 됩니다.
 """
+import json
 import re
 import sys
 from pathlib import Path
@@ -93,6 +94,22 @@ def main():
             problems.append(f"{name}에 단정 표현: {bad}")
         if chr(0x2014) in text:
             problems.append(f"{name}에 em dash(U+2014)가 {text.count(chr(0x2014))}개")
+
+    # 첫 화면 검색에 쓰는 상장 기업 목록 (한국거래소 상장 종목, 기준일과 출처가 있어야 함)
+    listed_path = APP / "data" / "listed-companies.json"
+    try:
+        listed = json.loads(listed_path.read_text(encoding="utf-8"))
+        rows = listed.get("companies") or []
+        names = {r[1] for r in rows if isinstance(r, list) and len(r) == 3}
+        if len(rows) < 2000 or len(names) != len(rows):
+            problems.append(f"listed-companies.json 형식이 이상함 (행 {len(rows)}개, 이름 {len(names)}개)")
+        if not listed.get("as_of") or not listed.get("source_url") or listed.get("count") != len(rows):
+            problems.append("listed-companies.json에 as_of, source_url, count(행 수와 같아야 함)가 필요함")
+        for must in ("삼성전자", "SK하이닉스", "현대차"):
+            if must not in names:
+                problems.append(f"listed-companies.json에 {must}가 없음")
+    except (OSError, ValueError) as e:
+        problems.append(f"listed-companies.json을 읽지 못함: {e}")
 
     print(f"app.js가 쓰는 class {len(used)}개, CSS에 있는 class {len(defined)}개")
     if problems:

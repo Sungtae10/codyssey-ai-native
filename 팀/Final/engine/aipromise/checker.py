@@ -30,6 +30,8 @@ def check(data, expect_real=True):
         for k in ("id", "name", "reports", "promises", "interview_card"):
             if k not in c:
                 errs.append(f"{cname}: {k}가 없습니다")
+        # 화면 시간축은 reports.evidence의 제목과 근거 문장의 source.report가 같아야 점이 맞게 찍힙니다
+        ev_titles = {r.get("title") for r in ((c.get("reports") or {}).get("evidence") or [])}
         if "check_note" in c and (not isinstance(c["check_note"], str) or find_forbidden(c["check_note"])):
             errs.append(f"{cname}: check_note는 단정 표현 없는 글자여야 합니다")
         specs = {}
@@ -64,6 +66,9 @@ def check(data, expect_real=True):
             for e in p.get("evidence", []):
                 if e.get("citation_verified") is not True:
                     errs.append(f"{pid}: 인용 검사를 통과하지 못한 근거가 들어 있습니다")
+                rep = (e.get("source") or {}).get("report")
+                if rep not in ev_titles:
+                    errs.append(f"(주의) {pid}: 근거 보고서 이름 '{rep}'이 reports.evidence 제목에 없습니다 (화면은 칸을 더해 보여줍니다)")
             bad = find_forbidden(p.get("reason") or "")
             if bad:
                 errs.append(f"{pid}: 판정 이유에 단정 표현 {bad}")

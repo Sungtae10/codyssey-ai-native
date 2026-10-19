@@ -77,11 +77,14 @@ python tests/ui_check.py         # 화면: 모든 화면(예시 데이터 18개)
 - [Google Drive ↔ GitHub 동기화](docs/drive-sync.md)
 - [제출 증빙 체크리스트](docs/submission-evidence-checklist.md)
 - [팀 협업 규칙](CONTRIBUTING.md)
+- [프로젝트 기획서](docs/project-plan.md)
 - [기능·비기능 요구사항](docs/requirements.md)
 - [공식 요구사항 ↔ 증빙 매트릭스](docs/official-requirements-matrix.md)
 - [사용자 피드백 반영 로그](docs/feedback-log.md)
 - [최종 발표 구성안](docs/presentation-outline.md)
 - [최종 제출 Release Checklist](docs/release-checklist.md)
+- [팀 기여 내역](docs/team-contributions.md)
+- [Final Project 결과보고서 초안](docs/final-report-draft.md)
 
 ## 9. 추가 평가
 
@@ -113,7 +116,8 @@ python tests/ui_check.py         # 화면: 모든 화면(예시 데이터 18개)
 5. **실사용 검증**: 최소 5명 테스트 및 실제 피드백 반영을 제출 증빙으로 남김
 
 ### 제출 링크
-- 서비스 URL: **[배포 후 입력]**
+- 현재 팀 공유 배포 URL: https://ai-promise-six.vercel.app
+- 서비스 URL 최종 검증: **제출 전 시크릿 창/모바일에서 직접 확인 필요**
 - 사용자 테스트: **[실제 인원 입력]명**
 - 피드백 반영: [docs/feedback-log.md](docs/feedback-log.md)
 - 발표자료: **[완성 후 링크 입력]**

@@ -56,7 +56,7 @@ companies:
 candidates:
   kakao:
     name: 카카오
-    check_note: "시연용 기업이에요. 화면의 약속은 팀이 원문과 대조해 확인했고, 사람 정답과 비교한 정확도는 없어요."
+    check_note: "AI 엔진 결과예요(사람 검토 전). 근거 문장은 코드가 원문과 글자 그대로 대조했고, 사람 정답과 비교한 정확도는 없어요."
     promise_reports:
       - {key: y2024, title: "2024 사업보고서", pdf: kakao_2024.pdf, url: ""}
     evidence_reports:
@@ -64,7 +64,7 @@ candidates:
       - {key: h2026, title: "2026 반기보고서", pdf: kakao_2026h1.pdf, url: ""}
   shinhanbank:
     name: 신한은행
-    check_note: "시연용 기업이에요. 화면의 약속은 팀이 원문과 대조해 확인했고, 사람 정답과 비교한 정확도는 없어요."
+    check_note: "AI 엔진 결과예요(사람 검토 전). 근거 문장은 코드가 원문과 글자 그대로 대조했고, 사람 정답과 비교한 정확도는 없어요."
     promise_reports:
       - {key: y2024, title: "2024 사업보고서", pdf: shinhan_2024.pdf, url: ""}
     evidence_reports:
@@ -72,7 +72,7 @@ candidates:
       - {key: h2026, title: "2026 반기보고서", pdf: shinhan_2026h1.pdf, url: ""}
   naver:
     name: NAVER
-    check_note: "시연용 기업이에요. 화면의 약속은 팀이 원문과 대조해 확인했고, 사람 정답과 비교한 정확도는 없어요."
+    check_note: "AI 엔진 결과예요(사람 검토 전). 근거 문장은 코드가 원문과 글자 그대로 대조했고, 사람 정답과 비교한 정확도는 없어요."
     promise_reports:
       - {key: y2024, title: "2024 사업보고서", pdf: naver_2024.pdf, url: ""}
     evidence_reports:

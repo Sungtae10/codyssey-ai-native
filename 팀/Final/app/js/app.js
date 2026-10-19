@@ -150,18 +150,22 @@
   }
 
   /* ---------- 공통 틀 ---------- */
-  // 규칙 9: 예시 데이터일 때 화면 맨 위 안내
-  function sampleBanner() {
+  // 규칙 9: 예시 데이터일 때 화면 맨 위 안내. 기업 화면에서는 그 기업의 안내(company.notice)가 있으면 그걸 보여줘요
+  var ENGINE_NOTICE = '이 기업은 AI 엔진 결과예요. 근거 문장은 코드가 원문과 대조했고, 판정은 사람이 아직 검토하지 않았어요.';
+  function sampleBanner(company) {
     var meta = DATA.meta || {};
+    var own = company && (company.notice || (company.data_mode === 'engine' ? ENGINE_NOTICE : ''));
+    if (own) return '<div class="sample-banner" role="note">' + esc(own) + '</div>';
     if (!meta.is_sample) return '';
     return '<div class="sample-banner" role="note">' + esc(meta.notice || '예시 데이터입니다. 실제 기업이나 실제 공시 내용이 아닙니다.') + '</div>';
   }
-  // 규칙 1: 안내 문구 2개를 모든 화면에
-  function disclaimers() {
-    return '<p class="disclaimer">' + (L.disclaimers || []).map(esc).join('<span aria-hidden="true"> · </span>') + '</p>';
+  // 규칙 1: 안내 문구 2개를 모든 화면에. AI 엔진 결과인 기업 화면에서는 안내서의 기본 문구 2개를 써요
+  function disclaimers(company) {
+    var list = company && company.data_mode === 'engine' ? DEFAULT_LABELS.disclaimers : (L.disclaimers || []);
+    return '<p class="disclaimer">' + list.map(esc).join('<span aria-hidden="true"> · </span>') + '</p>';
   }
-  function topbar(left) {
-    return sampleBanner() + '<header class="topbar">' + left + themeButton() + '</header>';
+  function topbar(left, company) {
+    return sampleBanner(company) + '<header class="topbar">' + left + themeButton() + '</header>';
   }
   function backLink(href, text) {
     return '<a class="back" href="' + href + '">' + ICON.back + esc(text) + '</a>';
@@ -176,14 +180,18 @@
     return '<span class="btn btn-secondary btn-sm" aria-disabled="true" title="원문 링크가 아직 없어요">' + esc(label) + ICON.external + '</span>';
   }
   // 데이터 방식 3가지: 사람이 원문 대조한 검증용 데이터(human), 가상 예시(sample), 엔진 결과(engine)
-  function dataMode() {
+  // 기업에 data_mode("human_reviewed_demo" 또는 "engine")가 있으면 그 기업은 그 값을 따라요 (한 파일에 섞여 있을 때)
+  function dataMode(company) {
+    var own = company && company.data_mode;
+    if (own === 'human_reviewed_demo') return 'human';
+    if (own === 'engine') return 'engine';
     var m = DATA.meta || {};
     if (m.data_mode === 'human_reviewed_demo') return 'human';
     if (m.is_sample && !m.data_mode) return 'sample';
     return 'engine';
   }
-  function byMode(human, sample, engine) {
-    var mode = dataMode();
+  function byMode(human, sample, engine, company) {
+    var mode = dataMode(company);
     return mode === 'human' ? human : (mode === 'sample' ? sample : engine);
   }
   function isReady(c) { return (c.promises || []).length > 0; }
@@ -221,7 +229,7 @@
   }
   function resultItem(c) {
     if (isReady(c)) {
-      var meta = '구체적 약속 ' + specifics(c).length + '개 · ' + byMode('사람이 원문 대조', '가상 예시', 'AI 엔진 결과');
+      var meta = '구체적 약속 ' + specifics(c).length + '개 · ' + byMode('사람이 원문 대조', '가상 예시', 'AI 엔진 결과(사람 검토 전)', c);
       return '<li><a class="search-item" href="#/c/' + encodeURIComponent(c.id) + '">' +
         '<span class="search-main"><span class="search-name">' + esc(c.name) + '</span><span class="search-meta">' + esc(meta) + '</span></span>' +
         '<span class="status-badge is-ready">분석 완료</span>' + ICON.chevron + '</a></li>';
@@ -308,10 +316,19 @@
       });
     });
 
-    var modeNote = byMode(
-      '지금 보이는 판정은 사람이 공시 원문을 직접 읽고 대조한 검증용 데이터예요. 엔진은 같은 4단계로 같은 형식의 결과를 만들어요.',
-      '지금 보이는 기업과 판정은 화면 형식을 보여 주는 가상 예시예요.',
-      '지금 보이는 판정은 AI 엔진 결과예요. 원문 링크로 직접 확인해 주세요.');
+    var humanNames = readyList.filter(function (c) { return dataMode(c) === 'human'; }).map(function (c) { return c.name; });
+    var engineNames = readyList.filter(function (c) { return dataMode(c) === 'engine'; }).map(function (c) { return c.name; });
+    var modeNote;
+    if (dataMode() === 'sample' && !humanNames.length && !engineNames.length) {
+      modeNote = '지금 보이는 기업과 판정은 화면 형식을 보여 주는 가상 예시예요.';
+    } else if (humanNames.length && engineNames.length) {
+      modeNote = humanNames.join(', ') + '의 판정은 사람이 공시 원문을 직접 읽고 대조한 검증용 데이터이고, ' +
+        engineNames.join(', ') + '는 AI 엔진 결과(사람 검토 전)예요. 둘 다 같은 4단계 형식이에요.';
+    } else if (humanNames.length) {
+      modeNote = '지금 보이는 판정은 사람이 공시 원문을 직접 읽고 대조한 검증용 데이터예요. 엔진은 같은 4단계로 같은 형식의 결과를 만들어요.';
+    } else {
+      modeNote = '지금 보이는 판정은 AI 엔진 결과예요. 원문 링크로 직접 확인해 주세요.';
+    }
 
     return topbar('<div class="brand">' + ICON.shield + esc(L.service_name) + '</div>') +
       '<main class="content">' + disclaimers() +
@@ -385,8 +402,8 @@
       : '';
     var nv = verdictInfo('not_verifiable') || {};
 
-    return topbar(backLink('#/', '기업 선택')) +
-      '<main class="content">' + disclaimers() +
+    return topbar(backLink('#/', '기업 선택'), company) +
+      '<main class="content">' + disclaimers(company) +
         '<section style="display:flex;flex-direction:column;gap:6px">' +
           '<p class="eyebrow">' + esc(company.name) + '</p>' +
           '<p class="note">약속: ' + esc(reportTitles(reports.promise)) + ' · 근거: ' + esc(reportTitles(reports.evidence)) + '</p>' +
@@ -444,15 +461,15 @@
 
     // 화면에는 데이터로 확인되는 상태만 보여줘요. 단계마다 누가 했는지 함께 적어요 (사람 대조 데이터를 AI가 한 것처럼 보이지 않게)
     var verifiedCount = evidence.filter(function (e) { return e.citation_verified === true; }).length;
-    var who2 = byMode('사람이 원문 대조', '예시 데이터', specific && p.search_attempts ? 'AI 검색 ' + p.search_attempts + '번' : 'AI 검색');
+    var who2 = byMode('사람이 원문 대조', '예시 데이터', specific && p.search_attempts ? 'AI 검색 ' + p.search_attempts + '번' : 'AI 검색', company);
     var pipeline = [
-      { n: '01', title: '약속 찾기', who: byMode('사람이 원문에서 고름', '예시 데이터', 'AI가 원문 문장을 고름'),
+      { n: '01', title: '약속 찾기', who: byMode('사람이 원문에서 고름', '예시 데이터', 'AI가 원문 문장을 고름', company),
         desc: promiseReport + '의 AI 계획 문장', ok: true },
       { n: '02', title: specific ? '근거 찾기' : '관련 활동 찾기', who: who2,
         desc: evidence.length ? '후속 공시에서 ' + (specific ? '근거' : '관련 활동') + ' ' + evidence.length + '개' : '읽은 후속 공시 범위에서 찾지 못함', ok: evidence.length > 0 },
-      { n: '03', title: '판정', who: specific ? byMode('판정기준 v2, 사람', '판정기준 v2, 예시', '판정기준 v2, AI') : '',
+      { n: '03', title: '판정', who: specific ? byMode('판정기준 v2, 사람', '판정기준 v2, 예시', '판정기준 v2, AI', company) : '',
         desc: specific ? verdictLabel(p.verdict) : '방향성 약속이라 판정하지 않음', ok: specific ? !!p.verdict : true },
-      { n: '04', title: '원문 인용 검사', who: byMode('사람이 원문과 대조', '예시 데이터', '코드가 원문과 대조'),
+      { n: '04', title: '원문 인용 검사', who: byMode('사람이 원문과 대조', '예시 데이터', '코드가 원문과 대조', company),
         desc: evidence.length ? (specific ? '근거 문장 ' : '찾은 문장 ') + evidence.length + '개 중 ' + verifiedCount + '개 ' + L.citation_verified_label : '확인할 문장이 없음', ok: evidence.length ? verifiedCount === evidence.length : false }
     ];
     var pipelineRows = pipeline.map(function (s) {
@@ -471,8 +488,8 @@
       ? docLink(evidence[0].source, evidence[0].source.report + ' 원문')
       : '<a class="btn btn-secondary btn-sm" href="' + listHref + '">목록으로</a>';
 
-    return topbar(backLink(listHref, '약속 목록')) +
-      '<main class="content ' + vClass(p.verdict) + '">' + disclaimers() +
+    return topbar(backLink(listHref, '약속 목록'), company) +
+      '<main class="content ' + vClass(p.verdict) + '">' + disclaimers(company) +
         '<section style="display:flex;flex-direction:column;gap:10px">' +
           pill +
           '<h1 class="detail-title">' + esc(p.title) + '</h1>' +
@@ -503,7 +520,7 @@
           '<p class="pipeline-note">' + esc(byMode(
             '지금 화면의 판정은 사람이 공시 원문을 직접 읽고 대조한 검증용 데이터예요. 엔진은 같은 4단계로 같은 형식의 결과를 만들고, 엔진 정확도는 따로 평가해요.',
             '가상 예시 데이터라 실제 기업이나 실제 공시가 아니에요.',
-            'AI 엔진 결과예요. 판정이 맞는지 원문 링크로 직접 확인해 주세요.')) + '</p>' +
+            'AI 엔진 결과예요. 판정이 맞는지 원문 링크로 직접 확인해 주세요.', company)) + '</p>' +
         '</details>' +
       '</main>' +
       '<footer class="bottombar two">' + docLink(p.source, ((p.source || {}).report || '약속') + ' 원문') + secondLink + '</footer>';
@@ -515,8 +532,8 @@
     var listHref = '#/c/' + encodeURIComponent(company.id);
     var issuesData = card.issues || [], tpData = card.talking_points || [], qData = card.questions || [];
     if (!issuesData.length && !tpData.length && !qData.length) {
-      return topbar(backLink(listHref, '약속 목록')) +
-        '<main class="content">' + disclaimers() + '<p class="empty">면접 카드를 준비하고 있어요.</p></main>';
+      return topbar(backLink(listHref, '약속 목록'), company) +
+        '<main class="content">' + disclaimers(company) + '<p class="empty">면접 카드를 준비하고 있어요.</p></main>';
     }
     function titleOf(pid) { var p = findPromise(company, pid); return p ? p.title : ''; }
     function verdictOf(pid) { var p = findPromise(company, pid); return p ? p.verdict : null; }
@@ -544,8 +561,8 @@
         : '<div class="question">' + inner + '</div>';
     }).join('');
 
-    return topbar(backLink(listHref, '약속 목록')) +
-      '<main class="content">' + disclaimers() +
+    return topbar(backLink(listHref, '약속 목록'), company) +
+      '<main class="content">' + disclaimers(company) +
         '<section style="display:flex;flex-direction:column;gap:6px">' +
           '<p class="eyebrow">' + esc(company.name) + ' 면접 카드</p>' +
           '<h1 class="headline">면접 5분 전,<br>이것만 보고 들어가세요</h1>' +

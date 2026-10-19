@@ -179,11 +179,11 @@ def list_filings(key, corp_code, bgn_de, end_de):
     return out
 
 
-def pick_report(filings, report_key):
-    """목록에서 보고서 키에 맞는 보고서 1건. 없으면 None."""
+def pick_reports(filings, report_key):
+    """목록에서 보고서 키에 맞는 보고서를 쓸 순서대로: 본문이 든 보고서(원본, 기재정정)를 늦게 낸 순서로, 그다음 첨부만 고친 정정."""
     target = report_target(report_key)
     if not target:
-        return None
+        return []
     want = f"{target[0]}({target[1]})"
     cands = []
     for f in filings:
@@ -193,10 +193,14 @@ def pick_report(filings, report_key):
         prefix, base = (m.group(1) or ""), re.sub(r"\s+", "", m.group(2))
         if base == want:
             cands.append((prefix, f))
-    if not cands:
-        return None
-    body = [c for c in cands if "첨부" not in c[0]] or cands
-    return max(body, key=lambda c: c[1].get("rcept_no", ""))[1]
+    cands.sort(key=lambda c: ("첨부" in c[0], -int(c[1].get("rcept_no") or 0)))
+    return [f for _, f in cands]
+
+
+def pick_report(filings, report_key):
+    """목록에서 보고서 키에 맞는 보고서 1건 (pick_reports의 첫 번째). 없으면 None."""
+    got = pick_reports(filings, report_key)
+    return got[0] if got else None
 
 
 # ---------- 3. 원문 받기, 글로 바꾸기 ----------
@@ -332,13 +336,22 @@ def fetch_company(key, company, out_dir, corps_loader, log=print, today=None):
              "corp_found_by": corp["how"], "reports": {}}
     os.makedirs(out_dir, exist_ok=True)
     for r in targets:
-        f = pick_report(filings, r["key"])
+        cands = pick_reports(filings, r["key"])
         kind, period = report_target(r["key"])
-        if not f:
+        if not cands:
             log(f"  {r['title']}: '{kind} ({period})'를 목록에서 찾지 못했습니다")
             entry["reports"][r["key"]] = {"title": r["title"], "found": False, "want": f"{kind} ({period})"}
             continue
-        xml, member, members = download_document(key, f["rcept_no"])
+        # (10/19 고침) 가장 늦은 정정 보고서의 원문 파일이 아직 없으면(상태 014) 그 전 보고서로 넘어갑니다 (KB금융 2025 사업보고서)
+        for n, f in enumerate(cands):
+            try:
+                xml, member, members = download_document(key, f["rcept_no"])
+                break
+            except DartError as e:
+                if "014" in str(e) and n + 1 < len(cands):
+                    log(f"  {r['title']}: {f['report_nm'].strip()} 접수 {f['rcept_no']}의 원문 파일이 없어 그 전 보고서로 넘어갑니다")
+                    continue
+                raise
         text = xml_to_text(xml)
         fname = f"{company['key']}_{r['key']}.txt"
         with open(os.path.join(out_dir, fname), "w", encoding="utf-8") as g:

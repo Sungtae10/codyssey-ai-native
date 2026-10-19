@@ -52,7 +52,8 @@ companies:
 # 핵심 2곳과 사용자 테스트를 먼저 끝내고, 시간이 남으면 실행합니다.
 # doctor, export를 그냥 돌릴 때는 들어가지 않고, --company나 --companies에 이름을 적을 때만 씁니다.
 # 실행 예) python run.py all --company kakao
-#          python run.py export --companies samsung skhynix kakao shinhanbank naver --copy-to ../app/data/results.json
+#          python run.py export --companies kakao shinhanbank naver
+#          python merge_screen.py --engine ../data/results/ai_promise_data.json --companies kakao shinhanbank naver --write
 candidates:
   kakao:
     name: 카카오

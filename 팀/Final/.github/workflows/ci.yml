@@ -31,6 +31,9 @@ jobs:
       - name: Check second-opinion judging and fallback model (no API)
         run: python tests/test_escalation.py
 
+      - name: Check merging engine companies into screen data
+        run: python tests/test_merge_screen.py
+
       - name: Validate sample JSON
         run: python -m json.tool tests/sample_data.json > /dev/null
 

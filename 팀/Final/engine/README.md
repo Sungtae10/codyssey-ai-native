@@ -103,7 +103,8 @@
 
 ## 5. 화면에 넣기
 
-- `export --copy-to ../app/data/results.json`은 화면 데이터를 덮어씁니다. 사용자 테스트가 끝나기 전에는 쓰지 않습니다 (3장).
+- `export --copy-to ../app/data/results.json`은 화면 데이터를 통째로 덮어씁니다. 사용자 테스트가 끝나기 전에는 쓰지 않습니다 (3장).
+- 10/19부터 엔진 결과 기업만 더할 때는 `python merge_screen.py --engine ../data/results/ai_promise_data.json --companies kakao shinhanbank naver --write`를 씁니다. 사람 대조 기업(삼성·SK)은 그대로 두고, 더한 기업에는 `data_mode: engine`이 붙어 화면이 기업별로 "AI 엔진 결과(사람 검토 전)"라고 보여줍니다. 섞이면 맨 위 안내 띠와 안내 문구도 기업 이름으로 나눠 고치고, 화면 점검에서 막는 문제가 있으면 쓰지 않습니다.
 - 화면 점검에서 문제가 나오면(`(주의)` 항목 제외) 복사하지 않고 그 사실을 알려 줍니다.
 - 엔진 결과 파일은 `meta.is_sample`이 false라서, 화면에 올리면 맨 위 안내 띠가 사라집니다.
 
@@ -127,7 +128,7 @@
 | --- | --- | --- |
 | 1 | PDF 9개를 `data/pdf`에 넣고, `config.yaml`의 시연용 `url` 9곳에 DART 주소를 붙여 넣기 | 파일 이름이 설정과 같은지 |
 | 2 | `python run.py all --company kakao` (`shinhanbank`, `naver`도 같게). 미리 보기만 하려면 `python run.py scan --company kakao` (2024 사업보고서 1개로 약속 추출까지) | 구체적 약속 3개 이상인지, 판정과 근거 문장 |
-| 3 | 사용자 테스트가 끝난 뒤, 브랜치에서 `python run.py export --companies samsung skhynix kakao shinhanbank naver --copy-to ../app/data/results.json` 하고 Pull Request를 올림 (Vercel 미리보기 주소가 생기고 main은 그대로) | "화면 점검 통과" |
+| 3 | 브랜치에서 `python run.py export --companies kakao shinhanbank naver` 뒤 `python merge_screen.py --engine ../data/results/ai_promise_data.json --companies kakao shinhanbank naver --write` 하고 Pull Request를 올림 (10/19 바뀜: 삼성·SK를 덮어쓰지 않음) (Vercel 미리보기 주소가 생기고 main은 그대로) | "화면 점검 통과" |
 | 4 | 서원님이 미리보기 주소에서 시연 기업의 약속을 원문과 대조해 확인 표에 적음 | 화면 안내 문구가 "팀이 원문과 대조해 확인했어요"라서, 확인을 먼저 끝냄 |
 | 5 | 확인이 끝난 기업만 남기고(빠질 기업은 목록에서 빼고 다시 `export`) main에 합침 | "화면 점검 통과", 사람 정답과 비교하지 않은 기업이라는 표시(`check_note`) |
 

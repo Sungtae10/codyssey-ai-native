@@ -32,6 +32,7 @@
 - [x] 원문 존재 확인(코드)과 사람 원문 검토를 화면과 문서에서 다른 이름으로 쓴다 (배지, 분석 정보, 확인 4단계 요약 줄, `docs/architecture.md`)
 - [x] 용어 칸, 확인 4단계, 분석 정보는 처음에 접혀 있고 접힌 줄에 상태가 보인다 (FB-09, `tests/ui_check.py`는 펼쳐서 검사)
 - [x] v2 배포 뒤 운영 사이트 이력서 기능 점검 (GitHub Actions `Resume fit smoke test`, 10/20 03:16): 삼성전자 직무 "기술사업화"·SK하이닉스 직무 없음 두 번 모두 응답 200, gpt-6.1-sol, 간접 연결 한계 문장 3/3, 보완점 준비할 것 5/5, 빠진 항목 0 (`smoke-results/39300958868`, `smoke-results/39300967745`)
+- [x] PC(1024px 이상)에서 화면을 넓게 쓰고, 휴대폰 화면은 그대로 (휴대폰 390px 화면 6개를 바꾸기 전과 픽셀 단위로 비교해 모두 같음, `tests/ui_check.py` 1280px 검사 통과)
 - [x] v2 운영 배포 확인 (PR #46 합친 커밋 24a7950, Vercel Production 03:15 완료. 운영 `results.json`의 `is_sample: false`, `data_status: "real"`, 원문 존재 확인 문구, 화면 코드의 v2 문구를 직접 읽어 확인)
 
 ## P2: 시간이 남으면

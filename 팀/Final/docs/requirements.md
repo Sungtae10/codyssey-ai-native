@@ -89,7 +89,7 @@ AI Promise의 기능 요구사항, 비기능 요구사항, AI 활용 방식, 시
 | NFR-06 | AI 생성 고지 | 모든 화면에 AI가 생성한 분석이라는 문구를 표시합니다 | FR-05 (`app/js/app.js`가 화면 6곳에 표시). `tests/ui_check.py`는 안내 문구 칸이 있는지와 글자 크기를 검사합니다 |
 | NFR-07 | 개인정보 | 사용자 테스트 참여자의 이름, 전화번호, 이메일을 저장하지 않고 번호로만 기록합니다(설문은 P01, 기록지는 1처럼). 참여 전에 동의를 받습니다. 내 경험 연결(FR-33)의 이력서는 저장하지 않고 로그에도 남기지 않으며, 화면에서 이름·연락처·주소·생년월일을 빼고 넣도록 먼저 안내합니다 | `docs/user-test-protocol.md`, 설문 설정(FR-32), `.gitignore` |
 | NFR-08 | 보안 | API 키는 `engine/.env`에만 두고 저장소, 공유 폴더, 단톡방에 올리지 않습니다 | `.gitignore`, `engine/.env.example` |
-| NFR-09 | 접근성 | 글자 대비는 작은 글자 4.5:1, 큰 글자 3:1 이상(WCAG AA)이고, 390px·320px 폭에서 가로로 밀리지 않으며, 다크·라이트 두 테마에서 모두 지킵니다 | `tests/ui_check.py` (CI `ui` 작업) |
+| NFR-09 | 접근성 | 글자 대비는 작은 글자 4.5:1, 큰 글자 3:1 이상(WCAG AA)이고, 390px·320px 폭에서 가로로 밀리지 않으며, 다크·라이트 두 테마에서 모두 지킵니다. PC(1024px 이상)에서는 화면을 920px까지 넓혀 기업 목록을 두 줄로 보여 주고, 휴대폰 화면은 바꾸지 않습니다(10/20) | `tests/ui_check.py` (CI `ui` 작업) |
 | NFR-10 | 재현성 | temperature 0(같은 입력에 최대한 같은 답), 모델과 설정은 `engine/config.yaml`에 고정, 판정기준 v2를 10/15에 동결, LLM 호출 기록을 남깁니다 | `engine/config.yaml`, FR-21 |
 | NFR-11 | 품질 관문 | main에 합치기 전에 `tests/test_config.py`(엔진 설정 모양), `tests/test_mock.py`, `tests/test_ui_static.py`, `tests/ui_check.py`를 통과해야 합니다(팀 규칙). CI의 `validate`와 `ui` 작업이 Pull Request와 main에 올릴 때 자동으로 돌립니다. main 보호 설정은 없어서 규칙으로 지킵니다 | README 6장, `.github/workflows/ci.yml` |
 | NFR-12 | 배포 | 외부에서 접속할 수 있는 공개 주소로 배포하고, main에 올리면 자동으로 다시 배포됩니다 | https://ai-promise-six.vercel.app, `docs/deploy.md` |

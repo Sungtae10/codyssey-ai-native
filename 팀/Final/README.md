@@ -1,12 +1,49 @@
 # AI Promise | 기업 AI 약속 검증
 
-회사가 사업보고서에 "AI로 이것을 하겠다"고 쓴 약속을 찾고, 다음 보고서에 실행 근거가 있는지 찾아 4가지(근거 확인, 일부 확인, 공시에서 확인 불가, 회사가 미추진으로 공시)로 판정해 보여주는 웹 서비스입니다. Codyssey Final Project입니다.
+기업이 실제로 무엇을 중요하게 말하고 있는지 공시에서 찾고, 그 전략을 내 지원 직무와 경험에 연결해 면접 준비까지 돕는 서비스입니다. 회사가 사업보고서에 "AI로 이것을 하겠다"고 쓴 약속을 찾고, 다음 보고서에 실행 근거가 있는지 찾아 4가지(근거 확인, 일부 확인, 공시에서 확인 불가, 회사가 미추진으로 공시)로 판정해 보여줍니다. Codyssey Final Project입니다.
 
 - 서비스 주소: https://ai-promise-six.vercel.app (Vercel, `app/` 폴더. main에 올리면 자동으로 다시 배포됩니다)
 - 사용자: 취업·이직 준비자 (면접 전 5분 안에 지원 회사의 AI 계획과 실행을 공시 원문으로 확인)
 - 검증 시연 기업 (사람 원문 검토 완료: 사람이 공시 원문을 읽고 판정): 삼성전자(개발용), SK하이닉스(평가용)
 - 확장 분석 기업 (AI 엔진 결과, 사람 검토 전): 카카오, 현대자동차, 신한지주. 10/19 OpenDART 자동 수집으로 후보 11곳을 돌려 미리 정한 기준(구체적 AI 약속 3개 이상)을 넘은 기업만 넣었습니다. 신한은행·NAVER 등 기준 미달 기업과 이유는 [시연용 기업 계획](docs/company-expansion-plan.md)에 있습니다. 평가 수치에는 넣지 않습니다.
 - 약속을 찾는 보고서: 2024 사업보고서 / 근거를 찾는 보고서: 2025 사업보고서, 2026 반기보고서
+
+![AI Promise 첫 화면 (PC)](docs/images/screens/hero.png)
+
+## 한눈에 보기
+
+| 항목 | 내용 |
+| --- | --- |
+| 문제 | 지원 회사의 AI 전략을 확인하려면 여러 해의 사업보고서(한 권에 수백 쪽)를 직접 비교해야 하고, 일반 검색과 요약은 과거 계획과 후속 실행 근거를 이어 주지 않습니다 |
+| 해결 | 2024 사업보고서의 AI 약속 → 2025 사업보고서·2026 반기보고서의 실행 근거 → 판정 4가지 → DART 원문 → 면접 카드 → 지원 직무 기준으로 내 경험 연결 |
+| 핵심 AI | OpenDART 자동 수집, RAG(키워드 BM25 + 의미 검색), LLM 판정(경계 판정은 상위 모델이 재검토), 원문 존재 확인(코드), GitHub Actions 자동화 |
+| 신뢰 장치 | 약속·근거 문장은 원문 그대로 인용하고 코드가 원문에 있는지 확인 / 판정을 사람이 원문으로 확인했는지(사람 원문 검토) 따로 표시 / "공시에서 확인 불가"는 미이행이라는 뜻이 아님 |
+
+### 결과 숫자
+
+| 구분 | 결과 | 읽는 법 |
+| --- | --- | --- |
+| 제품 | 5개 기업, AI 약속 24개(구체적 약속 15개 판정), 근거 문장 26개 모두 원문 존재 확인 | 사람 원문 검토 2곳(삼성전자, SK하이닉스) + AI 엔진 결과 3곳(카카오, 현대자동차, 신한지주) |
+| 사용자 | 설문 14명. 고치기 전 화면 12명: 이해도 4.50, 신뢰도 4.58, 면접 활용 의향 4.67 (5점 만점), 이력서 기능 12/12명 사용 | 점수는 화면과 근거 제시 방식에 대한 평가이고 AI 판정 정확도가 아닙니다 (9장) |
+| 개선 | 사용자 피드백 7건 실제 반영 (PR #41, PR #46) | 고치기 전·후 화면: [피드백 반영 로그](docs/feedback-log.md#고치기-전후-화면) |
+| AI 평가 | SK하이닉스 약속 3개 × 같은 엔진 3회: 1회차 2/3, 2회차 3/3, 3회차 2/3 | 독립 표본 9개가 아니라서 정확도로 부르지 않는 시범 평가입니다 ([실행 기록](eval/results/skhynix_runs.md)) |
+
+### 작동 흐름
+
+```mermaid
+flowchart TB
+  subgraph A["기업 분석 (엔진이 미리 만든 결과)"]
+    direction LR
+    A1["기업 검색"] --> A2["AI 약속<br/>2024 사업보고서"] --> A3["후속 공시 근거<br/>RAG 검색"] --> A4["판정 4가지"] --> A5["원문 존재 확인<br/>코드"] --> A6["DART 원문 링크<br/>사람 원문 검토 표시"]
+  end
+  subgraph B["내 면접 준비 (요청마다 생성)"]
+    direction LR
+    B1["지원 직무 선택"] --> B2["이력서"] --> B3["직접 연결 /<br/>간접 연결"] --> B4["경험 공백과<br/>준비할 것"] --> B5["면접 포인트<br/>역질문"]
+  end
+  A6 --> B1
+```
+
+**심사용 읽는 순서**: 이 README의 한눈에 보기 → [심사용 요약](docs/executive-summary.md) → [아키텍처](docs/architecture.md) → [사용자 피드백 반영 로그](docs/feedback-log.md) → [SK하이닉스 시범 평가](eval/results/skhynix_runs.md) → [예상 심사 질문](docs/judge-qa.md)
 
 ## 1. 핵심 AI 활용
 
@@ -151,6 +188,8 @@ SK하이닉스 사람 정답은 10/19 김성태·김서원 공동 검토로 고�
 | 근거 없는 실행 판정 | 0건 | |
 | 약속 찾기 | 사람 약속 4/4 | AI 관련 말이 없는 1문장은 판정기준 v2로 뺌 |
 
+**AI 판정 설명·근거 점검 (10/20)**: 화면의 판정 15개를 점검했습니다. 15개 모두 판정 이유와 약속 원문 링크가 있고, 판정에 쓴 근거 문장 15개는 모두 원문 존재 확인을 통과했으며 DART 링크가 있습니다. "일부 확인" 9개는 모두 이유에 확인된 부분과 확인되지 않은 부분을 함께 적었습니다. AI 엔진의 "공시에서 확인 불가" 3개는 판정 모델이 받은 후보 문장까지 읽어, 관련 근거가 없었던 경우(1개), 계획 문장만 있어 근거로 쓰지 않은 경우(1개), 약속 시기가 아직 오지 않은 경우(1개)로 나눴습니다. 정확도 평가가 아니라 설명과 근거 연결을 본 AI 보조 점검입니다 ([점검 기록](docs/judgment-audit.md)).
+
 **자동화 워크플로우 실행 기록 (10/19)**: OpenDART 자동 수집 → 엔진 → 결과 파일을 GitHub Actions로 기업마다 병렬 실행했습니다(엔진 실행은 기업당 1~3분). 후보 11곳 중 기준(구체적 약속 3개 이상)을 넘은 카카오, 현대자동차, 신한지주를 화면에 넣었습니다 (SK텔레콤도 넘었지만 예비) ([선별 기록](docs/company-expansion-plan.md)). 실행 중 찾은 수집 오류 3가지(그림 태그를 지우다 본문 삭제, 정정 보고서의 정정표를 장 제목으로 잡음, 최신 정정본 원문 파일 없음)를 고치고 시험(`tests/test_dart.py`)에 넣었습니다.
 
 **내 경험 연결 실배포 점검 (10/19 22:05)**: GitHub Actions `Resume fit smoke test`가 배포된 `/api/resume-fit`을 지어낸 가상 이력서로 불렀습니다. 응답 200, 27.0초, 실제로 답한 모델 gpt-6.1-sol(대체 모델 아님), 연결 3, 보완점 2, 면접 포인트 3, 질문 2, 근거 검사에서 빠진 항목 0개. 10/20 02:00에 PR #41 배포본으로 다시 점검했습니다(삼성전자, 현대자동차 각 1번): 두 번 모두 응답 200(25.6초, 22.9초), gpt-6.1-sol, 연결 3·보완점 2·면접 포인트 3·질문 2, 빠진 항목 0개, 연결의 이력서 인용 3개가 모두 보낸 이력서에 글자 그대로 있었고 점수·퍼센트 표현은 0건이었습니다 (결과 브랜치 `smoke-results/39290280295`, `smoke-results/39290283500`). 10/20 03:16에 v2 배포본(PR #46)으로 다시 점검했습니다: 삼성전자(지원 직무 "기술사업화")와 SK하이닉스(직무 선택 안 함) 두 번 모두 응답 200(33.4초, 34.5초), gpt-6.1-sol, 삼성전자는 보낸 직무를 그대로 돌려받음, 연결은 직접 2·간접 1 / 간접 2이고 간접 연결 3개 모두 한계 문장이 있음, 보완점 2개·3개 모두 면접 전에 준비할 것이 있음, 두 문장 요약 있음, 연결의 이력서 인용 5개가 모두 보낸 이력서에 글자 그대로 있음, 근거 검사에서 빠진 항목 0개. 삼성전자에서 이력서와 직접 이어지지 않는 갤럭시 약속은 연결이 아니라 보완점("폼팩터별 고객가치 검증")으로 나왔습니다(FB-08이 지적한 억지 연결이 사라짐) (결과 브랜치 `smoke-results/39300958868`, `smoke-results/39300967745`).
@@ -188,31 +227,13 @@ SK하이닉스 사람 정답은 10/19 김성태·김서원 공동 검토로 고�
 
 ## 11. 프로젝트 문서
 
-- [심사용 요약 (Executive Summary)](docs/executive-summary.md)
-- [프로젝트 기획서](docs/project-plan.md)
-- [기능 요구 명세서 (기능·비기능 요구사항)](docs/requirements.md)
-- [공식 요구사항 ↔ 증빙 매트릭스](docs/official-requirements-matrix.md)
-- [제출 증빙 체크리스트 (공식 미션 19개 항목)](docs/submission-evidence-checklist.md)
-- [최종 제출 Release Checklist](docs/release-checklist.md)
-- [마감 최소 완성안](docs/final-sprint.md)
-- [진행 기록](docs/progress-log.md)
-- [아키텍처](docs/architecture.md)
-- [평가 계획](docs/evaluation-plan.md)
-- [빠른 사용자 테스트 (혼자 써 보기)](docs/user-test-quick.md)
-- [10분 비대면 사용자 테스트 (화면공유)](docs/user-test-protocol.md)
-- [사용자 피드백 반영 로그](docs/feedback-log.md)
-- [사용자 테스트 분석 보고서와 반영 현황](docs/user-test-report.md)
-- [최종 발표 구성안](docs/presentation-outline.md)
-- [3분 시연 대본](docs/demo-script-3min.md)
-- [예상 심사 질문과 답](docs/judge-qa.md)
-- [Final Project 결과보고서 초안](docs/final-report-draft.md)
-- [팀 기여 내역](docs/team-contributions.md)
-- [시연용 기업 확장 계획](docs/company-expansion-plan.md)
-- [AI 윤리·신뢰성](docs/ai-ethics.md)
-- [Vercel 배포](docs/deploy.md)
-- [Google Drive ↔ GitHub 동기화](docs/drive-sync.md)
-- [후속 연구 계획](docs/follow-up-study-plan.md)
-- [팀 협업 규칙](CONTRIBUTING.md)
+| 묶음 | 문서 |
+| --- | --- |
+| 제출 핵심 | [심사용 요약](docs/executive-summary.md), [프로젝트 기획서](docs/project-plan.md), [기능 요구 명세서](docs/requirements.md), [아키텍처](docs/architecture.md), [결과보고서 초안](docs/final-report-draft.md), [공식 요구사항 ↔ 증빙 매트릭스](docs/official-requirements-matrix.md) |
+| 평가와 사용자 | [평가 계획](docs/evaluation-plan.md), [SK하이닉스 시범 평가](eval/results/skhynix_runs.md), [AI 판정 설명·근거 점검](docs/judgment-audit.md), [사용자 피드백 반영 로그](docs/feedback-log.md), [사용자 테스트 분석 보고서](docs/user-test-report.md), [빠른 사용자 테스트](docs/user-test-quick.md), [화면공유 사용자 테스트](docs/user-test-protocol.md) |
+| 발표 | [최종 발표 구성안](docs/presentation-outline.md), [3분 시연 대본](docs/demo-script-3min.md), [예상 심사 질문과 답](docs/judge-qa.md) |
+| 신뢰와 윤리 | [AI 윤리·신뢰성](docs/ai-ethics.md), [시연용 기업 확장 계획(선정 기준과 제외 기업)](docs/company-expansion-plan.md), [후속 연구 계획](docs/follow-up-study-plan.md) |
+| 팀과 운영 | [팀 기여 내역](docs/team-contributions.md), [진행 기록](docs/progress-log.md), [제출 증빙 체크리스트](docs/submission-evidence-checklist.md), [Release Checklist](docs/release-checklist.md), [마감 최소 완성안](docs/final-sprint.md), [Vercel 배포](docs/deploy.md), [Google Drive ↔ GitHub 동기화](docs/drive-sync.md), [팀 협업 규칙](CONTRIBUTING.md) |
 
 ## 12. 추가 평가
 

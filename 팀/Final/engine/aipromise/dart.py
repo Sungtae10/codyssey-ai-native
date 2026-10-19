@@ -249,7 +249,10 @@ def download_document(key, rcept_no):
     return decode_xml(z.read(name)), name, names
 
 
-_DROP = re.compile(r"<(SUMMARY|TOC|IMAGE|IMG|EXTRACTION)\b.*?</\1\s*>", re.S | re.I)
+# 요약(SUMMARY)만 통째로 뺍니다. 본문(BODY) 앞에 한 번 나오는 숫자 요약이라 본문 앞부분에서만 지웁니다.
+# (10/19 고침) 그림(IMAGE, IMG) 등을 '<태그 ...>부터 </태그>까지'로 지우면, 스스로 닫는 <IMG .../>가 있을 때
+# 다음 </IMG>까지 본문 수십 쪽이 함께 지워졌습니다 (카카오 2026 반기보고서 II장이 1문장만 남음). 다른 태그는 태그만 지우고 글은 남깁니다.
+_DROP_SUMMARY = re.compile(r"<SUMMARY\b[^>]*>.*?</SUMMARY\s*>", re.S | re.I)
 _BLOCK_END = re.compile(r"</\s*(P|TITLE|TR|TABLE|TABLE-GROUP|SECTION-\d|COVER-TITLE|LIBRARY|PART|LI|CORRECTION)\s*>"
                         r"|<\s*BR\s*/?>|<\s*PGBRK\b[^>]*>", re.I)
 _CELL_END = re.compile(r"</\s*(TD|TH|TE|TU)\s*>", re.I)
@@ -259,7 +262,9 @@ def xml_to_text(xml):
     """DART 공시 XML → 글. 큰 장(SECTION-1, 표지, 첨부 묶음)마다 \\f로 쪽을 나누고, 장 제목은 한 줄로 둡니다."""
     x = re.sub(r"<\?xml[^>]*\?>", "", xml)
     x = re.sub(r"<!--.*?-->", "", x, flags=re.S)
-    x = _DROP.sub("", x)
+    m = re.search(r"<\s*BODY\b", x, re.I)
+    if m:
+        x = _DROP_SUMMARY.sub("", x[:m.start()]) + x[m.start():]
     x = re.sub(r"<\s*(SECTION-1|COVER|LIBRARY)\b", "\f<\\1", x, flags=re.I)
     x = re.sub(r"<\s*TITLE\b[^>]*>", "\n", x, flags=re.I)
     x = _BLOCK_END.sub("\n", x)
@@ -334,17 +339,36 @@ def fetch_company(key, company, out_dir, corps_loader, log=print, today=None):
         pages = [clean_page_text(p) for p in text.split("\f")]
         loc = locate_sections(pages, ["I5", "II", "IV"])
         sections = {k: bool(loc.get(k)) for k in ("I5", "II", "IV")}
+        sizes = {k: _section_chars(pages, loc.get(k)) for k in ("I5", "II", "IV")}
+        tags = {t: len(re.findall(rf"<\s*{t}\b", xml, re.I)) for t in ("SECTION-1", "TABLE", "IMAGE", "IMG", "TOC", "LIBRARY")}
         entry["reports"][r["key"]] = {
             "title": r["title"], "found": True, "report_nm": f["report_nm"].strip(), "rcept_no": f["rcept_no"],
             "rcept_dt": f.get("rcept_dt", ""), "url": VIEWER.format(f["rcept_no"]), "file": fname,
             "xml_member": os.path.basename(member), "zip_members": len(members), "chars": len(text),
             "sha256": hashlib.sha256(text.encode("utf-8")).hexdigest()[:16], "sections_found": sections,
+            "section_chars": sizes, "xml_tags": tags,
         }
         found_txt = ", ".join(f"{SECTIONS[k]['name'].split(' > ')[-1]} {'OK' if ok else '없음'}" for k, ok in sections.items())
         log(f"  {r['title']}: {f['report_nm'].strip()} 접수 {f['rcept_no']} ({f.get('rcept_dt', '')}), "
-            f"글자 {len(text):,}, 장 찾기 [{found_txt}]")
+            f"글자 {len(text):,}, 장 찾기 [{found_txt}], 장 글자 수 {sizes}, XML 태그 {tags}")
+        if sections.get("II") and sizes.get("II", 0) < 3000:
+            log(f"  (주의) {r['title']}의 II. 사업의 내용이 {sizes['II']:,}자로 너무 짧습니다. 장 찾기나 글 바꾸기를 확인하세요.")
         time.sleep(0.5)  # 요청 간격 (요청 제한 배려)
     return entry
+
+
+def _section_chars(pages, info):
+    """locate_sections 결과 1개 → 그 장의 글자 수 (대략, 공백 포함)."""
+    if not info:
+        return 0
+    (sp, spos), end = info["start"], info["end"]
+    ep, epos = end if end else (len(pages) - 1, None)
+    total = 0
+    for i in range(sp, min(ep, len(pages) - 1) + 1):
+        a = spos if i == sp else 0
+        b = epos if (i == ep and epos is not None) else len(pages[i])
+        total += max(0, b - a)
+    return total
 
 
 def manifest_path(cfg):

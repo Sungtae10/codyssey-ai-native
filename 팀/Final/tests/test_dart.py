@@ -70,13 +70,15 @@ Y2024 = dart_xml([
         ("5. 정관에 관한 사항", ["당사는 정기주주총회에서 AI 학습용 데이터 판매업을 사업목적에 추가하였습니다.",
                               "신규 사업목적으로 추가한 AI 학습용 데이터 판매업을 2025년부터 추진할 계획입니다."])]),
     ("II. 사업의 내용", [
-        ("1. 사업의 개요", ["당사는 2025년 중 A공장 조립 라인에 AI 기반 외관 검사 시스템을&cr;도입할 계획입니다.",
+        ("1. 사업의 개요", ['<IMG USERMARK="F-1"/>그림 아래 설명 문장입니다.',   # 스스로 닫는 IMG: 다음 </IMG>까지 지우면 안 됨
+                         "당사는 2025년 중 A공장 조립 라인에 AI 기반 외관 검사 시스템을&cr;도입할 계획입니다.",
                          "또한 2025년 상반기까지 고객센터에 생성형 AI 상담 서비스를 출시할 예정입니다.",
                          "AI 시장은 앞으로 크게 성장할 것으로 예상됩니다.",
                          "당사는 국내 물류센터 3곳에 AI 수요 예측 시스템을 2025년까지 적용할 계획입니다."]),
         ("6. 주요계약 및 연구개발활동", ["당사는 R&amp;D 조직과 함께 해외 법인 5곳에 사내 AI 번역 도구를 2025년 중 도입할 예정입니다.", TABLE])]),
     ("III. 재무에 관한 사항", [("1. 요약재무정보", ["매출액은 100억원입니다."])]),
-    ("IV. 이사의 경영진단 및 분석의견", [(None, ["AI를 활용하여 제조 경쟁력을 지속적으로 강화해 나가겠습니다.",
+    ("IV. 이사의 경영진단 및 분석의견", [(None, ['<IMAGE><IMG>chart01.jpg</IMG></IMAGE>',
+                                          "AI를 활용하여 제조 경쟁력을 지속적으로 강화해 나가겠습니다.",
                                           "AI 전환을 전담하는 조직을 2025년에 신설할 계획입니다."])]),
     ("V. 회계감사인의 감사의견 등", [(None, ["감사의견은 적정입니다."])]),
 ])
@@ -174,6 +176,8 @@ def main():
     pages = [clean_page_text(p) for p in text.split("\f")]
     check("<" not in text and "&amp;" not in text and "&cr;" not in text, "태그와 특수문자가 남음")
     check("R&D" in text and "요약에만 있는 글" not in text, "&amp; 처리, SUMMARY 제외")
+    check("그림 아래 설명 문장입니다." in text and "외관 검사" in text and "6. 주요계약 및 연구개발활동" in text,
+          "스스로 닫는 IMG 뒤의 본문이 지워짐 (10/19 카카오 반기보고서 문제)")
     check(any(ln == "II. 사업의 내용" for ln in text.splitlines()), "장 제목이 한 줄로 있어야 함")
     # 쪽: 문서 이름(표지 앞) 1 + 표지와 목차 1 + 큰 장 5 = 7
     check(len(pages) == 7, f"문서 이름 1쪽 + 표지(목차) 1쪽 + 큰 장 5쪽이어야 함: {len(pages)}")
@@ -202,6 +206,9 @@ def main():
         check(reps["y2024"]["url"] == "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250402000002", reps["y2024"].get("url"))
         check(reps["y2024"]["xml_member"] == "20250402000002.xml", "첨부가 아닌 본문 XML을 읽어야 함")
         check(reps["y2024"]["sections_found"] == {"I5": True, "II": True, "IV": True}, reps["y2024"]["sections_found"])
+        check(reps["y2024"]["section_chars"]["II"] > 150 and reps["y2024"]["xml_tags"]["SECTION-1"] == 5,
+              f"장 글자 수, XML 태그 수 기록: {reps['y2024'].get('section_chars')} {reps['y2024'].get('xml_tags')}")
+        check(any("너무 짧습니다" in ln for ln in logs), "짧은 II장 경고가 기록에 있어야 함 (가상 회사 II장은 짧음)")
         check(reps["h2026"]["sections_found"]["I5"] is False, "반기보고서에는 정관 장이 없음")
         check(os.path.exists(os.path.join(TMP, "dart", "demo_dart_y2024.txt")), "글 파일이 없음")
         lists = [c for c in calls if c[0] == "list.json"]

@@ -85,7 +85,7 @@
 | 3. 삼성전자 전체 | `python run.py judge --company samsung` (전체), `card`, `export --companies samsung` | "화면 점검 통과". 결과는 `data/results/ai_promise_data.json`에만 남음. 화면에 올리기(`--copy-to`)는 사용자 테스트가 끝난 뒤 |
 | 4. SK하이닉스 준비 | `python run.py doctor --company skhynix`, `collect`, `extract` | SK하이닉스 AI 판정 결과와 결과 화면은 Human Validator에게 공유하지 않습니다 |
 | 5. SK하이닉스 사람 판정 | 서원님이 올린 SK하이닉스 약속 목록(약속 문장·위치·분류)을 복사해 내 판정을 v2로 매기고 `eval/gold/skhynix_김성태.csv`로 먼저 올리기 | AI 판정을 돌리기 전에 판정했다는 기록. 주의: 판정을 올리기 전에는 서비스의 SK하이닉스 화면과 `app/data/results.json`의 SK하이닉스 부분을 열지 않습니다 (10/19 PR #19로 서원님 판정 1차가 화면에 있음) |
-| 6. 합의와 정답 고정 | 서원님 SK하이닉스 정답 표를 `eval/gold/skhynix_서원.csv`로 저장, 판정이 다른 건은 원문을 보며 합의해 `skhynix_합의.csv` | Human Gold 고정 전까지 AI 결과를 보지 않음 |
+| 6. 합의와 정답 고정 | 서원님 SK하이닉스 정답 표를 `eval/gold/skhynix_서원.csv`로 저장, 판정이 다른 건은 원문을 보며 합의해 `skhynix_합의.csv` | Human Gold 고정 전까지 AI 결과를 보지 않음. 10/19 실제로는 5·6단계를 김성태·김서원 공동 검토 한 번으로 바꿔 `skhynix_합의.csv`만 고정했습니다 (따로 매긴 파일은 없음, `eval/gold/README.md`) |
 | 7. SK하이닉스 AI 판정 | `python run.py judge --company skhynix`, `card`, `export --companies samsung skhynix` | "화면 점검 통과". 화면에 올리기는 사용자 테스트가 끝난 뒤 |
 | 8. 평가 | `python ../eval/evaluate.py` | `eval/results/results.md` |
 | 9. 시간이 남으면 | 시연용 기업 실행 (6장). 10/19 결과: 후보 11곳 중 카카오, 현대자동차, 신한지주 | 기업마다 구체적 약속 3개 이상인지, 원문 대조 |

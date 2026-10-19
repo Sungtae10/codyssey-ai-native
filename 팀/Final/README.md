@@ -140,7 +140,7 @@ SK하이닉스 사람 정답은 10/19 김성태·김서원 공동 검토로 고�
 
 | 결과 | 원자료 | 계산 |
 | --- | --- | --- |
-| AI 판정 평가 (사람 합의 정답 대비 정확도, macro-F1, 혼동표, 사람 간 kappa) | `eval/gold/`(사람 정답), `data/work/<기업>/judged.json`(엔진 판정) | `python eval/evaluate.py` |
+| AI 판정 평가 (사람 합의 정답 대비 정확도, macro-F1, 혼동표, 따로 매긴 판정이 있을 때 사람 간 kappa) | `eval/gold/`(사람 정답), `data/work/<기업>/judged.json`(엔진 판정) | `python eval/evaluate.py` |
 | 사용자 테스트 (응답 수, 설문 점수 평균, 작은 과제를 4분 안에 해낸 비율) | 설문 응답 시트 (이름·연락처 없음). 화면공유 테스트를 했으면 `eval/user_test/results.csv` (번호만) | 응답 시트 집계. 화면공유 테스트는 `python eval/user_test/analyze.py eval/user_test/results.csv` |
 | 피드백 반영 (의견, 원인, 조치, 커밋, 재확인) | [사용자 피드백 반영 로그](docs/feedback-log.md) | 테스트가 끝난 뒤 작성 |
 

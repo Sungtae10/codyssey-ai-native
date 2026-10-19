@@ -75,8 +75,11 @@ jobs:
           git checkout -b "$B"
           echo "올릴 파일 크기:"
           du -sh data/work/"$COMPANY"/* data/results/* data/dart/manifest.json 2>/dev/null || true
-          git add data/runs data/dart/manifest.json data/results "data/work/$COMPANY" 2>/dev/null || true
-          if [ -d eval/results ]; then git add eval/results; fi
+          # 있는 것만 하나씩 올립니다 (핵심 기업은 data/results가 없어서, 한꺼번에 add하면 전부 빠짐)
+          for p in "data/runs/$COMPANY.log" data/dart/manifest.json data/results "data/work/$COMPANY" eval/results; do
+            if [ -e "$p" ]; then git add "$p"; fi
+          done
+          git status --short | head -40
           if git diff --cached --quiet; then echo "올릴 결과가 없습니다"; exit 0; fi
           git commit -q -m "엔진 자동 실행 결과: $COMPANY (GitHub Actions run $GITHUB_RUN_ID)"
           git push -q origin "$B"

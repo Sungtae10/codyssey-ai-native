@@ -201,6 +201,107 @@
      }
     }
    }
+  },
+  "shinhanfg": {
+   "corp_code": "00382199",
+   "corp_name": "신한지주",
+   "stock_code": "055550",
+   "corp_found_by": "종목코드",
+   "reports": {
+    "y2024": {
+     "title": "2024 사업보고서",
+     "found": true,
+     "report_nm": "사업보고서 (2024.12)",
+     "rcept_no": "20250318000993",
+     "rcept_dt": "20250318",
+     "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250318000993",
+     "file": "shinhanfg_y2024.txt",
+     "xml_member": "20250318000993.xml",
+     "zip_members": 3,
+     "chars": 1152062,
+     "sha256": "38e9dd004ab0872b",
+     "sections_found": {
+      "I5": true,
+      "II": true,
+      "IV": true
+     },
+     "section_chars": {
+      "I5": 1360,
+      "II": 127496,
+      "IV": 71740
+     },
+     "xml_tags": {
+      "SECTION-1": 14,
+      "TABLE": 1561,
+      "IMAGE": 2,
+      "IMG": 4,
+      "TOC": 0,
+      "LIBRARY": 24
+     }
+    },
+    "y2025": {
+     "title": "2025 사업보고서",
+     "found": true,
+     "report_nm": "[기재정정]사업보고서 (2025.12)",
+     "rcept_no": "20261007000218",
+     "rcept_dt": "20261007",
+     "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261007000218",
+     "file": "shinhanfg_y2025.txt",
+     "xml_member": "20261007000218.xml",
+     "zip_members": 1,
+     "chars": 1451907,
+     "sha256": "8bcc7cb8eab1936b",
+     "sections_found": {
+      "I5": true,
+      "II": true,
+      "IV": true
+     },
+     "section_chars": {
+      "I5": 1361,
+      "II": 127377,
+      "IV": 75602
+     },
+     "xml_tags": {
+      "SECTION-1": 15,
+      "TABLE": 3592,
+      "IMAGE": 3,
+      "IMG": 6,
+      "TOC": 0,
+      "LIBRARY": 26
+     }
+    },
+    "h2026": {
+     "title": "2026 반기보고서",
+     "found": true,
+     "report_nm": "[기재정정]반기보고서 (2026.06)",
+     "rcept_no": "20261007000223",
+     "rcept_dt": "20261007",
+     "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261007000223",
+     "file": "shinhanfg_h2026.txt",
+     "xml_member": "20261007000223.xml",
+     "zip_members": 1,
+     "chars": 967738,
+     "sha256": "af16338105fa4f61",
+     "sections_found": {
+      "I5": true,
+      "II": true,
+      "IV": true
+     },
+     "section_chars": {
+      "I5": 1412,
+      "II": 126388,
+      "IV": 246
+     },
+     "xml_tags": {
+      "SECTION-1": 15,
+      "TABLE": 2322,
+      "IMAGE": 3,
+      "IMG": 6,
+      "TOC": 0,
+      "LIBRARY": 33
+     }
+    }
+   }
   }
  },
  "note": "OpenDART 자동 수집 기록 (fetch_dart.py). 화면에 넣은 기업만 담습니다. 받은 글(.txt)은 저장소에 올리지 않습니다."

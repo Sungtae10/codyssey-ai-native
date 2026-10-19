@@ -77,7 +77,8 @@
     hanabank: ['hana', 'hanabank'],
     kbfg: ['kb', 'kb금융지주', 'kbfinancial'],
     hyundai: ['현대차', 'hyundai', 'hyundaimotor'],
-    skt: ['skt', 'sktelecom', '에스케이텔레콤']
+    skt: ['skt', 'sktelecom', '에스케이텔레콤'],
+    shinhanfg: ['신한금융지주', '신한금융', '신한', 'shinhan', 'shinhanfg']
   };
   // 상장 종목 이름이 흔히 부르는 이름과 다른 경우 (예: 현대자동차는 상장 종목 이름이 '현대차')
   var QUERY_ALIASES = {

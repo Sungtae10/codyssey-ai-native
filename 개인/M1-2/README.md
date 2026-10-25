@@ -134,7 +134,7 @@ sequenceDiagram
 ### 폴더 구조와 나눈 기준
 
 ```
-codyssey-m1-2-ai-assistant/
+codyssey-ai-assistant-M1-2/
 ├── render.yaml                  # Render Blueprint (백엔드 배포 설정)
 ├── backend/
 │   ├── main.py                  # 앱 시작점: uvicorn main:app --reload
@@ -218,6 +218,10 @@ conversations/{자동ID}  title, messages[{role, content, created_at, model?, to
 ## 9. 로컬 실행 방법
 
 ```bash
+# 0) 내려받기
+git clone https://github.com/Sungtae10/codyssey-ai-assistant-M1-2.git
+cd codyssey-ai-assistant-M1-2
+
 # 1) 백엔드
 cd backend
 python -m venv .venv
@@ -227,7 +231,7 @@ cp .env.example .env                 # OPENAI_API_KEY와 Firebase 키 파일 경
 python scripts/seed_firestore.py     # 처음 한 번: Firestore에 251개 올리기
 uvicorn main:app --reload            # http://localhost:8000/docs
 
-# 2) 프론트엔드 (새 터미널)
+# 2) 프론트엔드 (새 터미널에서 저장소 폴더로 이동한 뒤)
 cd frontend
 node scripts/generate-config.mjs     # API_BASE_URL이 없으면 http://localhost:8000
 python -m http.server 5500 --directory public   # http://localhost:5500

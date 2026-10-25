@@ -87,7 +87,7 @@ http://localhost:5500 을 열고 "이번 달 환율 흐름 어때?"를 눌러 �
 
 ## 3단계: GitHub에 올리기
 
-1. github.com → **New repository** → 이름 `codyssey-m1-2-ai-assistant` → Public → 아무것도 추가하지 않고 Create
+1. github.com → **New repository** → 이름 `codyssey-ai-assistant-M1-2` → Public → 아무것도 추가하지 않고 Create (zip을 푼 내 컴퓨터 폴더 이름은 `codyssey-m1-2-ai-assistant` 그대로 둬도 됩니다)
 2. 프로젝트 맨 위 폴더에서:
 
 ```powershell
@@ -105,7 +105,7 @@ git status
 ```powershell
 git commit -m "M1-2 나만의 AI 비서: FastAPI, Firestore, GPT 컨텍스트 주입, 바닐라 프론트엔드"
 git branch -M main
-git remote add origin https://github.com/Sungtae10/codyssey-m1-2-ai-assistant.git
+git remote add origin https://github.com/Sungtae10/codyssey-ai-assistant-M1-2.git
 git push -u origin main
 ```
 
@@ -113,7 +113,7 @@ git push -u origin main
 
 쉽게 말하면: 내 컴퓨터에서 켰던 서버를 **인터넷에 항상 켜 둔 컴퓨터(Render)** 에 옮기는 단계입니다.
 
-1. https://dashboard.render.com → **New** → **Blueprint** → GitHub 저장소 `codyssey-m1-2-ai-assistant` 선택
+1. https://dashboard.render.com → **New** → **Blueprint** → GitHub 저장소 `codyssey-ai-assistant-M1-2` 선택
 2. `render.yaml`을 읽어 서비스 `usdkrw-ai-assistant-api`(무료, 싱가포르)를 보여 줍니다. 값을 넣으라는 칸 2개를 채웁니다.
    - `OPENAI_API_KEY`: 본인 키
    - `FIREBASE_SERVICE_ACCOUNT_JSON`: `firebase-key.json`을 메모장으로 열어 **전체 선택(Ctrl+A) → 복사 → 붙여 넣기**
@@ -129,7 +129,7 @@ git push -u origin main
 
 1. https://vercel.com → **Add New** → **Project** → GitHub 저장소 **Import**
 2. 설정 화면에서:
-   - **Project Name**: `usdkrw-ai-assistant` (Render의 허용 주소 `ALLOWED_ORIGINS`에 `https://usdkrw-ai-assistant.vercel.app`을 미리 넣어 두었기 때문)
+   - **Project Name**: 칸에 미리 들어 있는 이름을 지우고 `usdkrw-ai-assistant` 입력 (Render의 허용 주소 `ALLOWED_ORIGINS`에 `https://usdkrw-ai-assistant.vercel.app`을 미리 넣어 두었기 때문)
    - **Framework Preset**: Other
    - **Root Directory**: Edit → `frontend` 선택
    - Build Command, Output Directory는 `frontend/vercel.json`이 자동으로 정합니다 (건드리지 않기)

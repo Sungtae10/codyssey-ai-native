@@ -103,7 +103,7 @@ python check_client.py --ask "하루에 가장 크게 오른 날 3개 알려줘"
   "mcpServers": {
     "usdkrw-assistant": {
       "command": "python",
-      "args": ["C:\\경로\\codyssey-m1-2-ai-assistant\\mcp_server\\server.py"],
+      "args": ["C:\\경로\\codyssey-ai-assistant-M1-2\\mcp_server\\server.py"],
       "env": { "API_BASE_URL": "https://내-render-주소.onrender.com" }
     }
   }

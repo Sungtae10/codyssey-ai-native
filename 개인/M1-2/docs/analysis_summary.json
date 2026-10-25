@@ -1,0 +1,444 @@
+{
+  "summary": {
+    "dataset": {
+      "name": "원/달러 환율 (USD/KRW)",
+      "unit": "원",
+      "source": "미국 연방준비제도 H.10 (FRED DEXKOUS, 뉴욕 정오 매입환율)"
+    },
+    "period": "2025-10-16 ~ 2026-10-16",
+    "start_date": "2025-10-16",
+    "end_date": "2026-10-16",
+    "count": 251,
+    "metrics": {
+      "average": 1454.44,
+      "max": 1555.96,
+      "max_date": "2026-06-05",
+      "min": 1334.03,
+      "min_date": "2026-10-16",
+      "latest": 1334.03,
+      "latest_date": "2026-10-16",
+      "first": 1416.07,
+      "first_date": "2025-10-16",
+      "change": -82.04,
+      "change_pct": -5.79,
+      "std": 51.88
+    },
+    "trend": "하락 (최근 20개 평균 1,353.11원, 직전 20개 평균 대비 -0.94%)",
+    "trend_detail": {
+      "direction": "하락",
+      "window": 20,
+      "recent_average": 1353.11,
+      "previous_average": 1365.89,
+      "change_pct": -0.94,
+      "slope_per_point": -2.14,
+      "threshold_pct": 0.5
+    },
+    "monthly": [
+      {
+        "month": "2025-10",
+        "count": 12,
+        "average": 1428.3,
+        "min": 1416.07,
+        "max": 1438.35,
+        "first": 1416.07,
+        "last": 1428.37,
+        "change_pct": null
+      },
+      {
+        "month": "2025-11",
+        "count": 18,
+        "average": 1459.88,
+        "min": 1430.65,
+        "max": 1475.94,
+        "first": 1430.65,
+        "last": 1467.65,
+        "change_pct": 2.75
+      },
+      {
+        "month": "2025-12",
+        "count": 22,
+        "average": 1465.36,
+        "min": 1433.88,
+        "max": 1481.45,
+        "first": 1467.79,
+        "last": 1444.55,
+        "change_pct": -1.57
+      },
+      {
+        "month": "2026-01",
+        "count": 20,
+        "average": 1455.5,
+        "min": 1433.84,
+        "max": 1478.33,
+        "first": 1444.45,
+        "last": 1444.51,
+        "change_pct": 0.0
+      },
+      {
+        "month": "2026-02",
+        "count": 19,
+        "average": 1447.29,
+        "min": 1427.12,
+        "max": 1463.13,
+        "first": 1452.03,
+        "last": 1439.82,
+        "change_pct": -0.32
+      },
+      {
+        "month": "2026-03",
+        "count": 22,
+        "average": 1490.52,
+        "min": 1439.8,
+        "max": 1523.5,
+        "first": 1439.8,
+        "last": 1523.5,
+        "change_pct": 5.81
+      },
+      {
+        "month": "2026-04",
+        "count": 22,
+        "average": 1483.8,
+        "min": 1461.66,
+        "max": 1511.31,
+        "first": 1511.31,
+        "last": 1477.93,
+        "change_pct": -2.99
+      },
+      {
+        "month": "2026-05",
+        "count": 20,
+        "average": 1488.4,
+        "min": 1447.01,
+        "max": 1517.33,
+        "first": 1477.22,
+        "last": 1503.96,
+        "change_pct": 1.76
+      },
+      {
+        "month": "2026-06",
+        "count": 21,
+        "average": 1529.46,
+        "min": 1508.12,
+        "max": 1555.96,
+        "first": 1511.71,
+        "last": 1548.78,
+        "change_pct": 2.98
+      },
+      {
+        "month": "2026-07",
+        "count": 22,
+        "average": 1486.01,
+        "min": 1424.05,
+        "max": 1550.59,
+        "first": 1550.59,
+        "last": 1436.81,
+        "change_pct": -7.23
+      },
+      {
+        "month": "2026-08",
+        "count": 21,
+        "average": 1403.22,
+        "min": 1368.25,
+        "max": 1430.49,
+        "first": 1430.49,
+        "last": 1368.25,
+        "change_pct": -4.77
+      },
+      {
+        "month": "2026-09",
+        "count": 21,
+        "average": 1359.21,
+        "min": 1339.81,
+        "max": 1387.97,
+        "first": 1371.76,
+        "last": 1355.91,
+        "change_pct": -0.9
+      },
+      {
+        "month": "2026-10",
+        "count": 11,
+        "average": 1343.3,
+        "min": 1334.03,
+        "max": 1364.83,
+        "first": 1364.83,
+        "last": 1334.03,
+        "change_pct": -1.61
+      }
+    ],
+    "recent": [
+      {
+        "date": "2026-10-02",
+        "value": 1345.75
+      },
+      {
+        "date": "2026-10-05",
+        "value": 1341.7
+      },
+      {
+        "date": "2026-10-06",
+        "value": 1337.88
+      },
+      {
+        "date": "2026-10-07",
+        "value": 1339.12
+      },
+      {
+        "date": "2026-10-08",
+        "value": 1343.34
+      },
+      {
+        "date": "2026-10-09",
+        "value": 1342.13
+      },
+      {
+        "date": "2026-10-13",
+        "value": 1341.16
+      },
+      {
+        "date": "2026-10-14",
+        "value": 1343.02
+      },
+      {
+        "date": "2026-10-15",
+        "value": 1343.31
+      },
+      {
+        "date": "2026-10-16",
+        "value": 1334.03
+      }
+    ]
+  },
+  "statistics": {
+    "count": 251,
+    "period": "2025-10-16 ~ 2026-10-16",
+    "moving_averages": {
+      "ma5": 1340.73,
+      "ma20": 1353.11,
+      "ma60": 1382.51
+    },
+    "latest_vs_ma20_pct": -1.41,
+    "volatility": {
+      "daily_std_pct": 0.646,
+      "annualized_pct": 10.26,
+      "avg_abs_change": 6.86
+    },
+    "max_drawdown": {
+      "pct": -14.26,
+      "start_date": "2026-06-05",
+      "start_value": 1555.96,
+      "end_date": "2026-10-16",
+      "end_value": 1334.03
+    },
+    "max_rally": {
+      "pct": 9.88,
+      "start_date": "2025-10-16",
+      "start_value": 1416.07,
+      "end_date": "2026-06-05",
+      "end_value": 1555.96
+    },
+    "quartiles": {
+      "p25": 1430.62,
+      "median": 1465.94,
+      "p75": 1488.54
+    },
+    "top_rises": [
+      {
+        "date": "2026-03-03",
+        "value": 1485.6,
+        "change": 45.8,
+        "change_pct": 3.181
+      },
+      {
+        "date": "2026-06-18",
+        "value": 1540.64,
+        "change": 26.4,
+        "change_pct": 1.743
+      },
+      {
+        "date": "2026-06-05",
+        "value": 1555.96,
+        "change": 24.05,
+        "change_pct": 1.57
+      },
+      {
+        "date": "2026-03-05",
+        "value": 1483.36,
+        "change": 20.66,
+        "change_pct": 1.412
+      },
+      {
+        "date": "2026-05-12",
+        "value": 1490.32,
+        "change": 20.41,
+        "change_pct": 1.389
+      }
+    ],
+    "top_falls": [
+      {
+        "date": "2025-12-24",
+        "value": 1443.62,
+        "change": -37.83,
+        "change_pct": -2.554
+      },
+      {
+        "date": "2026-05-06",
+        "value": 1447.01,
+        "change": -31.4,
+        "change_pct": -2.124
+      },
+      {
+        "date": "2026-06-08",
+        "value": 1528.23,
+        "change": -27.73,
+        "change_pct": -1.782
+      },
+      {
+        "date": "2026-04-08",
+        "value": 1477.1,
+        "change": -24.76,
+        "change_pct": -1.649
+      },
+      {
+        "date": "2026-08-19",
+        "value": 1388.39,
+        "change": -23.21,
+        "change_pct": -1.644
+      }
+    ],
+    "up_days": 123,
+    "down_days": 126,
+    "flat_days": 1,
+    "monthly": [
+      {
+        "month": "2025-10",
+        "count": 12,
+        "average": 1428.3,
+        "min": 1416.07,
+        "max": 1438.35,
+        "first": 1416.07,
+        "last": 1428.37,
+        "change_pct": null
+      },
+      {
+        "month": "2025-11",
+        "count": 18,
+        "average": 1459.88,
+        "min": 1430.65,
+        "max": 1475.94,
+        "first": 1430.65,
+        "last": 1467.65,
+        "change_pct": 2.75
+      },
+      {
+        "month": "2025-12",
+        "count": 22,
+        "average": 1465.36,
+        "min": 1433.88,
+        "max": 1481.45,
+        "first": 1467.79,
+        "last": 1444.55,
+        "change_pct": -1.57
+      },
+      {
+        "month": "2026-01",
+        "count": 20,
+        "average": 1455.5,
+        "min": 1433.84,
+        "max": 1478.33,
+        "first": 1444.45,
+        "last": 1444.51,
+        "change_pct": 0.0
+      },
+      {
+        "month": "2026-02",
+        "count": 19,
+        "average": 1447.29,
+        "min": 1427.12,
+        "max": 1463.13,
+        "first": 1452.03,
+        "last": 1439.82,
+        "change_pct": -0.32
+      },
+      {
+        "month": "2026-03",
+        "count": 22,
+        "average": 1490.52,
+        "min": 1439.8,
+        "max": 1523.5,
+        "first": 1439.8,
+        "last": 1523.5,
+        "change_pct": 5.81
+      },
+      {
+        "month": "2026-04",
+        "count": 22,
+        "average": 1483.8,
+        "min": 1461.66,
+        "max": 1511.31,
+        "first": 1511.31,
+        "last": 1477.93,
+        "change_pct": -2.99
+      },
+      {
+        "month": "2026-05",
+        "count": 20,
+        "average": 1488.4,
+        "min": 1447.01,
+        "max": 1517.33,
+        "first": 1477.22,
+        "last": 1503.96,
+        "change_pct": 1.76
+      },
+      {
+        "month": "2026-06",
+        "count": 21,
+        "average": 1529.46,
+        "min": 1508.12,
+        "max": 1555.96,
+        "first": 1511.71,
+        "last": 1548.78,
+        "change_pct": 2.98
+      },
+      {
+        "month": "2026-07",
+        "count": 22,
+        "average": 1486.01,
+        "min": 1424.05,
+        "max": 1550.59,
+        "first": 1550.59,
+        "last": 1436.81,
+        "change_pct": -7.23
+      },
+      {
+        "month": "2026-08",
+        "count": 21,
+        "average": 1403.22,
+        "min": 1368.25,
+        "max": 1430.49,
+        "first": 1430.49,
+        "last": 1368.25,
+        "change_pct": -4.77
+      },
+      {
+        "month": "2026-09",
+        "count": 21,
+        "average": 1359.21,
+        "min": 1339.81,
+        "max": 1387.97,
+        "first": 1371.76,
+        "last": 1355.91,
+        "change_pct": -0.9
+      },
+      {
+        "month": "2026-10",
+        "count": 11,
+        "average": 1343.3,
+        "min": 1334.03,
+        "max": 1364.83,
+        "first": 1364.83,
+        "last": 1334.03,
+        "change_pct": -1.61
+      }
+    ]
+  }
+}

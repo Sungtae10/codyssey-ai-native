@@ -1,0 +1,45 @@
+# Render Blueprint: 백엔드(FastAPI) 웹 서비스 1개
+# Render 대시보드 > New > Blueprint > 이 GitHub 저장소 선택 > Apply
+# sync: false 항목(키 2개)은 처음 만들 때 화면에서 값을 직접 넣습니다. 키는 이 파일에 쓰지 않습니다.
+services:
+  - type: web
+    name: usdkrw-ai-assistant-api
+    runtime: python
+    plan: free
+    region: singapore
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    autoDeployTrigger: commit
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.5
+      - key: STORAGE_BACKEND
+        value: firestore
+      - key: OPENAI_MODEL
+        value: gpt-6-luna
+      - key: OPENAI_FALLBACK_MODEL
+        value: gpt-4o-mini
+      - key: OPENAI_REASONING_EFFORT
+        value: none
+      - key: OPENAI_MAX_TOKENS
+        value: "700"
+      - key: CHAT_RATE_LIMIT_PER_MINUTE
+        value: "10"
+      - key: CHAT_DAILY_LIMIT_PER_IP
+        value: "100"
+      - key: CHAT_GLOBAL_RATE_LIMIT_PER_MINUTE
+        value: "30"
+      - key: CHAT_DAILY_LIMIT
+        value: "300"
+      - key: CHAT_DEADLINE_SECONDS
+        value: "75"
+      # CORS 허용 주소. Vercel 프로젝트 이름을 usdkrw-ai-assistant로 만들면 운영 주소가 아래와 같습니다.
+      # Vercel이 다른 주소를 주면 Render 대시보드 > Environment에서 이 값의 첫 주소를 바꾸세요.
+      - key: ALLOWED_ORIGINS
+        value: https://usdkrw-ai-assistant.vercel.app,http://localhost:5500,http://127.0.0.1:5500
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: FIREBASE_SERVICE_ACCOUNT_JSON
+        sync: false

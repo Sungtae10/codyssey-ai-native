@@ -1,0 +1,19 @@
+# 비밀 값: 절대 올리지 않음
+.env
+**/.env
+firebase-key*.json
+*serviceAccount*.json
+*service-account*.json
+*-firebase-adminsdk-*.json
+
+# 파이썬
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# 기타
+.DS_Store
+node_modules/
+.vercel/

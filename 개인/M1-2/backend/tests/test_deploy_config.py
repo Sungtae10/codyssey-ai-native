@@ -49,6 +49,12 @@ def test_render_limits_match_app_defaults():
     assert env["OPENAI_MODEL"] == s.openai_model and env["OPENAI_FALLBACK_MODEL"] == s.openai_fallback_model
 
 
+def test_render_seeds_empty_firestore_on_start():
+    env = {e["key"]: e.get("value") for e in load_render()["envVars"]}
+    assert env["SEED_IF_EMPTY"] == "true"  # 배포 직후 data가 비어 있으면 CSV 251개를 자동으로 올림
+    assert (ROOT / "backend" / "data" / "usdkrw_daily.csv").is_file()
+
+
 def test_vercel_config_and_gitignore():
     cfg = json.loads((ROOT / "frontend" / "vercel.json").read_text(encoding="utf-8"))
     assert cfg["outputDirectory"] == "public" and "generate-config.mjs" in cfg["buildCommand"]

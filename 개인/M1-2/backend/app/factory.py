@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import logging
+from contextlib import asynccontextmanager
 from typing import Any
 
 from fastapi import FastAPI, Request
@@ -9,12 +10,14 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from starlette.concurrency import run_in_threadpool
 
 from .config import Settings, load_settings
 from .container import build_container
 from .errors import AppError
 from .repositories.base import DocumentStore
 from .routers import chat, conversations, data, health, tools
+from .services.seed import seed_if_empty
 
 logger = logging.getLogger("app")
 
@@ -55,14 +58,24 @@ def create_app(
 ) -> FastAPI:
     settings = settings or load_settings()
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
+    container = build_container(settings, store=store, llm=llm)
+
+    @asynccontextmanager
+    async def lifespan(_: FastAPI):
+        # SEED_IF_EMPTY=true(Render 설정)이면 서버가 켜질 때 data 컬렉션이 완전히 비어 있는 경우에만
+        # CSV 251개를 올린다. 실패해도 서버는 켜지고, 원인은 /health와 로그에 남는다.
+        if settings.seed_if_empty and await run_in_threadpool(seed_if_empty, container.store, settings):
+            container.data.invalidate()
+        yield
 
     app = FastAPI(
         title="나만의 AI 비서 API (USD/KRW)",
         description=DESCRIPTION,
         version="1.0.0",
         openapi_tags=TAGS,
+        lifespan=lifespan,
     )
-    app.state.container = build_container(settings, store=store, llm=llm)
+    app.state.container = container
 
     @app.exception_handler(AppError)
     async def _app_error(_: Request, exc: AppError) -> JSONResponse:

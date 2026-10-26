@@ -54,7 +54,7 @@
 - **AI 모델**: 기본 `gpt-6-luna` (`reasoning_effort: none`). 기본 모델을 쓸 수 없을 때(모델 없음·권한 없음·요청 형식 오류, HTTP 400/403/404)만 `gpt-4o-mini`로 자동 대체하고, 실제로 답한 모델을 응답과 대화 기록에 남김. 키 오류·사용 한도·시간 초과는 대체하지 않고 원인을 알려 줌
 - **프론트엔드**: HTML, CSS, JavaScript(ES 모듈). 그래프는 SVG로 직접 그림
 - **배포**: Render(백엔드, Blueprint), Vercel(프론트엔드, 정적 사이트)
-- **테스트**: pytest 62개 (메모리 저장소 + 가짜 LLM, OpenAI SDK의 HTTP 목, mock-firestore)
+- **테스트**: pytest 70개 (메모리 저장소 + 가짜 LLM, OpenAI SDK의 HTTP 목, mock-firestore)
 - **보너스**: MCP Python SDK 2.3 (MCP 서버)
 
 ## 5. 데이터 선정과 분석
@@ -149,7 +149,7 @@ codyssey-ai-assistant-M1-2/
 │   │   └── repositories/        # 저장소: Firestore / 메모리(테스트용)
 │   ├── data/usdkrw_daily.csv    # 251개 데이터
 │   ├── scripts/                 # 데이터 준비, 분석, Firestore 업로드
-│   └── tests/                   # pytest 62개 + 로컬 전체 흐름 점검용 가짜 OpenAI
+│   └── tests/                   # pytest 70개 + 로컬 전체 흐름 점검용 가짜 OpenAI
 ├── frontend/
 │   ├── vercel.json              # 빌드 명령, 출력 폴더
 │   ├── scripts/generate-config.mjs
@@ -251,6 +251,7 @@ python -m http.server 5500 --directory public   # http://localhost:5500
 | `API_BASE_URL` | Vercel | 필수 | 프론트가 부를 백엔드 주소 (예: `https://...onrender.com`) |
 | `ALLOWED_ORIGIN_REGEX` | Render | 선택 | 미리보기 주소까지 허용할 때만. 다른 사람의 Vercel 주소가 걸리지 않게 본인 팀 이름까지 넣은 좁은 식으로 쓰기 |
 | `FIRESTORE_DATABASE_ID` | Render | 선택 | 기본 데이터베이스 `(default)`가 아닌 것을 쓸 때만 |
+| `SEED_IF_EMPTY` | Render | 선택 (`render.yaml`에 `true`) | 서버가 켜질 때 `data` 컬렉션이 완전히 비어 있으면 CSV 251개를 한 번 올림. 문서가 하나라도 있으면 아무것도 하지 않음 |
 | `OPENAI_MODEL` / `OPENAI_FALLBACK_MODEL` | Render | 선택 | 기본 `gpt-6-luna` / `gpt-4o-mini` |
 | `OPENAI_REASONING_EFFORT` | Render | 선택 | 기본 `none` (Chat Completions에서 도구 호출을 쓰기 위한 값) |
 | `OPENAI_MAX_TOKENS` | Render | 선택 | 답변 최대 토큰, 기본 700 |
@@ -264,7 +265,7 @@ python -m http.server 5500 --directory public   # http://localhost:5500
 자세한 순서(누가, 언제, 무엇을, 어떻게)는 **[docs/DEPLOY_GUIDE.md](docs/DEPLOY_GUIDE.md)** 에 있습니다.
 
 1. Firebase: 프로젝트 생성 → Firestore 데이터베이스(서울 `asia-northeast3`, 프로덕션 모드) → 서비스 계정 키 내려받기
-2. 로컬: `.env` 작성 → `seed_firestore.py`로 251개 업로드 → 실행 확인
+2. (선택) 로컬: `.env` 작성 → 실행 확인. 데이터 251개는 Render 서버가 처음 켜질 때 `data` 컬렉션이 비어 있으면 자동으로 올라갑니다 (`SEED_IF_EMPTY=true`). 로컬에서 먼저 올리려면 `seed_firestore.py`
 3. GitHub: 이 폴더를 새 저장소에 올리기 (`.env`와 키 파일은 `.gitignore`로 제외됨)
 4. Render: New > Blueprint → 저장소 선택 → `OPENAI_API_KEY`, `FIREBASE_SERVICE_ACCOUNT_JSON` 입력 → `/docs` 확인
 5. Vercel: 저장소 가져오기 → Root Directory `frontend` → 환경 변수 `API_BASE_URL` = Render 주소 → 배포
@@ -298,7 +299,7 @@ python -m http.server 5500 --directory public   # http://localhost:5500
 ```bash
 cd backend
 pip install -r requirements-dev.txt
-python -m pytest -q        # 62 passed
+python -m pytest -q        # 70 passed
 ```
 
 - 분석 함수: 손으로 계산 가능한 작은 데이터 + 실제 CSV를 표준 라이브러리로 다시 계산해 비교

@@ -64,6 +64,9 @@ class Settings:
     data_collection: str = "data"
     conversations_collection: str = "conversations"
     memory_seed_csv: str | None = str(BACKEND_DIR / "data" / "usdkrw_daily.csv")
+    # 서버가 켜질 때 data 컬렉션이 완전히 비어 있으면 이 CSV를 한 번 올린다 (render.yaml에서 true)
+    seed_if_empty: bool = False
+    seed_csv: str | None = str(BACKEND_DIR / "data" / "usdkrw_daily.csv")
 
     # OpenAI
     openai_api_key: str | None = None
@@ -119,6 +122,8 @@ def load_settings() -> Settings:
         data_collection=_str("DATA_COLLECTION", "data") or "data",
         conversations_collection=_str("CONVERSATIONS_COLLECTION", "conversations") or "conversations",
         memory_seed_csv=_str("MEMORY_SEED_CSV", str(BACKEND_DIR / "data" / "usdkrw_daily.csv")),
+        seed_if_empty=_bool("SEED_IF_EMPTY", False),
+        seed_csv=_str("SEED_CSV", str(BACKEND_DIR / "data" / "usdkrw_daily.csv")),
         openai_api_key=_str("OPENAI_API_KEY"),
         openai_model=_str("OPENAI_MODEL", "gpt-6-luna") or "gpt-6-luna",
         openai_fallback_model=_str("OPENAI_FALLBACK_MODEL", "gpt-4o-mini"),

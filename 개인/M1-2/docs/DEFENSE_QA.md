@@ -24,7 +24,7 @@
 - `routers/`: `POST /api/data` 같은 경로를 받아 서비스 함수를 부르고 결과를 돌려줌
 - `services/`: 같은 날짜 중복 금지(409), 요약 계산, 프롬프트 만들기, GPT 호출, 도구 실행
 - `repositories/`: Firestore 저장소와 테스트용 메모리 저장소. 같은 인터페이스라 갈아 끼울 수 있음
-- 장점: `/api/chat`이 HTTP로 자기 자신을 부르지 않고 `DataService.summary()`를 바로 써서 빠르고 단순합니다. 테스트에서 저장소만 메모리로 바꾸면 키 없이 같은 코드를 검사할 수 있습니다 (pytest 62개).
+- 장점: `/api/chat`이 HTTP로 자기 자신을 부르지 않고 `DataService.summary()`를 바로 써서 빠르고 단순합니다. 테스트에서 저장소만 메모리로 바꾸면 키 없이 같은 코드를 검사할 수 있습니다 (pytest 70개).
 
 ## 3. Pydantic 입력 검증을 쓴 이유와 방식
 
@@ -42,6 +42,7 @@
 
 - 연결: `app/database.py`가 환경 변수의 서비스 계정 키로 `firebase_admin.initialize_app` → `firestore.client()`
 - CRUD: `collection.document().set()`(추가, 자동 ID), `stream()`(목록), `update()`(수정), `delete()`(삭제), 초기 251개는 `batch`로 한 번에
+- 초기 데이터 자동 업로드: 서버가 켜질 때 `data` 컬렉션이 완전히 비어 있으면 CSV 251개를 한 번 올립니다 (`SEED_IF_EMPTY=true`, `app/services/seed.py`). 문서가 하나라도 있으면 건드리지 않아서 화면에서 고친 값이 덮어써지지 않습니다
 - 읽기 횟수 절약: 전체 목록을 60초 동안 메모리에 들고 있고, 추가·수정·삭제 때 바로 비웁니다. 여러 요청이 동시에 와도 Firestore 전체 읽기는 한 번만 합니다 (무료 한도: 하루 읽기 5만 건)
 - 같은 날짜 중복 확인: 캐시가 아니라 Firestore에서 그 날짜 문서만 찾아보고(`find_documents`), 확인과 저장을 잠금 안에서 한 번에 해서 동시에 눌러도 두 개가 생기지 않습니다
 - 대화 불러오기는 (A) 방식: 목록 API는 messages를 빼서 가볍게, 상세 API에서 전체 메시지를 줍니다.

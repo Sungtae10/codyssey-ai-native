@@ -11,9 +11,12 @@
 
 | 구분 | 주소 |
 |---|---|
-| 프론트엔드 (Vercel) | https://usdkrw-ai-assistant.vercel.app (배포 후 실제 주소로 바꾸기) |
-| 백엔드 API (Render) | https://usdkrw-ai-assistant-api.onrender.com (배포 후 실제 주소로 바꾸기) |
+| 프론트엔드 (Vercel) | https://usdkrw-ai-assistant.vercel.app |
+| 백엔드 API (Render) | https://usdkrw-ai-assistant-api.onrender.com |
 | Swagger UI | https://usdkrw-ai-assistant-api.onrender.com/docs |
+| GitHub | https://github.com/Sungtae10/codyssey-ai-assistant-M1-2 |
+
+배포 확인 (2026-10-26): `/health` 응답 `"status":"ok"`, 저장소 Firestore 연결됨, OpenAI 키 설정됨. `/api/data/summary` 응답 `"count":251` (서버가 처음 켜질 때 비어 있던 Firestore에 자동으로 올라감).
 
 > **무료 서버 안내**: Render 무료 서버는 15분 동안 요청이 없으면 잠들고, 다음 첫 요청 때 깨어나는 데 약 1분이 걸립니다.
 > 화면은 열리자마자 `/health`를 불러 서버를 깨우고, 기다리는 동안 경과 시간과 안내 문구를 보여 줍니다.

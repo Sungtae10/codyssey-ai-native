@@ -8,7 +8,7 @@
 요약에 없는 날짜나 기간의 값은 GPT가 **도구(Function Calling)** 로 직접 조회해서 확인합니다.
 
 > **평가·설명용 문서**
-> - [구현 설명서](docs/IMPLEMENTATION_GUIDE.md): 요구사항 14개 항목별로 무엇을, 어떻게 만들었는지와 근거 코드, 시연 순서
+> - [구현 설명서](docs/IMPLEMENTATION_GUIDE.md): 만든 과정, 주요 결정과 이유, 요구사항 14개 항목별로 무엇을 어떻게 만들었는지와 근거 코드, 시연 순서
 > - [과제 목표 6개 설명](docs/DEFENSE_QA.md): 분석 흐름, 구조 분리, Pydantic, Firestore, 컨텍스트 주입, CORS·키 관리
 > - [배포 가이드](docs/DEPLOY_GUIDE.md): Firebase, Render, Vercel 배포 순서
 

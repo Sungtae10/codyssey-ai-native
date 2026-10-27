@@ -19,7 +19,7 @@
 | 1 | 30초 | 위의 한 줄 소개 |
 | 2 | 2분 | 화면 시연: 요약판 확인 → 질문 하나 → 데이터 관리에서 메모 수정 → 새 대화를 연 뒤 앞의 대화 불러오기 |
 | 3 | 30초 | Swagger `/docs`에서 API 목록 보여 주기 |
-| 4 | 2분 | 질문을 받으면 아래 항목별 설명으로 답하기 |
+| 4 | 2분 | 질문을 받으면 아래 설명으로 답하기: "어떻게 만들었나"는 [만든 과정](#만든-과정), "왜 그렇게 했나"는 [주요 결정과 이유](#주요-결정과-이유), 세부 내용은 항목 1~14 |
 
 ## 한눈에 보기
 
@@ -39,6 +39,39 @@
 | 12 | [보너스 2 통계 그래프 내보내기 다크 모드](#12-보너스-2-통계-그래프-내보내기-다크-모드) | 완료 | 사진 2 오른쪽 |
 | 13 | [제약 사항](#13-제약-사항) | 완료 | 환경 변수, 검증, 비용 제한 |
 | 14 | [테스트와 검증](#14-테스트와-검증) | 완료 | pytest 70개 통과 |
+
+## 만든 과정
+
+> **한 줄 설명**: 데이터를 고르고 요약을 먼저 만든 뒤, 그 요약을 쓰는 서버와 AI, 화면을 차례로 만들고, 테스트로 확인한 다음 GitHub에 올려 Vercel, Firebase, Render 순서로 배포했습니다.
+
+| 순서 | 한 일 | 결과물 |
+|---|---|---|
+| 1 | 데이터 고르기와 정제: 미국 연준 H.10 원/달러 환율 1년치에서 값이 없는 휴일 11일을 빼고 251개로 정리 | [backend/data/usdkrw_daily.csv](../backend/data/usdkrw_daily.csv), [prepare_data.py](../backend/scripts/prepare_data.py) |
+| 2 | 분석과 요약: 평균·최고·최저·최신값·기간 변화·표준편차, 최근 20개와 직전 20개를 비교한 추세, 월별 통계 | [analysis.py](../backend/app/services/analysis.py), [analysis_summary.json](analysis_summary.json) |
+| 3 | 서버 뼈대: FastAPI를 라우터·서비스·저장소·스키마로 나누고, Pydantic 검증과 한국어 오류 형식을 통일 | [backend/app](../backend/app) |
+| 4 | 저장소 연결: Firestore(서비스 계정 키는 환경 변수)와 테스트용 메모리 저장소를 같은 모양으로 | [database.py](../backend/app/database.py), [repositories](../backend/app/repositories) |
+| 5 | API: 데이터 5개, 대화 기록 4개 | [routers](../backend/app/routers) |
+| 6 | AI: 요약을 시스템 프롬프트에 넣는 채팅, 읽기 전용 도구 6개, 토큰·시간·횟수 제한 | [chat_service.py](../backend/app/services/chat_service.py), [tools.py](../backend/app/services/tools.py) |
+| 7 | 화면: 바닐라 HTML/CSS/JS로 채팅, 데이터 관리, 대화 기록, 요약판, 그래프 | [frontend/public](../frontend/public) |
+| 8 | 테스트: 메모리 저장소와 가짜 AI로 pytest 70개, 가짜 OpenAI 서버로 화면부터 서버까지 전체 흐름 점검 | [backend/tests](../backend/tests) |
+| 9 | 배포: GitHub에 올림 → Vercel에 화면 배포(`API_BASE_URL`에 Render 서버 주소를 미리 지정) → Firebase에서 Firestore 만들고 키 발급 → Render Blueprint로 서버 배포(키 입력, 데이터 251개 자동 업로드) | [render.yaml](../render.yaml), [frontend/vercel.json](../frontend/vercel.json), [DEPLOY_GUIDE.md](DEPLOY_GUIDE.md) |
+| 10 | 마무리: 배포 주소에서 4가지 기능 확인, 제출 스크린샷 3장, README와 이 설명서 정리 | [README](../README.md) |
+
+## 주요 결정과 이유
+
+| 결정 | 이유 |
+|---|---|
+| 휴일은 값을 채우지 않고 뺐다 | 앞뒤 값으로 채우면 변화 0%인 가짜 날이 생겨 변동성이 작게 계산된다 |
+| 추세 기준을 ±0.5%로 정했다 | 하루 평균 변동이 6.86원(약 0.47%)이라, 그보다 작게 움직이면 방향이 있다고 보기 어렵다 |
+| 요약 함수 하나를 요약 API, 화면 요약판, AI 프롬프트가 함께 쓴다 | 세 곳의 숫자가 서로 어긋나지 않는다 |
+| 채팅은 요약 API를 HTTP로 다시 부르지 않고 같은 함수를 바로 쓴다 | 결과는 같고, 더 빠르고 단순하다 |
+| 같은 날짜는 두 번 저장하지 않는다 (409) | 하루에 값이 둘이면 추세와 통계가 틀어진다 |
+| 전체 목록을 60초 동안 기억한다 | Firestore 무료 읽기 횟수를 아낀다. 데이터를 바꾸면 바로 지운다 |
+| 도구를 부를 때 이유(`reason`)를 꼭 적게 했다 | AI가 왜 그 값을 조회했는지 화면에서 확인하고 검증할 수 있다 |
+| 서버 주소는 빌드 때 `config.js`로 만든다 | 바닐라 HTML은 브라우저에서 환경 변수를 읽을 수 없다 |
+| 서버가 처음 켜질 때 비어 있으면 데이터를 자동으로 올린다 | 내 컴퓨터에서 따로 실행하지 않아도 배포 직후 251개가 준비된다 |
+| 답변 길이, 질문 시간, 요청 횟수를 제한했다 | 개인 OpenAI 키의 과금을 막는다 |
+| CORS는 정확한 주소 목록만 허락한다 | 넓은 규칙은 다른 사람의 Vercel 주소까지 허락할 수 있다 |
 
 ---
 

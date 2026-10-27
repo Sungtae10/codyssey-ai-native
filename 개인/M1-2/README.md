@@ -7,6 +7,11 @@
 그 요약을 **매 질문마다 GPT의 시스템 프롬프트에 넣어(컨텍스트 주입)** "내 데이터의 숫자"로 답합니다.
 요약에 없는 날짜나 기간의 값은 GPT가 **도구(Function Calling)** 로 직접 조회해서 확인합니다.
 
+> **평가·설명용 문서**
+> - [구현 설명서](docs/IMPLEMENTATION_GUIDE.md): 요구사항 14개 항목별로 무엇을, 어떻게 만들었는지와 근거 코드, 시연 순서
+> - [과제 목표 6개 설명](docs/DEFENSE_QA.md): 분석 흐름, 구조 분리, Pydantic, Firestore, 컨텍스트 주입, CORS·키 관리
+> - [배포 가이드](docs/DEPLOY_GUIDE.md): Firebase, Render, Vercel 배포 순서
+
 ## 1. 배포 주소
 
 | 구분 | 주소 |
@@ -34,22 +39,24 @@
 
 ## 3. 미션 요구사항 대응표
 
+요구사항 이름을 누르면 [구현 설명서](docs/IMPLEMENTATION_GUIDE.md)의 자세한 설명(무엇을, 어떻게, 근거 코드)으로 이동합니다.
+
 | 요구사항 | 구현 | 위치 |
 |---|---|---|
-| Python 3.10+, venv, 지정 패키지 5개 | Python 3.13, `fastapi` `uvicorn` `firebase-admin` `openai` `python-dotenv` (버전 고정) | `backend/requirements.txt` |
-| 시계열 데이터 100개 이상 + 요약 | USD/KRW 251개, 기간·개수·평균·최고·최저·최신·추세·월별 | `backend/data/usdkrw_daily.csv`, `scripts/analyze_data.py` |
-| FastAPI 구성, CORS, Swagger | 라우터·서비스·스키마·저장소 분리, `ALLOWED_ORIGINS` 기반 CORS, `/docs` | `backend/main.py`, `backend/app/` |
-| Firestore 연동, 키는 환경 변수 | `data`, `conversations` 컬렉션. 키는 `FIREBASE_SERVICE_ACCOUNT_JSON` 또는 `..._PATH` | `app/database.py`, `app/repositories/` |
-| 데이터 API 5개 | `POST/GET /api/data`, `PUT/DELETE /api/data/{id}`, `GET /api/data/summary` | `app/routers/data.py` |
-| 대화 기록 API + 불러오기 | `POST/GET /api/conversations`, `DELETE /api/conversations/{id}`, **(A) 방식** `GET /api/conversations/{id}` | `app/routers/conversations.py` |
-| AI 챗봇 (컨텍스트 주입 + 자동 저장) | 요약 조회 → 시스템 프롬프트 삽입 → GPT 호출 → conversations 저장 | `app/services/chat_service.py`, `prompt.py` |
-| Render 배포 + 콜드스타트 대응 | Blueprint(`render.yaml`), 헬스 체크, 화면의 서버 깨우기 안내 | `render.yaml`, `frontend/public/app.js` |
-| 바닐라 프론트엔드 | HTML/CSS/JS만 사용 (프레임워크·차트 라이브러리 없음) | `frontend/public/` |
-| Vercel 배포 + API 주소 환경 변수 | 빌드 때 `API_BASE_URL`로 `config.js` 생성 | `frontend/vercel.json`, `scripts/generate-config.mjs` |
-| 입력 검증, 예외 처리, 키 비노출 | Pydantic 검증(422), 한국어 오류 메시지, 키는 환경 변수만 | `app/schemas/`, `app/factory.py` |
-| 비용 관리 | 답변 길이 700토큰, 질문 1번 75초 상한, 요청 제한(IP당 분당 10회·하루 100회, 서버 전체 분당 30회·하루 300회) | `app/services/ai_client.py`, `app/rate_limit.py` |
-| 보너스 1: Function Calling + MCP | 읽기 전용 도구 6개, 호출 이유 기록, MCP 서버로 같은 도구 연결 | `app/services/tools.py`, `mcp_server/`, [docs/TOOL_CALLING.md](docs/TOOL_CALLING.md) |
-| 보너스 2: 통계·그래프·내보내기·다크 모드 | `/api/data/statistics`, SVG 그래프(20일 이동평균), CSV/JSON 내려받기, 다크 모드 | `app/routers/data.py`, `frontend/public/chart.js` |
+| [Python 3.10+, venv, 지정 패키지 5개](docs/IMPLEMENTATION_GUIDE.md#1-개발-환경-준비) | Python 3.13, `fastapi` `uvicorn` `firebase-admin` `openai` `python-dotenv` (버전 고정) | `backend/requirements.txt` |
+| [시계열 데이터 100개 이상 + 요약](docs/IMPLEMENTATION_GUIDE.md#2-데이터-선정과-분석) | USD/KRW 251개, 기간·개수·평균·최고·최저·최신·추세·월별 | `backend/data/usdkrw_daily.csv`, `scripts/analyze_data.py` |
+| [FastAPI 구성, CORS, Swagger](docs/IMPLEMENTATION_GUIDE.md#3-fastapi-프로젝트-구성) | 라우터·서비스·스키마·저장소 분리, `ALLOWED_ORIGINS` 기반 CORS, `/docs` | `backend/main.py`, `backend/app/` |
+| [Firestore 연동, 키는 환경 변수](docs/IMPLEMENTATION_GUIDE.md#4-firestore-연동) | `data`, `conversations` 컬렉션. 키는 `FIREBASE_SERVICE_ACCOUNT_JSON` 또는 `..._PATH` | `app/database.py`, `app/repositories/` |
+| [데이터 API 5개](docs/IMPLEMENTATION_GUIDE.md#5-데이터-api-5개) | `POST/GET /api/data`, `PUT/DELETE /api/data/{id}`, `GET /api/data/summary` | `app/routers/data.py` |
+| [대화 기록 API + 불러오기](docs/IMPLEMENTATION_GUIDE.md#6-대화-기록-api) | `POST/GET /api/conversations`, `DELETE /api/conversations/{id}`, **(A) 방식** `GET /api/conversations/{id}` | `app/routers/conversations.py` |
+| [AI 챗봇 (컨텍스트 주입 + 자동 저장)](docs/IMPLEMENTATION_GUIDE.md#7-ai-챗봇과-컨텍스트-주입) | 요약 조회 → 시스템 프롬프트 삽입 → GPT 호출 → conversations 저장 | `app/services/chat_service.py`, `prompt.py` |
+| [Render 배포 + 콜드스타트 대응](docs/IMPLEMENTATION_GUIDE.md#8-백엔드-배포-render) | Blueprint(`render.yaml`), 헬스 체크, 화면의 서버 깨우기 안내 | `render.yaml`, `frontend/public/app.js` |
+| [바닐라 프론트엔드](docs/IMPLEMENTATION_GUIDE.md#9-바닐라-프론트엔드) | HTML/CSS/JS만 사용 (프레임워크·차트 라이브러리 없음) | `frontend/public/` |
+| [Vercel 배포 + API 주소 환경 변수](docs/IMPLEMENTATION_GUIDE.md#10-프론트엔드-배포-vercel과-readme) | 빌드 때 `API_BASE_URL`로 `config.js` 생성 | `frontend/vercel.json`, `scripts/generate-config.mjs` |
+| [입력 검증, 예외 처리, 키 비노출](docs/IMPLEMENTATION_GUIDE.md#13-제약-사항) | Pydantic 검증(422), 한국어 오류 메시지, 키는 환경 변수만 | `app/schemas/`, `app/factory.py` |
+| [비용 관리](docs/IMPLEMENTATION_GUIDE.md#13-제약-사항) | 답변 길이 700토큰, 질문 1번 75초 상한, 요청 제한(IP당 분당 10회·하루 100회, 서버 전체 분당 30회·하루 300회) | `app/services/ai_client.py`, `app/rate_limit.py` |
+| [보너스 1: Function Calling + MCP](docs/IMPLEMENTATION_GUIDE.md#11-보너스-1-도구-호출과-mcp) | 읽기 전용 도구 6개, 호출 이유 기록, MCP 서버로 같은 도구 연결 | `app/services/tools.py`, `mcp_server/`, [docs/TOOL_CALLING.md](docs/TOOL_CALLING.md) |
+| [보너스 2: 통계·그래프·내보내기·다크 모드](docs/IMPLEMENTATION_GUIDE.md#12-보너스-2-통계-그래프-내보내기-다크-모드) | `/api/data/statistics`, SVG 그래프(20일 이동평균), CSV/JSON 내려받기, 다크 모드 | `app/routers/data.py`, `frontend/public/chart.js` |
 
 ## 4. 기술 스택
 

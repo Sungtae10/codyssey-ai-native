@@ -1,0 +1,21 @@
+# 비밀 값: API 키가 들어 있는 파일은 절대 올리지 않는다
+.env
+.env.*
+!.env.example
+
+# Python 실행 부산물
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# 가짜 API 서버로 연습한 결과(제출물 아님)
+practice_results/
+
+# 편집기, 운영체제 파일
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# 참고: results/는 과제 제출물(실행 결과)이므로 무시하지 않는다

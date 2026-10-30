@@ -1,0 +1,58 @@
+{
+  "meta": {
+    "program": "codyssey-a1-2-travel-planner",
+    "version": "2.0.0",
+    "travel_date": "2026-10-11",
+    "mode": "single",
+    "generated_at": "2026-09-29T02:42:16+09:00",
+    "last_run_at": "2026-09-29T02:42:16+09:00",
+    "llm": {
+      "provider": "openai",
+      "model": "gpt-4o-mini"
+    },
+    "place": {
+      "provider": "kakao",
+      "label": "Kakao Local"
+    },
+    "cache": {
+      "used": false
+    },
+    "cache_key": {
+      "travel_date": "2026-10-11",
+      "city_count": 1,
+      "restaurant_count": 5,
+      "keyword": "맛집",
+      "llm_provider": "openai",
+      "llm_model": "gpt-4o-mini",
+      "place_provider": "kakao"
+    }
+  },
+  "recommendation": {
+    "recommended_city": "제주",
+    "weather": "10월 중순의 제주도는 서늘하고 맑은 날씨가 이어지며, 평균 기온은 15도에서 20도 사이입니다.",
+    "events": [
+      "제주 가을 꽃 축제(일정 변동 가능)",
+      "탑동하늘바람축제(일정 변동 가능)"
+    ],
+    "reason": "가을철의 제주도는 아름다운 자연 경관과 함께 다양한 축제가 열려 여행하기에 좋은 시기입니다. 특히, 제주 가을 꽃 축제와 다양한 이벤트가 여행자들에게 특별한 경험을 제공합니다. 서늘한 날씨 속에서 가을의 정취를 만끽하며 여유로운 여행을 즐길 수 있습니다."
+  },
+  "restaurants": [],
+  "place_searches": [
+    {
+      "city": "제주",
+      "query": "제주 맛집",
+      "provider": "kakao",
+      "status": "error",
+      "error_type": "AUTH_ERROR",
+      "result_count": 0
+    }
+  ],
+  "errors": [
+    {
+      "step": "place_search",
+      "type": "AUTH_ERROR",
+      "message": "HTTP 401: appKey(***) does not exist (query=제주 맛집)",
+      "time": "2026-09-29T02:42:19+09:00"
+    }
+  ]
+}

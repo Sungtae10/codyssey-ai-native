@@ -1,0 +1,49 @@
+{
+  "db_path": "data/news.db",
+  "output_dir": "output",
+  "log_level": "INFO",
+  "duplicate_policy": "skip",
+  "request_timeout_sec": 10,
+  "request_delay_sec": 1.0,
+  "user_agent": "CodysseyNewsBot/1.0 (student project)",
+  "fetch_full_body": true,
+  "sources": {
+    "rss": [
+      {
+        "name": "google_it",
+        "category": "IT",
+        "url": "https://news.google.com/rss/search?q=IT+기술&hl=ko&gl=KR&ceid=KR:ko"
+      },
+      {
+        "name": "google_econ",
+        "category": "경제",
+        "url": "https://news.google.com/rss/search?q=경제&hl=ko&gl=KR&ceid=KR:ko"
+      },
+      {
+        "name": "hani_general",
+        "category": "사회",
+        "url": "https://www.hani.co.kr/rss/"
+      },
+      {
+        "name": "khan_it",
+        "category": "IT",
+        "url": "https://www.khan.co.kr/rss/rssdata/it_news.xml"
+      }
+    ],
+    "crawl": [
+      {
+        "name": "zdnet_it",
+        "category": "IT",
+        "section_url": "https://zdnet.co.kr/news/?lstcode=0000",
+        "link_selector": "a[href*='/view/?no=']",
+        "body_selector": "div.article-feed, div.view_cont, article"
+      }
+    ]
+  },
+  "ai": {
+    "provider": "openai",
+    "model": "gpt-4o-mini",
+    "max_body_chars": 3000,
+    "max_articles_for_analysis": 60
+  }
+}

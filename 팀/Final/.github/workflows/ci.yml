@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install engine dependencies
+        run: python -m pip install --upgrade pip && pip install -r engine/requirements.txt
+
+      - name: Compile Python
+        run: python -m compileall -q engine eval tests
+
+      - name: Check engine config shape
+        run: python tests/test_config.py
+
+      - name: Run offline mock end-to-end test
+        run: python tests/test_mock.py
+
+      - name: Check second-opinion judging and fallback model (no API)
+        run: python tests/test_escalation.py
+
+      - name: Check merging engine companies into screen data
+        run: python tests/test_merge_screen.py
+
+      - name: Check OpenDART auto collect (fake responses, no key)
+        run: python tests/test_dart.py
+
+      - name: Validate sample JSON
+        run: python -m json.tool tests/sample_data.json > /dev/null
+
+      - name: Validate screen data JSON (results, listed companies)
+        run: |
+          python -m json.tool app/data/results.json > /dev/null
+          python -m json.tool app/data/listed-companies.json > /dev/null
+
+      - name: Check evaluation CLI
+        run: python eval/evaluate.py --help > /dev/null
+
+      - name: Check frontend JavaScript syntax
+        run: |
+          node --check app/js/app.js
+          node --check app/api/resume-fit.js
+
+      - name: Check resume-fit server function (fake OpenAI, no key)
+        run: node tests/test_resume_api.js
+
+      - name: Check screen code and CSS match (no browser)
+        run: python tests/test_ui_static.py
+
+  ui:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Playwright and Chromium
+        run: python -m pip install --upgrade pip && pip install playwright==1.56.0 && python -m playwright install --with-deps chromium
+
+      - name: Check screens (contrast, overflow, required parts)
+        run: python tests/ui_check.py

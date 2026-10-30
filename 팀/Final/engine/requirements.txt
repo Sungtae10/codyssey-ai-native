@@ -1,0 +1,9 @@
+# DART-Foresight AI에서 쓰던 버전과 같게 맞췄습니다.
+langchain-openai==1.2.2
+langchain-chroma==1.1.0
+langchain-core==1.4.2
+chromadb==1.5.9
+openai==2.41.0
+pypdf==6.13.1
+python-dotenv==1.2.2
+PyYAML==6.0.3

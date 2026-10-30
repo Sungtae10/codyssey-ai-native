@@ -1,0 +1,44 @@
+{
+ "promises": [
+  {
+   "type": "specific",
+   "title": "AI 기반 SDV 체계 전환",
+   "sentence": "차량 데이터와 AI 기반으로 기능과 서비스를 지속적으로 개선하는 SDV 체계로 전환하고, 이를 바탕으로 이동의 혁신을 실현하기 위한 수익 및 성장 전략을 수립하여 EV 경쟁력을 강화하고 수익성을 확보하며, SW 핵심 역량 내재화 기반으로 차량 개발 뿐 아니라 전 밸류체인과 서비스의 SW 중심 전환을 추진하며, SW 플랫폼 기반으로 AAM, 로봇 등 다양한 모빌리티 서비스를 연결하고자 합니다.",
+   "sentence_id": "y2024-II-0255",
+   "source": {
+    "report": "2024 사업보고서",
+    "section": "II. 사업의 내용",
+    "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250312001148",
+    "page": null
+   },
+   "id": "hyundai-p1"
+  },
+  {
+   "type": "specific",
+   "title": "차량 러닝 머신 개발",
+   "sentence": "SW 중심 전환 (SDV)의 궁극적인 목표는 데이터와 AI를 기반으로 차량이 스스로 학습하고 발전하는 러닝 머신을 개발하는 것입니다.",
+   "sentence_id": "y2024-II-0260",
+   "source": {
+    "report": "2024 사업보고서",
+    "section": "II. 사업의 내용",
+    "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250312001148",
+    "page": null
+   },
+   "id": "hyundai-p2"
+  },
+  {
+   "type": "specific",
+   "title": "AI 기능 구현",
+   "sentence": "특히 ‘26년 하반기에는 자체 개발한 차량용 고성능 컴퓨터와 중앙집중형 전기전자 아키텍처를 적용한 SDV 페이스 카를 통해, 보다 안정적인 자율주행과 편리한 AI 기능을 구현하고, 새로운 모빌리티 서비스와 비즈니스를 실증할 예정입니다.",
+   "sentence_id": "y2024-II-0262",
+   "source": {
+    "report": "2024 사업보고서",
+    "section": "II. 사업의 내용",
+    "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250312001148",
+    "page": null
+   },
+   "id": "hyundai-p3"
+  }
+ ],
+ "dropped": []
+}

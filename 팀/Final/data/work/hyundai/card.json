@@ -1,0 +1,43 @@
+{
+ "issues": [
+  {
+   "text": "Pleos OS 기반 OTA 업데이트·기능 확장 및 AI 엔진 기반 모빌리티 생태계 구현 관련 활동 (일부 확인)",
+   "promise_id": "hyundai-p1"
+  },
+  {
+   "text": "AI 엔진 기반 지속 학습 방향은 확인되나 차량 자체의 러닝 머신 개발 단계는 불명확 (일부 확인)",
+   "promise_id": "hyundai-p2"
+  },
+  {
+   "text": "검토한 공시 범위에서 AI 기능 구현 관련 근거 미확인 (확인 어려움)",
+   "promise_id": "hyundai-p3"
+  }
+ ],
+ "talking_points": [
+  {
+   "text": "CODA 플랫폼을 통한 차량 하드웨어 구조 단순화와 Pleos OS 기반 OTA 업데이트·기능 확장이 기재되어 있습니다.",
+   "promise_id": "hyundai-p1",
+   "evidence_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260318001394"
+  },
+  {
+   "text": "Pleos Connect를 통해 개인화된 디지털 경험과 서비스 기반 수익 모델을 구축하고 있습니다.",
+   "promise_id": "hyundai-p1",
+   "evidence_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260318001394"
+  },
+  {
+   "text": "Atria는 자율주행, Gleo는 자연어 인터페이스, Capora는 플릿 운영 최적화를 담당하는 AI 엔진으로 제시되어 있습니다. 이 AI 엔진을 통해 지속적으로 학습하고 진화하는 지능형 모빌리티 생태계를 실현하고 있다고 기재되어 있습니다.",
+   "promise_id": "hyundai-p2",
+   "evidence_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260318001394"
+  }
+ ],
+ "questions": [
+  {
+   "text": "검토한 2025 사업보고서와 2026 반기보고서에서는 AI 기능 구현 약속의 후속 내용을 확인하기 어려웠습니다. 현재 구체화하고 있는 AI 기능과 적용 단계는 무엇인지 궁금합니다.",
+   "promise_id": "hyundai-p3"
+  },
+  {
+   "text": "공시에서 AI 엔진을 통한 지속 학습 방향은 확인했지만, 차량 자체가 스스로 학습하는 러닝 머신의 개발 단계는 확인하기 어려웠습니다. 현재 개발 단계와 향후 확인할 수 있는 주요 이정표는 무엇인지 궁금합니다.",
+   "promise_id": "hyundai-p2"
+  }
+ ]
+}

@@ -1,0 +1,179 @@
+# AI Promise 엔진 설정. 경로는 engine 폴더 기준입니다.
+
+# 10/19 모델 올림 (김성태 결정). 공식 가격표 기준 100만 토큰당 입력/출력:
+#   gpt-6-luna $0.10/$0.50, gpt-6.1-sol $2/$10, gpt-6-astra $10/$50
+# 효과는 엔진을 돌린 뒤 같은 사람 정답과 비교해서만 말합니다 (README 9장).
+llm:
+  extract_model: gpt-6-luna         # 2~3단계 약속 추출·분류 (구조화 작업이라 가벼운 모델)
+  judge_model: gpt-6.1-sol          # 5단계 판정 (약속과 근거의 차이를 보는 핵심 단계)
+  card_model: gpt-6.1-sol           # 7단계 면접 카드
+  escalation_model: gpt-6-astra     # 아래 판정이 나오면 이 모델로 한 번 더 판정합니다. 비워 두면 하지 않습니다
+  escalate_verdicts: [partial]      # 일부 확인(근거 확인과의 경계가 애매한 판정)만 다시 봅니다
+  fallback_model: gpt-4o-mini       # 위 모델을 쓸 수 없으면(계정 권한, 매개변수 오류) 이 모델로 바꿔 계속하고 기록에 남깁니다
+  embed_model: text-embedding-3-large   # 바꾸면 벡터 DB를 모델 이름별로 새로 만듭니다
+  temperature: null                 # null이면 보내지 않습니다 (추론 모델은 temperature를 받지 않을 수 있음). gpt-4o-mini만 쓸 때는 0
+
+paths:
+  pdf_dir: ../data/pdf                          # DART에서 받은 PDF를 여기에 (핵심 2곳 6개 + 시연 3곳 9개)
+  dart_dir: ../data/dart                        # fetch_dart.py가 OpenDART에서 자동으로 받은 글(.txt)과 manifest.json. 있으면 PDF 대신 씁니다
+  work_dir: ../data/work                        # 단계별 중간 결과 (저장소에 올려도 됨, chroma_db는 제외)
+  results_file: ../data/results/ai_promise_data.json   # 화면에 넣을 결과 파일
+  labels_file: labels.json                      # 화면 문구 (sample_data.json의 labels와 같음)
+  eval_dir: ../eval                             # 정답 매길 목록, 평가 결과
+
+sections: [I5, II, IV]   # 읽는 장: I5=정관에 관한 사항, II=사업의 내용, IV=이사의 경영진단 및 분석의견
+keywords: [AI, 인공지능, 머신러닝, 딥러닝, "생성형 AI", 생성형AI]   # v2 확정: 자동화·지능형 단독어는 제외
+
+retrieval:
+  use_vector: true      # 의미 검색(ChromaDB) 함께 쓰기
+  top_windows: 8        # 검색 결과 상위 몇 곳을 볼지
+  max_candidates: 24    # 판정 때 AI에게 보여 줄 후보 문장 수
+  max_attempts: 3       # 근거를 못 찾으면 검색어를 바꿔 다시 찾는 횟수 (처음 포함)
+
+# 핵심 기업 2곳. url: DART에서 그 보고서를 열었을 때 주소창의 주소를 그대로 붙여 넣으세요. 화면의 "원문 링크"가 됩니다.
+#   fetch_dart.py로 자동으로 받으면 url이 비어 있는 칸은 DART 원문 주소(접수번호)로 자동으로 채워집니다.
+# stock_code: OpenDART 자동 수집에서 법인을 종목코드로 정확히 찾습니다 (app/data/listed-companies.json의 KRX 목록과 같음).
+# corp_code: OpenDART 고유번호(8자리). 적으면 기업 목록을 받지 않고 바로 씁니다.
+companies:
+  samsung:
+    name: 삼성전자
+    stock_code: "005930"
+    promise_reports:
+      - {key: y2024, title: "2024 사업보고서", pdf: samsung_2024.pdf, url: ""}
+    evidence_reports:
+      - {key: y2025, title: "2025 사업보고서", pdf: samsung_2025.pdf, url: ""}
+      - {key: h2026, title: "2026 반기보고서", pdf: samsung_2026h1.pdf, url: ""}
+  skhynix:
+    name: SK하이닉스
+    stock_code: "000660"
+    promise_reports:
+      - {key: y2024, title: "2024 사업보고서", pdf: skhynix_2024.pdf, url: ""}
+    evidence_reports:
+      - {key: y2025, title: "2025 사업보고서", pdf: skhynix_2025.pdf, url: ""}
+      - {key: h2026, title: "2026 반기보고서", pdf: skhynix_2026h1.pdf, url: ""}
+# check_note (선택): 기업 카드와 약속 목록 위에 작게 보이는 검증 안내. 비워 두면 보이지 않습니다.
+#   예) check_note: "사람 2명이 따로 매긴 정답과 AI 판정을 비교한 기업이에요."
+
+# 시연용 기업 3곳 (10/19 결정: 카카오, 신한은행, NAVER). 사람 정답과 비교하지 않고 화면에 시연용으로 표시합니다.
+# 핵심 2곳과 사용자 테스트를 먼저 끝내고, 시간이 남으면 실행합니다.
+# doctor, export를 그냥 돌릴 때는 들어가지 않고, --company나 --companies에 이름을 적을 때만 씁니다.
+# 실행 예) python run.py all --company kakao
+#          python run.py export --companies kakao shinhanbank naver
+#          python merge_screen.py --engine ../data/results/ai_promise_data.json --companies kakao shinhanbank naver --write
+candidates:
+  kakao:
+    name: 카카오
+    stock_code: "035720"
+    check_note: "AI 엔진 결과예요(사람 원문 검토 전). 근거 문장이 원문에 글자 그대로 있는지는 코드가 확인했고(원문 존재 확인), 사람 정답과 비교한 정확도는 없어요."
+    promise_reports:
+      - {key: y2024, title: "2024 사업보고서", pdf: kakao_2024.pdf, url: ""}
+    evidence_reports:
+      - {key: y2025, title: "2025 사업보고서", pdf: kakao_2025.pdf, url: ""}
+      - {key: h2026, title: "2026 반기보고서", pdf: kakao_2026h1.pdf, url: ""}
+  shinhanbank:
+    name: 신한은행   # 비상장 법인(신한지주 055550과 다른 법인). 자동 수집은 이름이 정확히 '신한은행'인 법인만 씁니다
+    check_note: "AI 엔진 결과예요(사람 원문 검토 전). 근거 문장이 원문에 글자 그대로 있는지는 코드가 확인했고(원문 존재 확인), 사람 정답과 비교한 정확도는 없어요."
+    promise_reports:
+      - {key: y2024, title: "2024 사업보고서", pdf: shinhan_2024.pdf, url: ""}
+    evidence_reports:
+      - {key: y2025, title: "2025 사업보고서", pdf: shinhan_2025.pdf, url: ""}
+      - {key: h2026, title: "2026 반기보고서", pdf: shinhan_2026h1.pdf, url: ""}
+  naver:
+    name: NAVER
+    stock_code: "035420"
+    check_note: "AI 엔진 결과예요(사람 원문 검토 전). 근거 문장이 원문에 글자 그대로 있는지는 코드가 확인했고(원문 존재 확인), 사람 정답과 비교한 정확도는 없어요."
+    promise_reports:
+      - {key: y2024, title: "2024 사업보고서", pdf: naver_2024.pdf, url: ""}
+    evidence_reports:
+      - {key: y2025, title: "2025 사업보고서", pdf: naver_2025.pdf, url: ""}
+      - {key: h2026, title: "2026 반기보고서", pdf: naver_2026h1.pdf, url: ""}
+
+  # 10/19 22시: 신한은행은 자동 분석에서 AI 약속 0개(2024 사업보고서의 AI 문장 3개가 모두 이미 한 일)라
+  # 김성태 결정으로 은행 시연 기업을 KB국민은행으로 바꿈. 우리은행, 하나은행은 같은 기준으로 함께 돌려 보는 예비 후보
+  # dart_names: OpenDART 기업 목록의 법인 이름 (화면 이름과 다를 때). 비상장 법인이라 종목코드 대신 이름이 정확히 같은 법인만 씀
+  kbbank:
+    name: KB국민은행
+    dart_names: [국민은행, KB국민은행]
+    check_note: "AI 엔진 결과예요(사람 원문 검토 전). 근거 문장이 원문에 글자 그대로 있는지는 코드가 확인했고(원문 존재 확인), 사람 정답과 비교한 정확도는 없어요."
+    promise_reports:
+      - {key: y2024, title: "2024 사업보고서", pdf: kbbank_2024.pdf, url: ""}
+    evidence_reports:
+      - {key: y2025, title: "2025 사업보고서", pdf: kbbank_2025.pdf, url: ""}
+      - {key: h2026, title: "2026 반기보고서", pdf: kbbank_2026h1.pdf, url: ""}
+  wooribank:
+    name: 우리은행
+    dart_names: [우리은행]
+    check_note: "AI 엔진 결과예요(사람 원문 검토 전). 근거 문장이 원문에 글자 그대로 있는지는 코드가 확인했고(원문 존재 확인), 사람 정답과 비교한 정확도는 없어요."
+    promise_reports:
+      - {key: y2024, title: "2024 사업보고서", pdf: wooribank_2024.pdf, url: ""}
+    evidence_reports:
+      - {key: y2025, title: "2025 사업보고서", pdf: wooribank_2025.pdf, url: ""}
+      - {key: h2026, title: "2026 반기보고서", pdf: wooribank_2026h1.pdf, url: ""}
+  hanabank:
+    name: 하나은행
+    dart_names: [하나은행]
+    check_note: "AI 엔진 결과예요(사람 원문 검토 전). 근거 문장이 원문에 글자 그대로 있는지는 코드가 확인했고(원문 존재 확인), 사람 정답과 비교한 정확도는 없어요."
+    promise_reports:
+      - {key: y2024, title: "2024 사업보고서", pdf: hanabank_2024.pdf, url: ""}
+    evidence_reports:
+      - {key: y2025, title: "2025 사업보고서", pdf: hanabank_2025.pdf, url: ""}
+      - {key: h2026, title: "2026 반기보고서", pdf: hanabank_2026h1.pdf, url: ""}
+
+  # 10/19 22시: 산업을 넓히려고 NAVER(카카오와 같은 플랫폼 업종) 대신 현대자동차를 넣기로 함 (김성태 결정).
+  # 시연 기업 기준(구체적 약속 3개 이상, engine/README 6장)에 못 미치면 SK텔레콤을 씀. KB금융은 은행 3곳이 기준 미달일 때의 금융 예비 후보
+  hyundai:
+    name: 현대자동차
+    stock_code: "005380"
+    check_note: "AI 엔진 결과예요(사람 원문 검토 전). 근거 문장이 원문에 글자 그대로 있는지는 코드가 확인했고(원문 존재 확인), 사람 정답과 비교한 정확도는 없어요."
+    promise_reports:
+      - {key: y2024, title: "2024 사업보고서", pdf: hyundai_2024.pdf, url: ""}
+    evidence_reports:
+      - {key: y2025, title: "2025 사업보고서", pdf: hyundai_2025.pdf, url: ""}
+      - {key: h2026, title: "2026 반기보고서", pdf: hyundai_2026h1.pdf, url: ""}
+  skt:
+    name: SK텔레콤
+    stock_code: "017670"
+    check_note: "AI 엔진 결과예요(사람 원문 검토 전). 근거 문장이 원문에 글자 그대로 있는지는 코드가 확인했고(원문 존재 확인), 사람 정답과 비교한 정확도는 없어요."
+    promise_reports:
+      - {key: y2024, title: "2024 사업보고서", pdf: skt_2024.pdf, url: ""}
+    evidence_reports:
+      - {key: y2025, title: "2025 사업보고서", pdf: skt_2025.pdf, url: ""}
+      - {key: h2026, title: "2026 반기보고서", pdf: skt_2026h1.pdf, url: ""}
+  kbfg:
+    name: KB금융
+    stock_code: "105560"
+    check_note: "AI 엔진 결과예요(사람 원문 검토 전). 근거 문장이 원문에 글자 그대로 있는지는 코드가 확인했고(원문 존재 확인), 사람 정답과 비교한 정확도는 없어요."
+    promise_reports:
+      - {key: y2024, title: "2024 사업보고서", pdf: kbfg_2024.pdf, url: ""}
+    evidence_reports:
+      - {key: y2025, title: "2025 사업보고서", pdf: kbfg_2025.pdf, url: ""}
+      - {key: h2026, title: "2026 반기보고서", pdf: kbfg_2026h1.pdf, url: ""}
+
+  # 금융 예비 후보 2 (10/19 22시, 은행 3곳과 KB국민은행이 기준 미달): 지주회사·인터넷은행
+  shinhanfg:
+    name: 신한지주
+    stock_code: "055550"
+    check_note: "AI 엔진 결과예요(사람 원문 검토 전). 근거 문장이 원문에 글자 그대로 있는지는 코드가 확인했고(원문 존재 확인), 사람 정답과 비교한 정확도는 없어요."
+    promise_reports:
+      - {key: y2024, title: "2024 사업보고서", pdf: shinhanfg_2024.pdf, url: ""}
+    evidence_reports:
+      - {key: y2025, title: "2025 사업보고서", pdf: shinhanfg_2025.pdf, url: ""}
+      - {key: h2026, title: "2026 반기보고서", pdf: shinhanfg_2026h1.pdf, url: ""}
+  kakaobank:
+    name: 카카오뱅크
+    stock_code: "323410"
+    check_note: "AI 엔진 결과예요(사람 원문 검토 전). 근거 문장이 원문에 글자 그대로 있는지는 코드가 확인했고(원문 존재 확인), 사람 정답과 비교한 정확도는 없어요."
+    promise_reports:
+      - {key: y2024, title: "2024 사업보고서", pdf: kakaobank_2024.pdf, url: ""}
+    evidence_reports:
+      - {key: y2025, title: "2025 사업보고서", pdf: kakaobank_2025.pdf, url: ""}
+      - {key: h2026, title: "2026 반기보고서", pdf: kakaobank_2026h1.pdf, url: ""}
+
+# 장을 자동으로 못 찾을 때만 적습니다. 쪽 번호는 PDF 뷰어 기준(1부터, 양끝 포함).
+section_pages: {}
+# 예)
+# section_pages:
+#   samsung:
+#     y2024:
+#       II: [10, 85]
+#       IV: [130, 141]

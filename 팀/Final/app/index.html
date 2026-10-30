@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ko" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>AI Promise | 기업 AI 약속 검증</title>
+  <meta name="description" content="회사가 사업보고서에 쓴 AI 약속과 다음 해 실행 근거를 나란히 보여주는 서비스">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <!-- Pretendard Variable (기존 Noto Sans KR에서 교체) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <script>
+    // 첫 화면이 깜빡이지 않도록, 저장된 테마를 가장 먼저 적용해요.
+    try {
+      var saved = localStorage.getItem('ai-promise-theme');
+      if (saved === 'light' || saved === 'dark') document.documentElement.setAttribute('data-theme', saved);
+    } catch (e) {}
+  </script>
+</head>
+<body>
+  <div class="app" id="app" aria-live="polite"></div>
+
+  <!-- 예시 데이터: 결과 파일(data/results.json)을 못 읽을 때, 이 컴퓨터에서 여는 경우(파일 더블클릭, localhost, 127.0.0.1)나 ?sample=1일 때만 쓰여요. 운영 사이트에서는 쓰지 않아요 (10/20) -->
+  <script src="data/sample-data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

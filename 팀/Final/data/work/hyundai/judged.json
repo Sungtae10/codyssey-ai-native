@@ -1,0 +1,243 @@
+{
+ "retrieval_mode": "키워드 + 의미",
+ "models_used": {
+  "extract": [
+   "gpt-6-luna"
+  ],
+  "judge": [
+   "gpt-6.1-sol"
+  ],
+  "judge_escalation": [
+   "gpt-6-astra"
+  ]
+ },
+ "promises": [
+  {
+   "type": "specific",
+   "title": "AI 기반 SDV 체계 전환",
+   "sentence": "차량 데이터와 AI 기반으로 기능과 서비스를 지속적으로 개선하는 SDV 체계로 전환하고, 이를 바탕으로 이동의 혁신을 실현하기 위한 수익 및 성장 전략을 수립하여 EV 경쟁력을 강화하고 수익성을 확보하며, SW 핵심 역량 내재화 기반으로 차량 개발 뿐 아니라 전 밸류체인과 서비스의 SW 중심 전환을 추진하며, SW 플랫폼 기반으로 AAM, 로봇 등 다양한 모빌리티 서비스를 연결하고자 합니다.",
+   "sentence_id": "y2024-II-0255",
+   "source": {
+    "report": "2024 사업보고서",
+    "section": "II. 사업의 내용",
+    "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250312001148",
+    "page": null
+   },
+   "id": "hyundai-p1",
+   "verdict": "partial",
+   "reason": "2025 사업보고서에는 Pleos OS 기반 OTA 업데이트·기능 확장과 서비스 기반 수익 모델 구축, AI 엔진을 통한 지속 학습형 모빌리티 생태계 구현이 기재되어 있어 약속한 AI 기반 SDV 전환과 관련된 활동이 확인됩니다. 다만 차량 데이터 활용, 전 밸류체인과 서비스의 SW 중심 전환, SW 플랫폼을 통한 AAM·로봇 서비스 연결까지는 확인되지 않아 약속 범위의 일부만 확인됩니다.",
+   "evidence": [
+    {
+     "sentence": "소프트웨어 전략에서는 CODA 플랫폼을 통해 차량 하드웨어 구조를 단순화하고, 독자 운영체제인 Pleos OS를 기반으로 OTA 업데이트와 기능 확장을 가능하게 하며, 차세대 인포테인먼트 플랫폼 Pleos Connect를 통해 개인화된 디지털 경험과 서비스 기반 수익 모델을 구축하고 있습니다.",
+     "source": {
+      "report": "2025 사업보고서",
+      "section": "II. 사업의 내용",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260318001394",
+      "page": null
+     },
+     "citation_verified": true,
+     "sentence_id": "y2025-II-0285"
+    },
+    {
+     "sentence": "또한, Atria(자율주행), Gleo(자연어 인터페이스), Capora(플릿 운영 최적화)로 구성된 AI 엔진을 통해 지속적으로 학습하고 진화하는 지능형 모빌리티 생태계를 실현하고 있습니다.현대자동차는 이러한 역량을 바탕으로 차량을 넘어 지속 가능한, 지능형 모빌리티 솔루션을 통해 고객과의 관계를 강화하고 미래 모빌리티 시장을 선도해 나갈 것입니다.",
+     "source": {
+      "report": "2025 사업보고서",
+      "section": "II. 사업의 내용",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260318001394",
+      "page": null
+     },
+     "citation_verified": true,
+     "sentence_id": "y2025-II-0286"
+    }
+   ],
+   "search_attempts": 1,
+   "search_log": [
+    {
+     "attempt": 1,
+     "query": "AI 기반 SDV 체계 전환 차량 데이터와 AI 기반으로 기능과 서비스를 지속적으로 개선하는 SDV 체계로 전환하고, 이를 바탕으로 이동의 혁신을 실현하기 위한 수익 및 성장 전략을 수립하여 EV 경쟁력을 강화하고 수익성을 확보하며, SW 핵심 역량 내재화 기반으로 차량 개발 뿐 아니라 전 밸류체인과 서비스의 SW 중심 전환을 추진하며, SW 플랫폼 기반으로 AAM, 로봇 등 다양한 모빌리티 서비스를 연결하고자 합니다.",
+     "candidates": [
+      "h2026-II-0282",
+      "h2026-II-0283",
+      "h2026-II-0284",
+      "y2025-II-0285",
+      "y2025-II-0286",
+      "y2025-II-0287",
+      "y2025-IV-0149",
+      "y2025-IV-0150",
+      "y2025-IV-0151",
+      "h2026-II-0288",
+      "h2026-II-0289",
+      "h2026-II-0290"
+     ],
+     "verdict": "partial",
+     "evidence_ids": [
+      "y2025-II-0285",
+      "y2025-II-0286"
+     ]
+    }
+   ],
+   "flags": [],
+   "judge_model_used": "gpt-6.1-sol",
+   "escalation": {
+    "model": "gpt-6-astra",
+    "first_verdict": "partial",
+    "second_verdict": "partial",
+    "adopted": true
+   }
+  },
+  {
+   "type": "specific",
+   "title": "차량 러닝 머신 개발",
+   "sentence": "SW 중심 전환 (SDV)의 궁극적인 목표는 데이터와 AI를 기반으로 차량이 스스로 학습하고 발전하는 러닝 머신을 개발하는 것입니다.",
+   "sentence_id": "y2024-II-0260",
+   "source": {
+    "report": "2024 사업보고서",
+    "section": "II. 사업의 내용",
+    "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250312001148",
+    "page": null
+   },
+   "id": "hyundai-p2",
+   "verdict": "partial",
+   "reason": "2025 사업보고서는 차량 소프트웨어 플랫폼을 구축하고 있으며, AI 엔진을 통해 지속적으로 학습하고 진화하는 지능형 모빌리티 생태계를 실현하고 있다고 밝혔습니다. 이는 약속한 차량의 학습·발전 방향과 관련된 활동이지만, 데이터와 AI를 기반으로 차량 자체가 스스로 학습하는 러닝 머신의 개발이 어느 단계까지 이루어졌는지는 명확하지 않습니다.",
+   "evidence": [
+    {
+     "sentence": "소프트웨어 전략에서는 CODA 플랫폼을 통해 차량 하드웨어 구조를 단순화하고, 독자 운영체제인 Pleos OS를 기반으로 OTA 업데이트와 기능 확장을 가능하게 하며, 차세대 인포테인먼트 플랫폼 Pleos Connect를 통해 개인화된 디지털 경험과 서비스 기반 수익 모델을 구축하고 있습니다.",
+     "source": {
+      "report": "2025 사업보고서",
+      "section": "II. 사업의 내용",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260318001394",
+      "page": null
+     },
+     "citation_verified": true,
+     "sentence_id": "y2025-II-0285"
+    },
+    {
+     "sentence": "또한, Atria(자율주행), Gleo(자연어 인터페이스), Capora(플릿 운영 최적화)로 구성된 AI 엔진을 통해 지속적으로 학습하고 진화하는 지능형 모빌리티 생태계를 실현하고 있습니다.현대자동차는 이러한 역량을 바탕으로 차량을 넘어 지속 가능한, 지능형 모빌리티 솔루션을 통해 고객과의 관계를 강화하고 미래 모빌리티 시장을 선도해 나갈 것입니다.",
+     "source": {
+      "report": "2025 사업보고서",
+      "section": "II. 사업의 내용",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260318001394",
+      "page": null
+     },
+     "citation_verified": true,
+     "sentence_id": "y2025-II-0286"
+    }
+   ],
+   "search_attempts": 1,
+   "search_log": [
+    {
+     "attempt": 1,
+     "query": "차량 러닝 머신 개발 SW 중심 전환 (SDV)의 궁극적인 목표는 데이터와 AI를 기반으로 차량이 스스로 학습하고 발전하는 러닝 머신을 개발하는 것입니다.",
+     "candidates": [
+      "y2025-IV-0149",
+      "y2025-IV-0150",
+      "y2025-IV-0151",
+      "y2025-IV-0148",
+      "h2026-II-0282",
+      "h2026-II-0283",
+      "h2026-II-0284",
+      "y2025-II-0285",
+      "y2025-II-0286",
+      "y2025-II-0287",
+      "h2026-II-0281",
+      "y2025-II-0284"
+     ],
+     "verdict": "partial",
+     "evidence_ids": [
+      "y2025-II-0286",
+      "y2025-II-0285"
+     ]
+    }
+   ],
+   "flags": [],
+   "judge_model_used": "gpt-6.1-sol",
+   "escalation": {
+    "model": "gpt-6-astra",
+    "first_verdict": "partial",
+    "second_verdict": "partial",
+    "adopted": true
+   }
+  },
+  {
+   "type": "specific",
+   "title": "AI 기능 구현",
+   "sentence": "특히 ‘26년 하반기에는 자체 개발한 차량용 고성능 컴퓨터와 중앙집중형 전기전자 아키텍처를 적용한 SDV 페이스 카를 통해, 보다 안정적인 자율주행과 편리한 AI 기능을 구현하고, 새로운 모빌리티 서비스와 비즈니스를 실증할 예정입니다.",
+   "sentence_id": "y2024-II-0262",
+   "source": {
+    "report": "2024 사업보고서",
+    "section": "II. 사업의 내용",
+    "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250312001148",
+    "page": null
+   },
+   "id": "hyundai-p3",
+   "verdict": "not_verifiable",
+   "reason": "읽은 공시 범위(2025 사업보고서, 2026 반기보고서)에서 관련 내용을 찾지 못했습니다. 검색어를 바꿔 2번 다시 찾았지만 결과가 같았습니다.",
+   "evidence": [],
+   "search_attempts": 3,
+   "search_log": [
+    {
+     "attempt": 1,
+     "query": "AI 기능 구현 특히 ‘26년 하반기에는 자체 개발한 차량용 고성능 컴퓨터와 중앙집중형 전기전자 아키텍처를 적용한 SDV 페이스 카를 통해, 보다 안정적인 자율주행과 편리한 AI 기능을 구현하고, 새로운 모빌리티 서비스와 비즈니스를 실증할 예정입니다.",
+     "candidates": [
+      "h2026-II-0283",
+      "h2026-II-0284",
+      "h2026-II-0285",
+      "y2025-II-0286",
+      "y2025-II-0287",
+      "y2025-II-0288",
+      "h2026-II-0281",
+      "h2026-II-0282",
+      "y2025-II-0284",
+      "y2025-II-0285",
+      "y2025-IV-0149",
+      "y2025-IV-0150"
+     ],
+     "verdict": "not_verifiable",
+     "evidence_ids": []
+    },
+    {
+     "attempt": 2,
+     "query": "SDV 페이스 카 차량용 고성능 컴퓨터 중앙집중형 전기전자 아키텍처 실증",
+     "candidates": [
+      "y2025-II-0285",
+      "y2025-II-0286",
+      "y2025-II-0287",
+      "h2026-II-0282",
+      "h2026-II-0283",
+      "h2026-II-0284",
+      "h2026-II-0190",
+      "h2026-II-0191",
+      "h2026-II-0192",
+      "y2025-IV-0044",
+      "y2025-IV-0045",
+      "y2025-IV-0046"
+     ],
+     "verdict": "not_verifiable",
+     "evidence_ids": []
+    },
+    {
+     "attempt": 3,
+     "query": "SDV 페이스카 고성능 차량 컴퓨터 E/E 아키텍처 자율주행 AI 서비스 실증 완료",
+     "candidates": [
+      "h2026-II-0281",
+      "h2026-II-0282",
+      "h2026-II-0283",
+      "y2025-II-0284",
+      "y2025-II-0285",
+      "y2025-II-0286",
+      "y2025-IV-0044",
+      "y2025-IV-0045",
+      "y2025-IV-0046",
+      "y2025-IV-0047",
+      "h2026-II-0284",
+      "y2025-II-0287"
+     ],
+     "verdict": "not_verifiable",
+     "evidence_ids": []
+    }
+   ],
+   "flags": [],
+   "judge_model_used": "gpt-6.1-sol"
+  }
+ ]
+}

@@ -1,0 +1,308 @@
+{
+ "companies": {
+  "kakao": {
+   "corp_code": "00258801",
+   "corp_name": "카카오",
+   "stock_code": "035720",
+   "corp_found_by": "종목코드",
+   "reports": {
+    "y2024": {
+     "title": "2024 사업보고서",
+     "found": true,
+     "report_nm": "[기재정정]사업보고서 (2024.12)",
+     "rcept_no": "20250324000901",
+     "rcept_dt": "20250324",
+     "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250324000901",
+     "file": "kakao_y2024.txt",
+     "xml_member": "20250324000901.xml",
+     "zip_members": 1,
+     "chars": 727984,
+     "sha256": "80cb56bc8647c64a",
+     "sections_found": {
+      "I5": true,
+      "II": true,
+      "IV": true
+     },
+     "section_chars": {
+      "I5": 9719,
+      "II": 59372,
+      "IV": 13860
+     },
+     "xml_tags": {
+      "SECTION-1": 15,
+      "TABLE": 2609,
+      "IMAGE": 4,
+      "IMG": 8,
+      "TOC": 0,
+      "LIBRARY": 27
+     }
+    },
+    "y2025": {
+     "title": "2025 사업보고서",
+     "found": true,
+     "report_nm": "사업보고서 (2025.12)",
+     "rcept_no": "20260318001423",
+     "rcept_dt": "20260318",
+     "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260318001423",
+     "file": "kakao_y2025.txt",
+     "xml_member": "20260318001423.xml",
+     "zip_members": 3,
+     "chars": 734397,
+     "sha256": "d507c79c11a1d05c",
+     "sections_found": {
+      "I5": true,
+      "II": true,
+      "IV": true
+     },
+     "section_chars": {
+      "I5": 9975,
+      "II": 64577,
+      "IV": 17611
+     },
+     "xml_tags": {
+      "SECTION-1": 14,
+      "TABLE": 2805,
+      "IMAGE": 3,
+      "IMG": 6,
+      "TOC": 0,
+      "LIBRARY": 27
+     }
+    },
+    "h2026": {
+     "title": "2026 반기보고서",
+     "found": true,
+     "report_nm": "[기재정정]반기보고서 (2026.06)",
+     "rcept_no": "20260819000055",
+     "rcept_dt": "20260819",
+     "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260819000055",
+     "file": "kakao_h2026.txt",
+     "xml_member": "20260819000055.xml",
+     "zip_members": 1,
+     "chars": 522122,
+     "sha256": "dae82c76825a642f",
+     "sections_found": {
+      "I5": true,
+      "II": true,
+      "IV": true
+     },
+     "section_chars": {
+      "I5": 12273,
+      "II": 54477,
+      "IV": 430
+     },
+     "xml_tags": {
+      "SECTION-1": 15,
+      "TABLE": 1692,
+      "IMAGE": 4,
+      "IMG": 8,
+      "TOC": 0,
+      "LIBRARY": 41
+     }
+    }
+   }
+  },
+  "hyundai": {
+   "corp_code": "00164742",
+   "corp_name": "현대자동차",
+   "stock_code": "005380",
+   "corp_found_by": "종목코드",
+   "reports": {
+    "y2024": {
+     "title": "2024 사업보고서",
+     "found": true,
+     "report_nm": "사업보고서 (2024.12)",
+     "rcept_no": "20250312001148",
+     "rcept_dt": "20250312",
+     "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250312001148",
+     "file": "hyundai_y2024.txt",
+     "xml_member": "20250312001148.xml",
+     "zip_members": 3,
+     "chars": 704261,
+     "sha256": "16eb0191f2e03371",
+     "sections_found": {
+      "I5": true,
+      "II": true,
+      "IV": true
+     },
+     "section_chars": {
+      "I5": 6194,
+      "II": 48483,
+      "IV": 15265
+     },
+     "xml_tags": {
+      "SECTION-1": 14,
+      "TABLE": 2419,
+      "IMAGE": 2,
+      "IMG": 4,
+      "TOC": 0,
+      "LIBRARY": 24
+     }
+    },
+    "y2025": {
+     "title": "2025 사업보고서",
+     "found": true,
+     "report_nm": "사업보고서 (2025.12)",
+     "rcept_no": "20260318001394",
+     "rcept_dt": "20260318",
+     "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260318001394",
+     "file": "hyundai_y2025.txt",
+     "xml_member": "20260318001394.xml",
+     "zip_members": 3,
+     "chars": 725636,
+     "sha256": "4cf9752984928a89",
+     "sections_found": {
+      "I5": true,
+      "II": true,
+      "IV": true
+     },
+     "section_chars": {
+      "I5": 11193,
+      "II": 49731,
+      "IV": 15827
+     },
+     "xml_tags": {
+      "SECTION-1": 14,
+      "TABLE": 2477,
+      "IMAGE": 2,
+      "IMG": 4,
+      "TOC": 0,
+      "LIBRARY": 27
+     }
+    },
+    "h2026": {
+     "title": "2026 반기보고서",
+     "found": true,
+     "report_nm": "반기보고서 (2026.06)",
+     "rcept_no": "20260814003521",
+     "rcept_dt": "20260814",
+     "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003521",
+     "file": "hyundai_h2026.txt",
+     "xml_member": "20260814003521.xml",
+     "zip_members": 1,
+     "chars": 525670,
+     "sha256": "ddd77597567a2636",
+     "sections_found": {
+      "I5": true,
+      "II": true,
+      "IV": true
+     },
+     "section_chars": {
+      "I5": 8169,
+      "II": 49703,
+      "IV": 382
+     },
+     "xml_tags": {
+      "SECTION-1": 14,
+      "TABLE": 1981,
+      "IMAGE": 2,
+      "IMG": 4,
+      "TOC": 0,
+      "LIBRARY": 41
+     }
+    }
+   }
+  },
+  "shinhanfg": {
+   "corp_code": "00382199",
+   "corp_name": "신한지주",
+   "stock_code": "055550",
+   "corp_found_by": "종목코드",
+   "reports": {
+    "y2024": {
+     "title": "2024 사업보고서",
+     "found": true,
+     "report_nm": "사업보고서 (2024.12)",
+     "rcept_no": "20250318000993",
+     "rcept_dt": "20250318",
+     "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250318000993",
+     "file": "shinhanfg_y2024.txt",
+     "xml_member": "20250318000993.xml",
+     "zip_members": 3,
+     "chars": 1152062,
+     "sha256": "38e9dd004ab0872b",
+     "sections_found": {
+      "I5": true,
+      "II": true,
+      "IV": true
+     },
+     "section_chars": {
+      "I5": 1360,
+      "II": 127496,
+      "IV": 71740
+     },
+     "xml_tags": {
+      "SECTION-1": 14,
+      "TABLE": 1561,
+      "IMAGE": 2,
+      "IMG": 4,
+      "TOC": 0,
+      "LIBRARY": 24
+     }
+    },
+    "y2025": {
+     "title": "2025 사업보고서",
+     "found": true,
+     "report_nm": "[기재정정]사업보고서 (2025.12)",
+     "rcept_no": "20261007000218",
+     "rcept_dt": "20261007",
+     "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261007000218",
+     "file": "shinhanfg_y2025.txt",
+     "xml_member": "20261007000218.xml",
+     "zip_members": 1,
+     "chars": 1451907,
+     "sha256": "8bcc7cb8eab1936b",
+     "sections_found": {
+      "I5": true,
+      "II": true,
+      "IV": true
+     },
+     "section_chars": {
+      "I5": 1361,
+      "II": 127377,
+      "IV": 75602
+     },
+     "xml_tags": {
+      "SECTION-1": 15,
+      "TABLE": 3592,
+      "IMAGE": 3,
+      "IMG": 6,
+      "TOC": 0,
+      "LIBRARY": 26
+     }
+    },
+    "h2026": {
+     "title": "2026 반기보고서",
+     "found": true,
+     "report_nm": "[기재정정]반기보고서 (2026.06)",
+     "rcept_no": "20261007000223",
+     "rcept_dt": "20261007",
+     "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261007000223",
+     "file": "shinhanfg_h2026.txt",
+     "xml_member": "20261007000223.xml",
+     "zip_members": 1,
+     "chars": 967738,
+     "sha256": "af16338105fa4f61",
+     "sections_found": {
+      "I5": true,
+      "II": true,
+      "IV": true
+     },
+     "section_chars": {
+      "I5": 1412,
+      "II": 126388,
+      "IV": 246
+     },
+     "xml_tags": {
+      "SECTION-1": 15,
+      "TABLE": 2322,
+      "IMAGE": 3,
+      "IMG": 6,
+      "TOC": 0,
+      "LIBRARY": 33
+     }
+    }
+   }
+  }
+ },
+ "note": "OpenDART 자동 수집 기록 (fetch_dart.py). 화면에 넣은 기업만 담습니다. 받은 글(.txt)은 저장소에 올리지 않습니다."
+}

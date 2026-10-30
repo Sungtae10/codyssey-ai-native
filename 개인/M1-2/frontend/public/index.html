@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>원/달러 환율 비서</title>
+  <meta name="description" content="내 환율 데이터를 아는 AI 비서. 저장한 원/달러 환율 요약을 GPT에 넣어 맞춤형으로 답합니다.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23136b4c'/%3E%3Cpath d='M7 22l5-7 4 4 7-10' fill='none' stroke='%23fff' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="styles.css">
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem("theme");
+        if (saved === "light" || saved === "dark") document.documentElement.setAttribute("data-theme", saved);
+      } catch (e) { /* 저장소를 쓸 수 없어도 화면은 그대로 동작 */ }
+    })();
+  </script>
+  <script src="config.js"></script>
+  <script type="module" src="app.js"></script>
+</head>
+<body class="lock">
+  <a class="skip" href="#main">본문으로 건너뛰기</a>
+
+  <header class="topbar">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+        <rect width="32" height="32" rx="7" fill="var(--brand)"/>
+        <path d="M7 22l5-7 4 4 7-10" fill="none" stroke="var(--brand-ink)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <h1 class="brand-name">원/달러 환율 비서</h1>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="화면 선택">
+      <button class="tab" role="tab" id="tab-chat" aria-controls="view-chat" aria-selected="true">AI 채팅</button>
+      <button class="tab" role="tab" id="tab-data" aria-controls="view-data" aria-selected="false" tabindex="-1">데이터 관리</button>
+    </nav>
+    <div class="top-actions">
+      <span id="server-status" class="status" data-state="waking" role="status"><span class="status-text">서버 확인 중</span></span>
+      <button id="theme-toggle" class="icon-btn" type="button" aria-label="다크 모드로 바꾸기">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path class="icon-moon" d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <div id="banner" class="banner" role="status" hidden>
+    <span id="banner-text"></span>
+    <button id="banner-retry" class="btn btn-small" type="button" hidden>다시 연결</button>
+  </div>
+
+  <section id="board" class="board is-loading" aria-label="데이터 요약" aria-busy="true">
+    <p class="board-empty">데이터 요약을 불러오는 중이에요.</p>
+  </section>
+
+  <main id="main">
+    <!-- AI 채팅 -->
+    <section id="view-chat" class="view view-chat" role="tabpanel" aria-labelledby="tab-chat">
+      <aside id="history" class="history" aria-label="대화 기록">
+        <div class="history-head">
+          <h2>대화 기록</h2>
+          <button id="new-chat" class="btn btn-small" type="button">새 대화</button>
+        </div>
+        <ul id="conv-list" class="conv-list"></ul>
+        <p id="conv-empty" class="empty" hidden>아직 저장된 대화가 없어요. 질문하면 자동으로 저장돼요.</p>
+      </aside>
+      <div id="backdrop" class="backdrop"></div>
+
+      <div class="chat">
+        <div class="chat-head">
+          <button id="history-toggle" class="btn btn-quiet btn-small only-mobile" type="button" aria-controls="history" aria-expanded="false">대화 기록</button>
+          <h2 id="chat-title" class="chat-title">새 대화</h2>
+          <button id="save-copy" class="btn btn-quiet btn-small" type="button" disabled>사본 저장</button>
+        </div>
+        <div id="messages" class="messages" aria-live="polite"></div>
+        <form id="composer" class="composer" autocomplete="off">
+          <div class="composer-row">
+            <label for="prompt" class="sr-only">질문 입력</label>
+            <textarea id="prompt" rows="1" maxlength="1000" placeholder="예: 이번 달 환율 흐름 어때?"></textarea>
+            <button id="send" class="btn btn-primary" type="submit">보내기</button>
+          </div>
+          <p class="composer-hint"><span>Enter로 보내기, Shift+Enter로 줄바꿈</span><span id="char-count" class="num">0/1000</span></p>
+        </form>
+      </div>
+    </section>
+
+    <!-- 데이터 관리 -->
+    <section id="view-data" class="view view-data" role="tabpanel" aria-labelledby="tab-data" hidden>
+      <div class="data-main">
+        <section class="panel" aria-labelledby="chart-title">
+          <div class="panel-head">
+            <h2 id="chart-title">환율 흐름</h2>
+            <div class="seg" role="group" aria-label="그래프 기간">
+              <button type="button" data-range="1" aria-pressed="false">1개월</button>
+              <button type="button" data-range="3" aria-pressed="false">3개월</button>
+              <button type="button" data-range="6" aria-pressed="false">6개월</button>
+              <button type="button" data-range="all" aria-pressed="true">전체</button>
+            </div>
+            <label class="check"><input type="checkbox" id="ma-toggle" checked> 20일 이동평균</label>
+          </div>
+          <div class="legend" id="chart-legend">
+            <span><i class="key-1"></i>환율 (원)</span>
+            <span id="legend-ma"><i class="key-2"></i>20일 이동평균</span>
+          </div>
+          <div id="chart" class="chart"></div>
+        </section>
+
+        <section class="panel" aria-labelledby="table-title">
+          <div class="panel-head">
+            <h2 id="table-title">데이터 목록 <span id="data-count" class="num"></span></h2>
+            <div class="table-tools">
+              <label for="data-filter" class="sr-only">날짜나 메모로 찾기</label>
+              <input type="search" id="data-filter" placeholder="예: 2026-10 또는 메모">
+              <button class="btn btn-small" type="button" data-export="csv">CSV 내려받기</button>
+              <button class="btn btn-small" type="button" data-export="json">JSON 내려받기</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <caption class="sr-only">날짜별 환율 데이터. 최신 날짜가 위에 있어요.</caption>
+              <thead>
+                <tr><th scope="col">날짜</th><th scope="col" class="c-num">값 (원)</th><th scope="col" class="c-num">전일 대비</th><th scope="col">메모</th><th scope="col" class="c-act"><span class="sr-only">관리</span></th></tr>
+              </thead>
+              <tbody id="data-body"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <div class="data-side">
+        <section class="panel" aria-labelledby="add-title">
+          <h2 id="add-title">데이터 추가</h2>
+          <p class="panel-note" style="margin-top:4px">하루에 값은 하나만 저장돼요. 같은 날짜가 있으면 목록에서 수정하세요.</p>
+          <form id="add-form" class="form-grid" novalidate>
+            <div class="field-row">
+              <div class="field">
+                <label for="add-date">날짜</label>
+                <input id="add-date" name="date" type="date" required>
+              </div>
+              <div class="field">
+                <label for="add-value">값 (원)</label>
+                <input id="add-value" name="value" type="number" step="0.01" min="0.01" inputmode="decimal" placeholder="1334.03" required>
+              </div>
+            </div>
+            <div class="field">
+              <label for="add-memo">메모 (선택, 200자까지)</label>
+              <input id="add-memo" name="memo" type="text" maxlength="200" placeholder="예: 서울 외환시장 종가">
+            </div>
+            <p id="add-error" class="form-error" role="alert"></p>
+            <button class="btn btn-primary" type="submit">추가하기</button>
+          </form>
+        </section>
+
+        <section class="panel" aria-labelledby="stats-title">
+          <h2 id="stats-title">확장 통계</h2>
+          <p class="panel-note" style="margin-top:4px">저장된 전체 데이터 기준이에요.</p>
+          <div id="stats-body"><p class="empty" style="padding:0">통계를 불러오는 중이에요.</p></div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="copy-dialog" aria-labelledby="copy-title">
+    <form method="dialog" id="copy-form">
+      <h2 id="copy-title">대화 사본 저장</h2>
+      <div class="field">
+        <label for="copy-name">제목</label>
+        <input id="copy-name" type="text" maxlength="100" required>
+      </div>
+      <div class="dialog-actions">
+        <button class="btn" type="button" id="copy-cancel">취소</button>
+        <button class="btn btn-primary" type="submit" value="save">저장하기</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
